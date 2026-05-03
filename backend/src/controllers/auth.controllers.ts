@@ -2,13 +2,15 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt';
+import { hashNik } from '../utils/nik';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
         const {name, email, password, phone, nik, address, birthDate} = req.body;
         const emailExisting = await prisma.user.findUnique({ where: { email } });
         const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
-        const nikExisting = nik ? await prisma.user.findUnique({ where: { nik } }) : null;
+        const nikHash = nik ? hashNik(nik) : null;
+        const nikExisting = nikHash ? await prisma.user.findUnique({ where: { nik: nikHash } }) : null;
         if (emailExisting) {
             return res.status(400).json({
                 message: 'Email sudah terdaftar',
@@ -31,9 +33,9 @@ export const registerController = async (req: Request, res: Response) => {
                 email,
                 password: hashedPassword,
                 phone,
-                nik,
+                nik: nikHash,
                 address,
-                birthDate: birthDate ? new Date(birthDate) : undefined,
+                birthDate,
                 role: 'USER',
             },
             select: {

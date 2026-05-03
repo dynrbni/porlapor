@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
+import { hashNik } from '../utils/nik';
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -65,7 +66,7 @@ export const updateUser = async (req: Request, res: Response) => {
     if (name) data.name = name;
     if (email) data.email = email;
     if (phone) data.phone = phone;
-        if (nik) data.nik = nik;
+        if (nik) data.nik = hashNik(nik);
         if (address) data.address = address;
         if (birthDate) data.birthDate = new Date(birthDate);
     if (password) {

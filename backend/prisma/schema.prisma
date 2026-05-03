@@ -42,8 +42,10 @@ model User {
   email    String  @unique
   password String  // disimpan dalam bentuk hash bcrypt
   phone    String? @unique
-  nik      String? @db.VarChar(24) @unique 
-  birthDate DateTime? @db.Date
+  nik      String? @db.VarChar(64) @unique
+  birthDate String? 
+  address  String?
+
   role     Role    @default(USER)
   isActive Boolean @default(true)
 
