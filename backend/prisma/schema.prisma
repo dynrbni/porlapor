@@ -42,7 +42,7 @@ model User {
   email    String  @unique
   password String  // disimpan dalam bentuk hash bcrypt
   phone    String? @unique
-  nik      String? @db.VarChar(64) @unique
+  nik      String? @unique
   birthDate String? 
   address  String?
 

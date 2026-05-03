@@ -3,6 +3,7 @@ import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 import { hashNik } from '../utils/nik';
+import { normalizeBirthDate } from '../utils/date';
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -68,7 +69,15 @@ export const updateUser = async (req: Request, res: Response) => {
     if (phone) data.phone = phone;
         if (nik) data.nik = hashNik(nik);
         if (address) data.address = address;
-        if (birthDate) data.birthDate = new Date(birthDate);
+        if (birthDate) {
+            const normalizedBirthDate = normalizeBirthDate(birthDate);
+            if (!normalizedBirthDate) {
+                return res.status(400).json({
+                    message: 'Format tanggal lahir tidak valid',
+                });
+            }
+            data.birthDate = normalizedBirthDate;
+        }
     if (password) {
       data.password = await bcrypt.hash(password, 10);
     }

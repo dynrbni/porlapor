@@ -3,6 +3,7 @@ import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt';
 import { hashNik } from '../utils/nik';
+import { normalizeBirthDate } from '../utils/date';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
@@ -26,6 +27,13 @@ export const registerController = async (req: Request, res: Response) => {
                 message: 'NIK sudah terdaftar',
             });
         }
+        const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
+        if (birthDate && !normalizedBirthDate) {
+            return res.status(400).json({
+                message: 'Format tanggal lahir tidak valid',
+            });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
             data: {
@@ -35,7 +43,7 @@ export const registerController = async (req: Request, res: Response) => {
                 phone,
                 nik: nikHash,
                 address,
-                birthDate,
+                birthDate: normalizedBirthDate ?? undefined,
                 role: 'USER',
             },
             select: {
@@ -59,6 +67,7 @@ export const registerController = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({
             message: 'Internal server error',
+            error: error
         });
     }
 }
