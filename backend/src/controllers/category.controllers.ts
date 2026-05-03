@@ -74,6 +74,14 @@ export const getAllCategories = async (req: Request, res: Response) => {
 export const getCategoryById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const categoryNotFound = !(await prisma.category.findUnique({
+      where: { id: String(id) },
+    }));
+    if (categoryNotFound) {
+      return res.status(404).json({
+        message: 'Kategori tidak ditemukan',
+      });
+    }
     const category = await prisma.category.findFirst({
       where: {
         id: String(id),
@@ -104,6 +112,14 @@ export const updateCategory = async (req: Request, res: Response) => {
     const name = normalizeText(req.body?.name);
     const description = normalizeText(req.body?.description);
     const isActive = parseBoolean(req.body?.isActive);
+    const categoryNotFound = !(await prisma.category.findUnique({
+      where: { id: String(id) },
+    }));
+    if (categoryNotFound) {
+      return res.status(404).json({
+        message: 'Kategori tidak ditemukan',
+      });
+    }
 
     const data: { name?: string; description?: string | null; isActive?: boolean } = {};
 
@@ -136,6 +152,14 @@ export const updateCategory = async (req: Request, res: Response) => {
 export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const categoryNotFound = !(await prisma.category.findUnique({
+      where: { id: String(id) },
+    }));
+    if (categoryNotFound) {
+      return res.status(404).json({
+        message: 'Kategori tidak ditemukan',
+      });
+    }
 
     await prisma.category.delete({
       where: { id: String(id) },
