@@ -10,7 +10,7 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use('/reports', authenticate);
 
 router.post('/reports', createReport);
 router.get('/reports', getAllReports);
