@@ -1,5 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ===================================================
+// PorLapor — schema.prisma
+// DB: PostgreSQL | ORM: Prisma
+// Auth: Email + Password (bcrypt)
+// ===================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -8,4 +11,167 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ===================================================
+// ENUMS
+// ===================================================
+
+enum Role {
+  USER        // masyarakat biasa, bisa buat laporan
+  ADMIN       // pegawai instansi, kelola laporan
+  SUPERADMIN  // bisa semua + bisa tambah/kelola admin
+}
+
+enum ReportStatus {
+  PENDING      // baru masuk, belum ditinjau
+  IN_REVIEW    // sedang ditinjau admin
+  IN_PROGRESS  // sedang diproses instansi
+  RESOLVED     // selesai ditangani
+  REJECTED     // ditolak (spam / tidak valid)
+}
+
+// ===================================================
+// MODEL: User
+// Satu model untuk ketiga role (USER, ADMIN, SUPERADMIN)
+// ===================================================
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String  // disimpan dalam bentuk hash bcrypt
+  phone    String?
+  role     Role    @default(USER)
+  isActive Boolean @default(true)
+
+  // Relasi: siapa yang membuat akun admin ini
+  // Hanya SUPERADMIN yang bisa isi field ini
+  createdById   String?
+  createdBy     User?  @relation("AdminCreator", fields: [createdById], references: [id])
+  createdAdmins User[] @relation("AdminCreator")
+
+  reports    Report[]
+  statusLogs ReportStatusLog[]
+  spamLogs   SpamLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ===================================================
+// MODEL: Agency (Instansi Pemerintah)
+// Contoh: Dinas PU, Dinas Kebersihan, Kepolisian
+// ===================================================
+
+model Agency {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  email       String?
+  phone       String?
+  address     String?
+  isActive    Boolean @default(true)
+
+  categories Category[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("agencies")
+}
+
+// ===================================================
+// MODEL: Category (Jenis / Kategori Laporan)
+// Contoh: Jalan Rusak → Dinas PU
+//         Sampah Menumpuk → Dinas Kebersihan
+// ===================================================
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id])
+
+  reports Report[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+// ===================================================
+// MODEL: Report (Laporan Masyarakat)
+// ===================================================
+
+model Report {
+  id          String       @id @default(uuid())
+  title       String
+  description String       @db.Text
+  latitude    Float        // koordinat GPS dari device
+  longitude   Float
+  address     String?      // alamat hasil reverse geocoding (opsional)
+  imageUrl    String?      // URL foto laporan
+  status      ReportStatus @default(PENDING)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  statusLogs ReportStatusLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reports")
+}
+
+// ===================================================
+// MODEL: ReportStatusLog
+// Riwayat perubahan status laporan oleh admin
+// Berguna untuk transparansi ke masyarakat
+// ===================================================
+
+model ReportStatusLog {
+  id     String       @id @default(uuid())
+  status ReportStatus // status baru setelah diupdate
+  note   String?      // catatan dari admin (opsional)
+
+  reportId String
+  report   Report @relation(fields: [reportId], references: [id])
+
+  updatedById String
+  updatedBy   User   @relation(fields: [updatedById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("report_status_logs")
+}
+
+// ===================================================
+// MODEL: SpamLog
+// Anti-spam: maksimal 3 laporan per user per hari
+// ===================================================
+
+model SpamLog {
+  id    String   @id @default(uuid())
+  date  DateTime @db.Date
+  count Int      @default(1)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("spam_logs")
 }
