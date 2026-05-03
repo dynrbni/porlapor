@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
+import { generateToken } from '../utils/jwt';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
@@ -35,8 +36,10 @@ export const registerController = async (req: Request, res: Response) => {
                 createdAt: true,
             },
         });
+        const token = generateToken({ id: user.id, email: user.email, role: user.role });
         res.status(201).json({
             message: 'Registrasi User berhasil',
+            token,
             data: user,
         });
     } catch (error) {
@@ -61,8 +64,10 @@ export const loginController = async (req: Request, res: Response) => {
                 message: 'Password salah',
             });
         }
+        const token = generateToken({ id: user.id, email: user.email, role: user.role });
         res.status(200).json({
-            message: 'Login berhasil',
+            message: 'Login User berhasil',
+            token,
             data: {
                 id: user.id,
                 name: user.name,
