@@ -137,14 +137,12 @@ export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const category = await prisma.category.update({
+    await prisma.category.delete({
       where: { id: String(id) },
-      data: { isActive: false },
     });
 
     res.status(200).json({
-      message: 'Kategori berhasil dinonaktifkan',
-      data: category,
+      message: 'Kategori berhasil dihapus',
     });
   } catch (error) {
     res.status(500).json({
