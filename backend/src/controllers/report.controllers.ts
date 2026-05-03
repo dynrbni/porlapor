@@ -17,7 +17,8 @@ function reporterSelect() {
     name: true,
     email: true,
     phone: true,
-    role: true,
+    nik: true,
+    birthDate: true,
     createdAt: true,
   };
 }
