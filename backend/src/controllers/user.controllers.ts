@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
-import { hashNik } from '../utils/nik';
+import { hashNik, compareNik } from '../utils/nik';
 import { normalizeBirthDate } from '../utils/date';
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -67,7 +67,28 @@ export const updateUser = async (req: Request, res: Response) => {
     if (name) data.name = name;
     if (email) data.email = email;
     if (phone) data.phone = phone;
-        if (nik) data.nik = hashNik(nik);
+        if (nik) {
+            const nikRows = await prisma.user.findMany({
+                where: {
+                    nik: { not: null },
+                    id: { not: String(id) },
+                },
+                select: { nik: true },
+            });
+            let nikExists = false;
+            for (const row of nikRows) {
+                if (row.nik && await compareNik(nik, row.nik)) {
+                    nikExists = true;
+                    break;
+                }
+            }
+            if (nikExists) {
+                return res.status(400).json({
+                    message: 'NIK sudah terdaftar',
+                });
+            }
+            data.nik = await hashNik(nik);
+        }
         if (address) data.address = address;
         if (birthDate) {
             const normalizedBirthDate = normalizeBirthDate(birthDate);

@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt';
-import { hashNik } from '../utils/nik';
+import { hashNik, compareNik } from '../utils/nik';
 import { normalizeBirthDate } from '../utils/date';
 
 export const registerController = async (req: Request, res: Response) => {
@@ -10,8 +10,7 @@ export const registerController = async (req: Request, res: Response) => {
         const {name, email, password, phone, nik, address, birthDate} = req.body;
         const emailExisting = await prisma.user.findUnique({ where: { email } });
         const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
-        const nikHash = nik ? hashNik(nik) : null;
-        const nikExisting = nikHash ? await prisma.user.findUnique({ where: { nik: nikHash } }) : null;
+        let nikHash: string | null = null;
         if (emailExisting) {
             return res.status(400).json({
                 message: 'Email sudah terdaftar',
@@ -22,10 +21,24 @@ export const registerController = async (req: Request, res: Response) => {
                 message: 'Nomor telepon sudah terdaftar',
             });
         }
-        if (nikExisting) {
-            return res.status(400).json({
-                message: 'NIK sudah terdaftar',
+        if (nik) {
+            const nikRows = await prisma.user.findMany({
+                where: { nik: { not: null } },
+                select: { nik: true },
             });
+            let nikExists = false;
+            for (const row of nikRows) {
+                if (row.nik && await compareNik(nik, row.nik)) {
+                    nikExists = true;
+                    break;
+                }
+            }
+            if (nikExists) {
+                return res.status(400).json({
+                    message: 'NIK sudah terdaftar',
+                });
+            }
+            nikHash = await hashNik(nik);
         }
         const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
         if (birthDate && !normalizedBirthDate) {

@@ -1,16 +1,11 @@
-import crypto from 'crypto';
-import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
-dotenv.config();
+const NIK_SALT_ROUNDS = 10;
 
-function getNikHashSecret() {
-  const secret = process.env.NIK_HASH_SECRET || process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('NIK_HASH_SECRET or JWT_SECRET is not defined in environment variables');
-  }
-  return secret;
+export async function hashNik(nik: string) {
+  return bcrypt.hash(nik, NIK_SALT_ROUNDS);
 }
 
-export function hashNik(nik: string) {
-  return crypto.createHmac('sha256', getNikHashSecret()).update(nik).digest('hex');
+export async function compareNik(nik: string, hash: string) {
+  return bcrypt.compare(nik, hash);
 }
