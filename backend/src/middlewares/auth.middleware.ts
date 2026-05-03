@@ -41,3 +41,22 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   (req as AuthenticatedRequest).user = { id, email, role };
   next();
 };
+
+export const authorizeRoles = (...allowedRoles: AuthPayload['role'][]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req as AuthenticatedRequest;
+    if (!user?.role) {
+      return res.status(401).json({
+        message: 'Token tidak valid',
+      });
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      return res.status(403).json({
+        message: 'Akses ditolak',
+      });
+    }
+
+    next();
+  };
+};
