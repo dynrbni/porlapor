@@ -5,9 +5,10 @@ import { generateToken } from '../utils/jwt';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
-        const {name, email, password, phone} = req.body;
+        const {name, email, password, phone, nik, address, birthDate} = req.body;
         const emailExisting = await prisma.user.findUnique({ where: { email } });
-        const phoneExisting = await prisma.user.findUnique({ where: { phone } });
+        const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
+        const nikExisting = nik ? await prisma.user.findUnique({ where: { nik } }) : null;
         if (emailExisting) {
             return res.status(400).json({
                 message: 'Email sudah terdaftar',
@@ -18,6 +19,11 @@ export const registerController = async (req: Request, res: Response) => {
                 message: 'Nomor telepon sudah terdaftar',
             });
         }
+        if (nikExisting) {
+            return res.status(400).json({
+                message: 'NIK sudah terdaftar',
+            });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
             data: {
@@ -25,6 +31,9 @@ export const registerController = async (req: Request, res: Response) => {
                 email,
                 password: hashedPassword,
                 phone,
+                nik,
+                address,
+                birthDate: birthDate ? new Date(birthDate) : undefined,
                 role: 'USER',
             },
             select: {
@@ -32,6 +41,9 @@ export const registerController = async (req: Request, res: Response) => {
                 name: true,
                 email: true,
                 phone: true,
+                nik: true,
+                address: true,
+                birthDate: true,
                 role: true,
                 createdAt: true,
             },
@@ -73,6 +85,9 @@ export const loginController = async (req: Request, res: Response) => {
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
+                nik: user.nik,
+                address: user.address,
+                birthDate: user.birthDate,
                 role: user.role,
                 createdAt: user.createdAt,
             },

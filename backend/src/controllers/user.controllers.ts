@@ -48,7 +48,7 @@ export const getUserById = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, nik, address, birthDate } = req.body;
 
     const user = await prisma.user.findUnique({
       where: { id: String(id) },
@@ -65,6 +65,9 @@ export const updateUser = async (req: Request, res: Response) => {
     if (name) data.name = name;
     if (email) data.email = email;
     if (phone) data.phone = phone;
+        if (nik) data.nik = nik;
+        if (address) data.address = address;
+        if (birthDate) data.birthDate = new Date(birthDate);
     if (password) {
       data.password = await bcrypt.hash(password, 10);
     }
@@ -81,6 +84,9 @@ export const updateUser = async (req: Request, res: Response) => {
         name: updatedUser.name,
         email: updatedUser.email,
         phone: updatedUser.phone,
+                nik: updatedUser.nik,
+                address: updatedUser.address,
+                birthDate: updatedUser.birthDate,
         role: updatedUser.role,
         updatedAt: updatedUser.updatedAt,
       }
@@ -145,6 +151,9 @@ export const getProfile = async (req: Request, res: Response) => {
                 name: true,
                 email: true,
                 phone: true,
+                nik: true,
+                address: true,
+                birthDate: true,
                 role: true,
                 createdAt: true,
             },
