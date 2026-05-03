@@ -63,28 +63,6 @@ model User {
 }
 
 // ===================================================
-// MODEL: Agency (Instansi Pemerintah)
-// Contoh: Dinas PU, Dinas Kebersihan, Kepolisian
-// ===================================================
-
-model Agency {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  email       String?
-  phone       String?
-  address     String?
-  isActive    Boolean @default(true)
-
-  categories Category[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("agencies")
-}
-
-// ===================================================
 // MODEL: Category (Jenis / Kategori Laporan)
 // Contoh: Jalan Rusak → Dinas PU
 //         Sampah Menumpuk → Dinas Kebersihan
@@ -95,9 +73,6 @@ model Category {
   name        String
   description String?
   isActive    Boolean @default(true)
-
-  agencyId String
-  agency   Agency @relation(fields: [agencyId], references: [id])
 
   reports Report[]
 
