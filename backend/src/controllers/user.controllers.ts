@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
-import { hashNik, compareNik } from '../utils/nik';
 import { normalizeBirthDate } from '../utils/date';
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -77,7 +76,7 @@ export const updateUser = async (req: Request, res: Response) => {
             });
             let nikExists = false;
             for (const row of nikRows) {
-                if (row.nik && await compareNik(nik, row.nik)) {
+                if (row.nik && await bcrypt.compare(nik, row.nik)) {
                     nikExists = true;
                     break;
                 }
@@ -87,7 +86,7 @@ export const updateUser = async (req: Request, res: Response) => {
                     message: 'NIK sudah terdaftar',
                 });
             }
-            data.nik = await hashNik(nik);
+            data.nik = await bcrypt.hash(nik, 10);
         }
         if (address) data.address = address;
         if (birthDate) {

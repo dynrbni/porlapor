@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt';
-import { hashNik, compareNik } from '../utils/nik';
 import { normalizeBirthDate } from '../utils/date';
 
 export const registerController = async (req: Request, res: Response) => {
@@ -28,7 +27,7 @@ export const registerController = async (req: Request, res: Response) => {
             });
             let nikExists = false;
             for (const row of nikRows) {
-                if (row.nik && await compareNik(nik, row.nik)) {
+                if (row.nik && await bcrypt.compare(nik, row.nik)) {
                     nikExists = true;
                     break;
                 }
@@ -38,7 +37,7 @@ export const registerController = async (req: Request, res: Response) => {
                     message: 'NIK sudah terdaftar',
                 });
             }
-            nikHash = await hashNik(nik);
+            nikHash = await bcrypt.hash(nik, 10);
         }
         const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
         if (birthDate && !normalizedBirthDate) {
