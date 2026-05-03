@@ -2,13 +2,19 @@ import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 
-export const register = async (req: Request, res: Response) => {
+export const registerController = async (req: Request, res: Response) => {
     try {
         const {name, email, password, phone} = req.body;
-        const existing = await prisma.user.findUnique({ where: { email } });
-        if (existing) {
+        const emailExisting = await prisma.user.findUnique({ where: { email } });
+        const phoneExisting = await prisma.user.findUnique({ where: { phone } });
+        if (emailExisting) {
             return res.status(400).json({
                 message: 'Email sudah terdaftar',
+            });
+        }
+        if (phoneExisting) {
+            return res.status(400).json({
+                message: 'Nomor telepon sudah terdaftar',
             });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +36,7 @@ export const register = async (req: Request, res: Response) => {
             },
         });
         res.status(201).json({
-            message: 'Registrasi berhasil',
+            message: 'Registrasi User berhasil',
             data: user,
         });
     } catch (error) {
@@ -40,7 +46,7 @@ export const register = async (req: Request, res: Response) => {
     }
 }
 
-export const login = async (req: Request, res: Response) => {
+export const loginController = async (req: Request, res: Response) => {
     try {
         const {email, password} = req.body;
         const user = await prisma.user.findUnique({ where: { email } });
