@@ -61,7 +61,7 @@ export const getAllCategories = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({
-      message: 'Berhasil mendapatkan data kategori',
+      message: 'Berhasil mendapatkan semua data kategori',
       data: categories,
     });
   } catch (error) {
