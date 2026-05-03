@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Prisma, ReportStatus } from '@prisma/client';
 import prisma from '../config/database';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
@@ -138,23 +139,25 @@ export const updateReport = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, description, latitude, longitude, address, imageUrl, status, categoryId } = req.body;
 
-    const data: {
-      title?: string;
-      description?: string;
-      latitude?: number;
-      longitude?: number;
-      address?: string | null;
-      imageUrl?: string | null;
-      status?: string;
-      categoryId?: string;
-    } = {};
+    const data: Prisma.ReportUpdateInput = {};
 
     if (title) data.title = title;
     if (description) data.description = description;
     if (address !== undefined) data.address = address;
     if (imageUrl !== undefined) data.imageUrl = imageUrl;
-    if (status) data.status = status;
-    if (categoryId) data.categoryId = categoryId;
+    if (status) {
+      if (!Object.values(ReportStatus).includes(status)) {
+        return res.status(400).json({
+          message: 'Status laporan tidak valid',
+        });
+      }
+      data.status = status as ReportStatus;
+    }
+    if (categoryId) {
+      data.category = {
+        connect: { id: categoryId },
+      };
+    }
 
     if (latitude !== undefined) {
       const lat = parseNumber(latitude);
