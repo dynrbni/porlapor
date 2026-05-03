@@ -4,7 +4,7 @@ import { authenticate, authorizeRoles } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use('/users', authenticate);
 
 router.get('/users', authorizeRoles('ADMIN', 'SUPERADMIN'), getAllUsers);
 router.get('/users/me', getProfile);
