@@ -27,6 +27,7 @@ function parseBoolean(value: unknown) {
 export const createCategory = async (req: Request, res: Response) => {
   try {
     const name = normalizeText(req.body?.name);
+    const description = normalizeText(req.body?.description);
 
     if (!name) {
       return res.status(400).json({
@@ -34,11 +35,12 @@ export const createCategory = async (req: Request, res: Response) => {
       });
     }
 
-    const category = await prisma.category.create({
-      data: {
-        name,
-      },
-    });
+    const data: { name: string; description?: string | null } = { name };
+    if (req.body?.description !== undefined) {
+      data.description = description;
+    }
+
+    const category = await prisma.category.create({ data });
 
     res.status(201).json({
       message: 'Kategori berhasil dibuat',
