@@ -1,0 +1,43 @@
+import { Request, Response, NextFunction } from 'express';
+import { verifyToken } from '../utils/jwt';
+
+export interface AuthPayload {
+  id: string;
+  email: string;
+  role: string;
+}
+
+export type AuthenticatedRequest = Request & { user: AuthPayload };
+
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({
+      message: 'Token tidak ditemukan',
+    });
+  }
+
+  const [scheme, token] = authHeader.split(' ');
+  if (scheme !== 'Bearer' || !token) {
+    return res.status(401).json({
+      message: 'Format token tidak valid',
+    });
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded || typeof decoded === 'string') {
+    return res.status(401).json({
+      message: 'Token tidak valid',
+    });
+  }
+
+  const { id, email, role } = decoded as Partial<AuthPayload>;
+  if (!id || !email || !role) {
+    return res.status(401).json({
+      message: 'Token tidak valid',
+    });
+  }
+
+  (req as AuthenticatedRequest).user = { id, email, role };
+  next();
+};

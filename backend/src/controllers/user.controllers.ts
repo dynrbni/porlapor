@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import prisma from '../config/database';
 import bcrypt from 'bcrypt';
+import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -126,8 +127,19 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const getProfile = async (req: Request, res: Response) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: String() },
+        const { user: authUser } = req as AuthenticatedRequest;
+        if (!authUser?.id) {
+            return res.status(401).json({
+                message: 'Token tidak valid',
+            });
+        }
+
+        const userId = authUser.id;
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId,
+                deletedAt: null,
+            },
             select: {
                 id: true,
                 name: true,
