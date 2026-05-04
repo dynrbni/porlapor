@@ -88,6 +88,16 @@ export const registerController = async (req: Request, res: Response) => {
 export const loginController = async (req: Request, res: Response) => {
     try {
         const {email, password} = req.body;
+        const userDeleted = await prisma.user.findFirst({
+            where: {
+                deletedAt: { not: null },
+            },
+        });
+        if (userDeleted) {
+            return res.status(404).json({
+                message: 'User tidak ditemukan',
+            });
+        }
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
             return res.status(404).json({
