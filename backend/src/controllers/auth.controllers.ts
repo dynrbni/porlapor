@@ -90,6 +90,7 @@ export const loginController = async (req: Request, res: Response) => {
         const {email, password} = req.body;
         const userDeleted = await prisma.user.findFirst({
             where: {
+                email,
                 deletedAt: { not: null },
             },
         });
