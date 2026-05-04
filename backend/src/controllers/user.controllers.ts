@@ -186,6 +186,7 @@ export const getProfile = async (req: Request, res: Response) => {
                 birthDate: true,
                 role: true,
                 createdAt: true,
+                lastLoginAt: true,
             },
         });
         if (!user) {

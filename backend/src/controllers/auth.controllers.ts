@@ -68,6 +68,7 @@ export const registerController = async (req: Request, res: Response) => {
                 birthDate: true,
                 role: true,
                 createdAt: true,
+                lastLoginAt: true,
             },
         });
         const token = generateToken({ id: user.id, email: user.email, role: user.role });
@@ -99,20 +100,39 @@ export const loginController = async (req: Request, res: Response) => {
                 message: 'Password salah',
             });
         }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                nik: true,
+                address: true,
+                birthDate: true,
+                role: true,
+                createdAt: true,
+                lastLoginAt: true,
+            },
+        });
+
         const token = generateToken({ id: user.id, email: user.email, role: user.role });
         res.status(200).json({
             message: 'Login User berhasil',
             token,
             data: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                nik: user.nik,
-                address: user.address,
-                birthDate: user.birthDate,
-                role: user.role,
-                createdAt: user.createdAt,
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                nik: updatedUser.nik,
+                address: updatedUser.address,
+                birthDate: updatedUser.birthDate,
+                role: updatedUser.role,
+                createdAt: updatedUser.createdAt,
+                lastLoginAt: updatedUser.lastLoginAt,
             },
         });
     } catch (error) {
