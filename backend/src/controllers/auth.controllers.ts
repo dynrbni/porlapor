@@ -71,7 +71,10 @@ export const registerController = async (req: Request, res: Response) => {
                 lastLoginAt: true,
             },
         });
-        const token = generateToken({ id: user.id, email: user.email, role: user.role });
+        const token = generateToken({ 
+            id: user.id, 
+            email: user.email, 
+            role: user.role });
         res.status(201).json({
             message: 'Registrasi User berhasil',
             token,
@@ -129,7 +132,10 @@ export const loginController = async (req: Request, res: Response) => {
             },
         });
 
-        const token = generateToken({ id: user.id, email: user.email, role: user.role });
+        const token = generateToken({ 
+            id: user.id, 
+            email: user.email, 
+            role: user.role });
         res.status(200).json({
             message: 'Login User berhasil',
             token,
