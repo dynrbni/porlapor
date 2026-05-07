@@ -80,8 +80,10 @@ export const createReport = async (req: Request, res: Response) => {
       data: report,
     });
   } catch (error) {
+    console.error('Error creating report:', error);
     res.status(500).json({
       message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 };
