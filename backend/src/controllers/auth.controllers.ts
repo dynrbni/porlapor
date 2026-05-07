@@ -3,13 +3,13 @@ import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt';
 import { normalizeBirthDate } from '../utils/date';
+import { normalizeGender } from '../utils/gender';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
-        const {name, email, password, phone, nik, address, birthDate} = req.body;
+        const { name, email, password, phone, nik, address, birthDate, gender } = req.body;
         const emailExisting = await prisma.user.findUnique({ where: { email } });
         const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
-        let nikHash: string | null = null;
         if (emailExisting) {
             return res.status(400).json({
                 message: 'Email sudah terdaftar',
@@ -21,28 +21,26 @@ export const registerController = async (req: Request, res: Response) => {
             });
         }
         if (nik) {
-            const nikRows = await prisma.user.findMany({
-                where: { nik: { not: null } },
-                select: { nik: true },
+            const nikExisting = await prisma.user.findFirst({
+                where: { nik },
+                select: { id: true },
             });
-            let nikExists = false;
-            for (const row of nikRows) {
-                if (row.nik && await bcrypt.compare(nik, row.nik)) {
-                    nikExists = true;
-                    break;
-                }
-            }
-            if (nikExists) {
+            if (nikExisting) {
                 return res.status(400).json({
                     message: 'NIK sudah terdaftar',
                 });
             }
-            nikHash = await bcrypt.hash(nik, 10);
         }
         const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
         if (birthDate && !normalizedBirthDate) {
             return res.status(400).json({
                 message: 'Format tanggal lahir tidak valid',
+            });
+        }
+        const normalizedGender = normalizeGender(gender);
+        if (normalizedGender === null) {
+            return res.status(400).json({
+                message: 'Gender tidak valid',
             });
         }
 
@@ -53,9 +51,10 @@ export const registerController = async (req: Request, res: Response) => {
                 email,
                 password: hashedPassword,
                 phone,
-                nik: nikHash,
+                nik,
                 address,
                 birthDate: normalizedBirthDate ?? undefined,
+                gender: normalizedGender ?? undefined,
                 role: 'USER',
             },
             select: {
@@ -66,6 +65,7 @@ export const registerController = async (req: Request, res: Response) => {
                 nik: true,
                 address: true,
                 birthDate: true,
+                gender: true,
                 role: true,
                 createdAt: true,
                 lastLoginAt: true,
@@ -126,6 +126,7 @@ export const loginController = async (req: Request, res: Response) => {
                 nik: true,
                 address: true,
                 birthDate: true,
+                gender: true,
                 role: true,
                 createdAt: true,
                 lastLoginAt: true,
@@ -147,6 +148,7 @@ export const loginController = async (req: Request, res: Response) => {
                 nik: updatedUser.nik,
                 address: updatedUser.address,
                 birthDate: updatedUser.birthDate,
+                gender: updatedUser.gender,
                 role: updatedUser.role,
                 createdAt: updatedUser.createdAt,
                 lastLoginAt: updatedUser.lastLoginAt,

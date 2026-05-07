@@ -31,6 +31,11 @@ enum ReportStatus {
   REJECTED     // ditolak (spam / tidak valid)
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 // ===================================================
 // MODEL: User
 // Satu model untuk ketiga role (USER, ADMIN, SUPERADMIN)
@@ -45,6 +50,7 @@ model User {
   nik      String? @unique
   birthDate String? 
   address  String?
+  gender   Gender?
 
   role     Role    @default(USER)
   isActive Boolean @default(true)

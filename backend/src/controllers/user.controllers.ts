@@ -3,6 +3,7 @@ import prisma from '../config/database';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 import { normalizeBirthDate } from '../utils/date';
+import { normalizeGender } from '../utils/gender';
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -49,7 +50,7 @@ export const getUserById = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-        const { name, email, password, phone, nik, address, birthDate } = req.body;
+        const { name, email, password, phone, nik, address, birthDate, gender } = req.body;
 
     const user = await prisma.user.findUnique({
       where: { id: String(id) },
@@ -67,26 +68,19 @@ export const updateUser = async (req: Request, res: Response) => {
     if (email) data.email = email;
     if (phone) data.phone = phone;
         if (nik) {
-            const nikRows = await prisma.user.findMany({
+            const nikExisting = await prisma.user.findFirst({
                 where: {
-                    nik: { not: null },
+                    nik,
                     id: { not: String(id) },
                 },
-                select: { nik: true },
+                select: { id: true },
             });
-            let nikExists = false;
-            for (const row of nikRows) {
-                if (row.nik && await bcrypt.compare(nik, row.nik)) {
-                    nikExists = true;
-                    break;
-                }
-            }
-            if (nikExists) {
+            if (nikExisting) {
                 return res.status(400).json({
                     message: 'NIK sudah terdaftar',
                 });
             }
-            data.nik = await bcrypt.hash(nik, 10);
+            data.nik = nik;
         }
         if (address) data.address = address;
         if (birthDate) {
@@ -97,6 +91,15 @@ export const updateUser = async (req: Request, res: Response) => {
                 });
             }
             data.birthDate = normalizedBirthDate;
+        }
+        const normalizedGender = normalizeGender(gender);
+        if (normalizedGender === null) {
+            return res.status(400).json({
+                message: 'Gender tidak valid',
+            });
+        }
+        if (normalizedGender !== undefined) {
+            data.gender = normalizedGender;
         }
     if (password) {
       data.password = await bcrypt.hash(password, 10);
@@ -117,6 +120,7 @@ export const updateUser = async (req: Request, res: Response) => {
                 nik: updatedUser.nik,
                 address: updatedUser.address,
                 birthDate: updatedUser.birthDate,
+                gender: updatedUser.gender,
         role: updatedUser.role,
         updatedAt: updatedUser.updatedAt,
       }
@@ -184,6 +188,7 @@ export const getProfile = async (req: Request, res: Response) => {
                 nik: true,
                 address: true,
                 birthDate: true,
+                gender: true,
                 role: true,
                 createdAt: true,
                 lastLoginAt: true,
