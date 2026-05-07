@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Prisma, ReportStatus } from '@prisma/client';
 import prisma from '../config/database';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
+import crypto from 'crypto';
 
 function parseNumber(value: unknown) {
   if (value === null || value === undefined || value === '') {
@@ -58,8 +59,21 @@ export const createReport = async (req: Request, res: Response) => {
       });
     }
 
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId }
+    });
+
+    if (!categoryExists) {
+      return res.status(400).json({
+        message: `Kategori dengan ID ${categoryId} tidak ditemukan. Silakan gunakan ID kategori yang valid.`
+      });
+    }
+
+    const trackingId = `REP-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+
     const report = await prisma.report.create({
       data: {
+        id: trackingId,
         title,
         description,
         latitude: lat,

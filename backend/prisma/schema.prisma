@@ -98,7 +98,7 @@ model Category {
 // ===================================================
 
 model Report {
-  id          String       @id @default(uuid())
+  id          String       @id // Custom short ID generated safely in controller (e.g. REP-A1B2C3)
   title       String
   description String       @db.Text
   latitude    Float        // koordinat GPS dari device
