@@ -1,64 +1,74 @@
-import { ArrowRight, ShieldCheck, Zap, Clock } from 'lucide-react';
-
 export default function Hero() {
   return (
-    <section id="beranda" className="relative pt-20 pb-32 overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-white to-white" />
-      <div className="absolute right-0 top-20 -z-10 opacity-20">
-        <div className="w-[500px] h-[500px] bg-blue-400 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-8">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600"></span>
-            Layanan Pengaduan Masyarakat Terpadu
+    <section id="beranda" className="relative flex flex-col pt-10 sm:pt-20 px-4 sm:px-8 border-b-2 border-dashed border-[--color-ink]">
+      <div className="flex flex-col lg:flex-row items-stretch border-b-2 border-[--color-ink]">
+        
+        {/* Left Content */}
+        <div className="flex-1 py-12 lg:py-24 lg:pr-12 flex flex-col justify-center border-b-2 lg:border-b-0 lg:border-r-2 border-[--color-ink]">
+          <div className="inline-flex max-w-max border-2 border-[--color-ink] px-3 py-1 bg-[--color-brand] text-white font-display font-bold uppercase text-xs tracking-widest mb-8">
+            Layanan Aduan Publik
           </div>
           
-          <h1 className="text-5xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-            Suara Anda <span className="text-blue-600">Solusi Kita</span> Bersama
+          <h1 className="font-display font-black text-6xl sm:text-7xl lg:text-[7rem] leading-[0.9] uppercase tracking-tighter mb-8 text-balance">
+            Suara <br/>
+            Kalian <br/>
+            <span className="text-[--color-brand]">Senjata</span> Kita.
           </h1>
           
-          <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-            Sampaikan laporan masalah fasilitas umum, keamanan, dan pelayanan publik di sekitar Anda. Kami pastikan setiap laporan ditindaklanjuti.
+          <p className="text-xl sm:text-2xl font-medium max-w-xl leading-relaxed mb-10 border-l-4 border-[--color-brand] pl-6 text-gray-800">
+            Sistem pengaduan modern untuk melaporkan masalah kota tanpa birokrasi berbelit. Tajam, cepat, terpantau.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50">
-              Buat Laporan Sekarang
-              <ArrowRight className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <button className="bg-[--color-brand] text-white font-display font-bold uppercase tracking-widest px-8 py-4 brutal-border brutal-shadow text-lg flex items-center justify-between group">
+              <span>Lapor Sekarang</span>
+              <span className="ml-4 group-hover:translate-x-1 transition-transform">→</span>
             </button>
-            <button className="flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-8 py-4 rounded-full font-semibold transition-all shadow-sm">
-              Lacak Laporan
+            <button className="bg-transparent text-[--color-ink] font-display font-bold uppercase tracking-widest px-8 py-4 brutal-border brutal-shadow text-lg transition-colors hover:bg-gray-100">
+              Lacak Pengaduan
             </button>
           </div>
         </div>
 
-        {/* Feature Highlights */}
-        <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="flex flex-col items-center text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-white/60 shadow-sm">
-            <div className="bg-blue-100 p-3 rounded-2xl mb-4 text-blue-600">
-              <Zap className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-gray-900 mb-2">Respons Cepat</h3>
-            <p className="text-gray-600 text-sm">Laporan langsung diteruskan ke instansi terkait</p>
-          </div>
+        {/* Right / Visual Aside */}
+        <div className="lg:w-[40%] flex flex-col bg-gray-100 relative overflow-hidden">
+          {/* Abstract Grid / Shapes */}
+          <div className="absolute inset-0 pattern-grid opacity-20 pointer-events-none" style={{ backgroundImage: "linear-gradient(var(--color-ink) 1px, transparent 1px), linear-gradient(90deg, var(--color-ink) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
           
-          <div className="flex flex-col items-center text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-white/60 shadow-sm">
-            <div className="bg-green-100 p-3 rounded-2xl mb-4 text-green-600">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="flex-1 p-8 flex flex-col justify-end">
+            <div className="bg-white p-6 brutal-border brutal-shadow mb-6 rotate-[-2deg]">
+              <div className="flex justify-between items-center mb-4 border-b-2 border-gray-200 pb-4">
+                <span className="font-bold text-xs uppercase tracking-wider text-gray-500">Aduan Masuk #1042</span>
+                <span className="bg-red-100 text-red-700 px-2 py-1 text-[10px] font-bold uppercase">Pending</span>
+              </div>
+              <h3 className="font-display font-bold text-xl mb-2 uppercase">Jalan Berlubang di Margonda</h3>
+              <p className="text-sm font-medium text-gray-600">Pelapor dirahasiakan &bull; 2 jam yang lalu</p>
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Terpercaya</h3>
-            <p className="text-gray-600 text-sm">Privasi dan data diri pelapor dijamin aman</p>
-          </div>
 
-          <div className="flex flex-col items-center text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-white/60 shadow-sm">
-            <div className="bg-orange-100 p-3 rounded-2xl mb-4 text-orange-600">
-              <Clock className="w-6 h-6" />
+            <div className="bg-[--color-brand] text-white p-6 brutal-border brutal-shadow rotate-[1deg] translate-x-4">
+              <div className="flex justify-between items-center mb-4 border-b-2 border-white/20 pb-4">
+                <span className="font-bold text-xs uppercase tracking-wider text-white/70">Aduan Masuk #1041</span>
+                <span className="bg-white text-[--color-brand] px-2 py-1 text-[10px] font-bold uppercase">Selesai</span>
+              </div>
+              <h3 className="font-display font-bold text-xl mb-2 uppercase">Lampu Jalan Padam</h3>
+              <p className="text-sm font-medium text-white/80">Pelapor dirahasiakan &bull; 1 hari yang lalu</p>
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Pantau 24/7</h3>
-            <p className="text-gray-600 text-sm">Tetap terhubung dengan progres laporan Anda</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Marquee Footer of Hero */}
+      <div className="py-4 border-b-2 border-[--color-ink] bg-black text-white w-full overflow-hidden absolute bottom-0 left-0">
+        <div className="marquee-container">
+          <div className="marquee-content font-display font-black text-2xl uppercase tracking-widest flex gap-12 px-6">
+            <span>&bull; LAPORKAN KEJANGGALAN</span>
+            <span>&bull; PANTAU STATUS 24/7</span>
+            <span>&bull; RAHASIA DIJAMIN</span>
+            <span>&bull; BUKAN SEKADAR JANJI</span>
+            <span>&bull; LAPORKAN KEJANGGALAN</span>
+            <span>&bull; PANTAU STATUS 24/7</span>
+            <span>&bull; RAHASIA DIJAMIN</span>
+            <span>&bull; BUKAN SEKADAR JANJI</span>
           </div>
         </div>
       </div>
