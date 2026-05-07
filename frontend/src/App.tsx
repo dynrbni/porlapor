@@ -5,19 +5,16 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <>
-      <div className="noise-overlay"></div>
-      <div className="min-h-screen bg-[--color-paper] text-[--color-ink] selection:bg-[--color-brand] selection:text-white flex flex-col pt-16">
-        <Header />
-        
-        <main className="flex-1 flex flex-col">
-          <Hero />
-          <HowItWorks />
-        </main>
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200">
+      <Header />
+      
+      <main>
+        <Hero />
+        <HowItWorks />
+      </main>
 
-        <Footer />
-      </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 
