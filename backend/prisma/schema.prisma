@@ -32,8 +32,8 @@ enum ReportStatus {
 }
 
 enum Gender {
-  MALE
-  FEMALE
+  LAKI_LAKI
+  PEREMPUAN
 }
 
 // ===================================================
