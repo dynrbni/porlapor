@@ -69,7 +69,11 @@ export const createReport = async (req: Request, res: Response) => {
       });
     }
 
-    const trackingId = `REP-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    // Generate 8-digit numeric ID (e.g., 84739210)
+    let trackingId = '';
+    for (let i = 0; i < 8; i++) {
+      trackingId += Math.floor(Math.random() * 10).toString();
+    }
 
     const report = await prisma.report.create({
       data: {
