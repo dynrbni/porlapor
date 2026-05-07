@@ -1,91 +1,108 @@
-import { FileText, ChevronRight, CheckCircle } from 'lucide-react';
+import { Camera, ArrowRight, ShieldCheck } from 'lucide-react';
+import LocationPicker from './LocationPicker';
 
 export default function Hero() {
   return (
-    <section id="beranda" className="relative bg-white pt-16 pb-24 overflow-hidden border-b border-slate-200">
-      <div className="absolute inset-y-0 right-0 w-1/2 bg-slate-50 rounded-l-[100px] -z-10 hidden lg:block"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+    <section id="beranda" className="pt-24 pb-20 lg:pt-32 lg:pb-32 px-4 sm:px-8 border-b-2 border-black">
+      <div className="max-w-[1400px] mx-auto relative z-10 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        
+        {/* Typographic Left Content */}
+        <div className="lg:col-span-6 flex flex-col justify-center h-full">
+          <div className="inline-flex items-center justify-self-start gap-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest mb-8">
+            <ShieldCheck className="w-4 h-4" />
+            Layanan Resmi
+          </div>
           
-          {/* Left Content */}
-          <div className="max-w-2xl py-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-              </span>
-              Portal Resmi Pengaduan Terintegrasi
-            </div>
-            
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6 tracking-tight">
-              Layanan Aspirasi & <br/>
-              <span className="text-blue-700">Pengaduan Rakyat</span>
-            </h1>
-            
-            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              Sampaikan laporan masalah fasilitas umum, keamanan, dan pelayanan publik di sekitar Anda. Terhubung langsung dengan instansi berwenang untuk penanganan yang transparan dan akuntabel.
-            </p>
+          <h1 className="text-5xl sm:text-6xl lg:text-[5rem] font-bold text-black leading-[1.05] mb-8 uppercase">
+            Laporkan.<br />
+            Kawal.<br />
+            Tuntaskan.
+          </h1>
+          
+          <p className="text-xl text-zinc-700 mb-10 leading-relaxed font-medium bg-white p-6 border-sharp shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+            Akses langsung ke instansi terkait untuk setiap masalah fasilitas, infrastruktur, atau layanan yang Anda temui. Transparansi data terjamin.
+          </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-8 py-3.5 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg">
-                <FileText className="w-5 h-5" />
-                Buat Pengaduan
-              </button>
-              <button className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-blue-700 border border-blue-200 px-8 py-3.5 rounded-lg font-semibold transition-all shadow-sm">
-                Lacak Status
-                <ChevronRight className="w-5 h-5" />
-              </button>
+          <div className="grid grid-cols-2 gap-4 border-t-2 border-black pt-8">
+            <div>
+              <div className="text-4xl font-black mb-1 text-[#df3817]">24/7</div>
+              <div className="text-sm font-bold uppercase tracking-wider text-black">Akses Pelaporan</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black mb-1 text-[#df3817]">100%</div>
+              <div className="text-sm font-bold uppercase tracking-wider text-black">Data Diverifikasi</div>
             </div>
           </div>
-
-          {/* Right Dashboard Mockup */}
-          <div className="relative mt-8 lg:mt-0">
-            <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 relative z-10">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                <h3 className="font-semibold text-slate-800">Status Laporan Terkini</h3>
-                <span className="text-sm text-blue-600 font-medium cursor-pointer hover:underline">Lihat Semua</span>
-              </div>
-              
-              <div className="space-y-4">
-                {[
-                  { id: '#L-2983', title: 'Jalan Rusak di Merdeka', status: 'Selesai', date: '2 Jam lalu', color: 'text-green-700 bg-green-50 border-green-100' },
-                  { id: '#L-2984', title: 'Lampu PJU Padam', status: 'Proses', date: '5 Jam lalu', color: 'text-amber-700 bg-amber-50 border-amber-100' },
-                  { id: '#L-2985', title: 'Tumpukan Sampah', status: 'Selesai', date: '1 Hari lalu', color: 'text-green-700 bg-green-50 border-green-100' }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-slate-100 p-3 rounded-lg hidden sm:block">
-                        <FileText className="w-5 h-5 text-slate-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-slate-800">{item.title}</h4>
-                        <span className="text-sm text-slate-500">{item.id} &bull; {item.date}</span>
-                      </div>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${item.color}`}>
-                      {item.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Decorative metric */}
-            <div className="absolute -right-4 lg:-right-8 -bottom-6 bg-blue-900 rounded-2xl p-6 text-white shadow-xl max-w-xs z-20">
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-800 p-3 rounded-lg">
-                  <CheckCircle className="w-8 h-8 text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-blue-200 text-sm font-medium">Tingkat Penanganan</p>
-                  <p className="text-3xl font-bold">92.4%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        {/* Brutal/Editorial Form */}
+        <div className="lg:col-span-6 lg:mt-8">
+          <div className="bg-white border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] flex flex-col">
+            <div className="bg-black text-white px-6 py-4 flex justify-between items-center">
+              <h3 className="font-bold text-lg uppercase tracking-wider">Formulir Pengaduan</h3>
+              <span className="text-xs bg-[#df3817] px-2 py-1 font-bold">LIVE</span>
+            </div>
+            
+            <form className="p-6 space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Judul Laporan</label>
+                <input 
+                  type="text" 
+                  placeholder="Misal: Jalan Berlubang di Sudirman" 
+                  className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Kategori Laporan</label>
+                <select className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none appearance-none">
+                  <option value="">-- Pilih Instansi/Kategori --</option>
+                  <option value="infrastruktur">Infrastruktur & Pekerjaan Umum</option>
+                  <option value="pelayanan">Pelayanan Administrasi</option>
+                  <option value="keamanan">Ketertiban Umum</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Titik Lokasi (Koordinat & Alamat)</label>
+                {/* Embedded Map Picker */}
+                <LocationPicker onLocationChange={() => {}} />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Deskripsi Detail</label>
+                <textarea 
+                  rows={4}
+                  placeholder="Uraikan kronologi atau detail masalah secara lengkap..." 
+                  className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none resize-none"
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Bukti Foto</label>
+                <div className="w-full border-sharp border-dashed bg-[#f4f4f0] hover:bg-white cursor-pointer transition-colors p-6 flex flex-col items-center justify-center group">
+                  <Camera className="w-8 h-8 mb-2 group-hover:text-[#df3817]" />
+                  <span className="text-sm font-bold underline decoration-2 underline-offset-4">Unggah Gambar (Wajib)</span>
+                  <span className="text-xs mt-1 text-zinc-500">Maks. 5MB, format JPG/PNG/WEBP</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t-2 border-black mt-6">
+                <button 
+                  type="button"
+                  className="w-full flex items-center justify-between bg-[#df3817] hover:bg-black text-white px-6 py-4 font-black uppercase tracking-widest text-sm transition-colors group"
+                >
+                  <span>Verifikasi & Kirim</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </button>
+                <p className="text-center text-xs font-bold text-zinc-500 mt-4 uppercase">
+                  Diperlukan Autentikasi NIK / Akun
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+
       </div>
     </section>
   );

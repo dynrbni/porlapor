@@ -1,71 +1,61 @@
-import { Shield, Phone, Mail, MapPin } from 'lucide-react';
-
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-20 pb-10 border-t-4 border-blue-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded flex-shrink-0">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <span className="font-bold text-xl text-white block leading-tight">PorLapor</span>
-                <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold leading-tight">Republik Indonesia</span>
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed text-slate-400">
-              Sistem Informasi Pengelolaan Pengaduan Pelayanan Publik Nasional. Layanan aspirasi dan pengaduan elektronik terintegrasi.
+    <footer className="bg-black text-white border-t-[16px] border-[#df3817]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+        
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+          <div className="lg:col-span-5">
+            <h2 className="text-5xl font-black uppercase tracking-tighter leading-none mb-6">
+              PRLPR.<br/>
+              Sistem<br/>
+              Aduan<br/>
+              Publik.
+            </h2>
+            <div className="w-16 h-2 bg-white mb-8"></div>
+            <p className="font-medium text-white/50 max-w-sm">
+              Inisiatif keterbukaan data dan transparansi layanan masyarakat. Laporkan, pantau, dan selesaikan masalah publik bersama.
             </p>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-6">Tautan Penting</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Tentang Kami</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Statistik Publik</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Syarat & Ketentuan</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Kebijakan Privasi</a></li>
-            </ul>
+          <div className="lg:col-span-3">
+             <h4 className="text-xs font-black uppercase tracking-widest text-[#df3817] mb-6">Navigasi Utama</h4>
+             <ul className="space-y-4 font-bold uppercase tracking-wider text-sm">
+               <li><a href="#" className="hover:text-[#df3817] transition-colors">Verifikasi NIK</a></li>
+               <li><a href="#" className="hover:text-[#df3817] transition-colors">Database Laporan</a></li>
+               <li><a href="#" className="hover:text-[#df3817] transition-colors">Dashboard Statistik</a></li>
+               <li><a href="#" className="hover:text-[#df3817] transition-colors">Panduan Sistem</a></li>
+             </ul>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-6">Pusat Bantuan</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Panduan Pengguna</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Tanya Jawab (FAQ)</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Glosarium Khusus</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-semibold mb-6">Kontak Resmi</h4>
-            <ul className="space-y-4 text-sm">
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                <span>Call Center: 147</span>
+          <div className="lg:col-span-4">
+             <h4 className="text-xs font-black uppercase tracking-widest text-[#df3817] mb-6">Titik Kontak</h4>
+            <ul className="space-y-4 font-medium text-sm text-white/70">
+              <li className="flex justify-between border-b border-white/10 pb-2">
+                <span className="uppercase tracking-widest text-xs font-bold text-white">Call Center</span>
+                <span>1-4-7</span>
               </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                <span>bantuan@porlapor.go.id</span>
+              <li className="flex justify-between border-b border-white/10 pb-2">
+                <span className="uppercase tracking-widest text-xs font-bold text-white">Email</span>
+                <span>info@porlapor.go.id</span>
               </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                <span>Gedung Kementerian Pelayanan Publik Lt. 4, Jakarta Pusat 10110</span>
+              <li className="flex flex-col gap-2 pt-2 text-xs uppercase tracking-widest leading-relaxed">
+                <strong className="text-white">Alamat Operasional</strong>
+                Gedung Kementerian Pelayanan Publik Lt. 4<br/>
+                Kawasan Medan Merdeka, Jakarta Pusat 10110
               </li>
             </ul>
           </div>
-
         </div>
 
-        <div className="pt-8 border-t border-slate-700 text-sm text-center md:flex md:justify-between md:text-left">
-          <p className="mb-4 md:mb-0">&copy; {new Date().getFullYear()} PorLapor - Sistem Pengaduan Masyarakat Terpadu. Hak Cipta Dilindungi.</p>
-          <div className="flex justify-center gap-6">
-             <span className="text-slate-500">Versi 2.4.0</span>
+        <div className="pt-8 border-t-2 border-white/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/50">
+          <p>&copy; {new Date().getFullYear()} REPUBLIK INDONESIA — HAK CIPTA DILINDUNGI.</p>
+          <div className="flex gap-6">
+             <a href="#" className="hover:text-white">Privasi</a>
+             <a href="#" className="hover:text-white">Ketentuan</a>
+             <span>V 2.5 — Editorial</span>
           </div>
         </div>
+
       </div>
     </footer>
   );
