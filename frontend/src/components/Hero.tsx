@@ -1,108 +1,131 @@
-import { Camera, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 import LocationPicker from './LocationPicker';
+import { Send, Image as ImageIcon, MapPin } from 'lucide-react';
 
 export default function Hero() {
+  const [type, setType] = useState('pengaduan');
+
   return (
-    <section id="beranda" className="pt-24 pb-20 lg:pt-32 lg:pb-32 px-4 sm:px-8 border-b-2 border-black">
-      <div className="max-w-[1400px] mx-auto relative z-10 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-        
-        {/* Typographic Left Content */}
-        <div className="lg:col-span-6 flex flex-col justify-center h-full">
-          <div className="inline-flex items-center justify-self-start gap-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest mb-8">
-            <ShieldCheck className="w-4 h-4" />
-            Layanan Resmi
-          </div>
-          
-          <h1 className="text-5xl sm:text-6xl lg:text-[5rem] font-bold text-black leading-[1.05] mb-8 uppercase">
-            Laporkan.<br />
-            Kawal.<br />
-            Tuntaskan.
-          </h1>
-          
-          <p className="text-xl text-zinc-700 mb-10 leading-relaxed font-medium bg-white p-6 border-sharp shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-            Akses langsung ke instansi terkait untuk setiap masalah fasilitas, infrastruktur, atau layanan yang Anda temui. Transparansi data terjamin.
-          </p>
+    <section className="relative overflow-hidden bg-slate-50 pt-12 pb-24 lg:pt-20 lg:pb-32">
+      {/* Decorative Grid Background */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNjYmQ1ZTEiLz48L3N2Zz4=')] opacity-50"></div>
+      
+      {/* Modern Gradient Accents */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-100/60 rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/4"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[100px] -z-10 -translate-x-1/3 translate-y-1/3"></div>
 
-          <div className="grid grid-cols-2 gap-4 border-t-2 border-black pt-8">
-            <div>
-              <div className="text-4xl font-black mb-1 text-[#df3817]">24/7</div>
-              <div className="text-sm font-bold uppercase tracking-wider text-black">Akses Pelaporan</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black mb-1 text-[#df3817]">100%</div>
-              <div className="text-sm font-bold uppercase tracking-wider text-black">Data Diverifikasi</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Brutal/Editorial Form */}
-        <div className="lg:col-span-6 lg:mt-8">
-          <div className="bg-white border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] flex flex-col">
-            <div className="bg-black text-white px-6 py-4 flex justify-between items-center">
-              <h3 className="font-bold text-lg uppercase tracking-wider">Formulir Pengaduan</h3>
-              <span className="text-xs bg-[#df3817] px-2 py-1 font-bold">LIVE</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Content Column */}
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold uppercase tracking-wider mb-6">
+              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+              Layanan Publik Terpadu
             </div>
             
-            <form className="p-6 space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Judul Laporan</label>
-                <input 
-                  type="text" 
-                  placeholder="Misal: Jalan Berlubang di Sudirman" 
-                  className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none"
-                />
-              </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6">
+              Ruang <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600">Aspirasi</span> & <br/>
+              Pengaduan Rakyat
+            </h1>
+            
+            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+              Sistem integrasi pelaporan masalah fasilitas kota, administrasi, dan layanan masyarakat. Diproses langsung oleh instansi terkait secara transparan dan akuntabel.
+            </p>
 
+            <div className="flex items-center gap-8 py-6 border-y border-slate-200">
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Kategori Laporan</label>
-                <select className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none appearance-none">
-                  <option value="">-- Pilih Instansi/Kategori --</option>
-                  <option value="infrastruktur">Infrastruktur & Pekerjaan Umum</option>
-                  <option value="pelayanan">Pelayanan Administrasi</option>
-                  <option value="keamanan">Ketertiban Umum</option>
-                </select>
+                <p className="text-3xl font-bold text-slate-900">48 Jam</p>
+                <p className="text-sm font-medium text-slate-500">Batas Respon Resmi</p>
               </div>
-
+              <div className="w-px h-12 bg-slate-200"></div>
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Titik Lokasi (Koordinat & Alamat)</label>
-                {/* Embedded Map Picker */}
-                <LocationPicker onLocationChange={() => {}} />
+                <p className="text-3xl font-bold text-slate-900">100%</p>
+                <p className="text-sm font-medium text-slate-500">Transparansi Data</p>
               </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Deskripsi Detail</label>
-                <textarea 
-                  rows={4}
-                  placeholder="Uraikan kronologi atau detail masalah secara lengkap..." 
-                  className="w-full border-sharp bg-[#f4f4f0] px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-0 rounded-none resize-none"
-                ></textarea>
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">Bukti Foto</label>
-                <div className="w-full border-sharp border-dashed bg-[#f4f4f0] hover:bg-white cursor-pointer transition-colors p-6 flex flex-col items-center justify-center group">
-                  <Camera className="w-8 h-8 mb-2 group-hover:text-[#df3817]" />
-                  <span className="text-sm font-bold underline decoration-2 underline-offset-4">Unggah Gambar (Wajib)</span>
-                  <span className="text-xs mt-1 text-zinc-500">Maks. 5MB, format JPG/PNG/WEBP</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t-2 border-black mt-6">
-                <button 
-                  type="button"
-                  className="w-full flex items-center justify-between bg-[#df3817] hover:bg-black text-white px-6 py-4 font-black uppercase tracking-widest text-sm transition-colors group"
-                >
-                  <span>Verifikasi & Kirim</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </button>
-                <p className="text-center text-xs font-bold text-zinc-500 mt-4 uppercase">
-                  Diperlukan Autentikasi NIK / Akun
-                </p>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
 
+          {/* Form Column */}
+          <div className="relative">
+            {/* The floating card */}
+            <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 ring-1 ring-slate-100 overflow-hidden">
+              <div className="p-6 md:p-8">
+                
+                {/* Custom Segmented Control for Type */}
+                <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
+                  {['pengaduan', 'aspirasi', 'info'].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setType(t)}
+                      className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                        type === t 
+                          ? 'bg-white text-teal-700 shadow-sm ring-1 ring-slate-200/50' 
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      {t === 'info' ? 'Informasi' : t}
+                    </button>
+                  ))}
+                </div>
+
+                <form className="space-y-5" onSubmit={e => e.preventDefault()}>
+                  <div className="space-y-4">
+                    <input 
+                      type="text" 
+                      placeholder="Apa permasalahan yang Anda temui?" 
+                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all placeholder:text-slate-400 font-medium"
+                    />
+                    
+                    <textarea 
+                      rows={3} 
+                      placeholder="Jelaskan detail kronologi, lokasi spesifik, dan pihak yang terlibat..." 
+                      className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all resize-none placeholder:text-slate-400"
+                    ></textarea>
+
+                    <select className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-slate-600 appearance-none">
+                      <option value="">Pilih Instansi / Kategori Tujuan</option>
+                      <option value="pu">Pekerjaan Umum & Tata Ruang</option>
+                      <option value="dukcapil">Kependudukan & Pencatatan Sipil</option>
+                      <option value="dishub">Dinas Perhubungan</option>
+                    </select>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Map Picker Context */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                        <div className="px-3 py-2 border-b border-slate-200 flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-widest bg-white">
+                          <MapPin className="w-3.5 h-3.5 text-teal-600" /> Titik Lokasi
+                        </div>
+                        <LocationPicker onLocationChange={() => {}} />
+                      </div>
+
+                      {/* File Upload */}
+                      <div className="border border-slate-200 border-dashed rounded-xl bg-slate-50 flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:bg-slate-100 transition-colors group">
+                        <div className="bg-white p-2 rounded-full shadow-sm ring-1 ring-slate-200 mb-2 group-hover:scale-110 transition-transform">
+                          <ImageIcon className="w-5 h-5 text-teal-600" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Lampirkan Bukti</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 mt-1">Foto / PDF Maks 5MB</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-600/20">
+                      <Send className="w-4 h-4" />
+                      Kirim Laporan
+                    </button>
+                    <p className="text-center text-xs font-medium text-slate-400 mt-4">
+                      Dengan mengirimkan laporan, Anda menyetujui <a href="#" className="text-teal-600 hover:underline">Syarat & Ketentuan</a> berlaku.
+                    </p>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );

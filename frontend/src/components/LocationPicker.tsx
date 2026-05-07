@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -46,7 +46,6 @@ function LocationMarker({ onLocationChange }: { onLocationChange: (lat: number, 
 }
 
 export default function LocationPicker({ onLocationChange }: LocationPickerProps) {
-  const [latLng, setLatLng] = useState<{lat: number, lng: number} | null>(null);
   const [addressPreview, setAddressPreview] = useState<string>("Mengambil lokasi...");
 
   const fetchAddress = async (lat: number, lng: number) => {
@@ -63,7 +62,6 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
   };
 
   const handleLocationUpdate = (lat: number, lng: number) => {
-    setLatLng({lat, lng});
     fetchAddress(lat, lng);
   };
 
