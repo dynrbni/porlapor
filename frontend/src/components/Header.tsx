@@ -14,12 +14,14 @@ export default function Header() {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out px-4 py-4 md:px-8 md:py-6`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        isScrolled ? 'px-4 py-4 md:px-8' : 'px-0 py-0'
+      }`}
     >
-      <div className={`max-w-6xl mx-auto rounded-2xl flex justify-between items-center transition-all duration-500 ease-in-out ${
+      <div className={`mx-auto flex justify-between items-center transition-all duration-500 ease-in-out ${
         isScrolled 
-          ? 'bg-white/80 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-3 px-6' 
-          : 'bg-white/50 backdrop-blur-md border border-white/20 py-4 px-6 md:px-8'
+          ? 'max-w-6xl rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-3 px-6' 
+          : 'max-w-7xl bg-transparent py-5 px-4 sm:px-6 lg:px-8 border-b border-transparent'
       }`}>
           
           {/* Logo */}
