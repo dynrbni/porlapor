@@ -5,10 +5,7 @@ export default function Hero() {
     <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 text-teal-700 text-sm font-semibold mb-8 border border-teal-100">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-            Sistem Informasi Terpadu
-          </div>
+         
           
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-8 leading-[1.1]">
             Kanal Pengaduan Publik <span className="text-teal-600">Terbuka & Akuntabel.</span>
@@ -19,7 +16,7 @@ export default function Hero() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-teal-500/25 flex items-center justify-center gap-2 group">
+            <button className="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-teal-500/25 flex items-center justify-center gap-2 group cursor-pointer">
               Tulis Laporan Baru
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>

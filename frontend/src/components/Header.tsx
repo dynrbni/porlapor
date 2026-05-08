@@ -11,7 +11,7 @@ export default function Header() {
              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
                <span className="text-white font-black text-sm">PR</span>
              </div>
-             <span className="font-extrabold text-2xl tracking-tighter text-slate-900">PorLapor.</span>
+             <span className="font-extrabold text-2xl tracking-tighter text-slate-900">PorLapor</span>
           </div>
 
           {/* Nav */}
@@ -27,7 +27,7 @@ export default function Header() {
             <button className="text-sm font-bold text-slate-600 hover:text-slate-900 px-4 py-2">
               Daftar
             </button>
-            <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors">
+            <button className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors cursor-pointer">
               Masuk
             </button>
           </div>

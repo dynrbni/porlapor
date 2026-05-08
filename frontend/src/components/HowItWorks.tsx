@@ -32,10 +32,6 @@ export default function HowItWorks() {
               Kami menerapkan standar resolusi transparan. Setiap tindak lanjut dari instansi tergabung tercatat dan dapat dipantau langsung oleh pelapor secara real-time.
             </p>
           </div>
-          <div className="shrink-0 bg-slate-50 px-6 py-4 rounded-xl border border-slate-100">
-              <span className="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Total Instansi Aktif</span>
-              <span className="text-3xl font-black text-teal-600">142<span className="text-slate-800 text-lg ml-1 font-bold">Lembaga</span></span>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-16">

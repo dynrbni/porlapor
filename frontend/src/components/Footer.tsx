@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
            <h3 className="text-xl font-bold text-white tracking-tight">Perlu bantuan lebih lanjut? Konsultasikan masalah Anda.</h3>
-           <button className="bg-white text-slate-900 hover:bg-slate-100 px-6 py-3 rounded-lg text-sm font-bold transition-colors">
+           <button className="bg-white text-slate-900 hover:bg-slate-100 px-6 py-3 rounded-lg text-sm font-bold transition-colors cursor-pointer">
               Pusat Panduan & FAQ
            </button>
         </div>
@@ -49,9 +49,9 @@ export default function Footer() {
                 <Mail className="w-4 h-4 text-teal-500 mt-0.5" />
                 <span>halo@porlapor.go.id</span>
               </li>
-              <li className="flex items-start gap-3 border-t border-white/10 pt-4 mt-2">
+              <li className="flex items-start gap-3 border-t border-white/10 pt-4">
                 <MapPin className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
-                <span className="leading-relaxed">Kementerian Pelayanan Publik Lt. 4<br/>Kawasan Medan Merdeka, Jakarta Pusat</span>
+                <span className="leading-relaxed">Jl. Jenderal Sudirman No.1, RT.1/RW.3, Gelora, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10270</span>
               </li>
             </ul>
           </div>
@@ -61,9 +61,9 @@ export default function Footer() {
 
       <div className="bg-slate-950 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold text-slate-500">
-           <p>&copy; {new Date().getFullYear()} PorLapor Initiative.</p>
+           <p>&copy; {new Date().getFullYear()} PorLapor Indonesia.</p>
            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-teal-500"></span> Sistem Berjalan Normal
+               #KoalisiIndonesiaMaju
            </div>
         </div>
       </div>
