@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-slate-900 border-t border-slate-800">
       {/* Newsletter / Action Banner */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div data-aos="fade-up" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
            <h3 className="text-xl font-bold text-white tracking-tight">Perlu bantuan lebih lanjut? Konsultasikan masalah Anda.</h3>
            <button className="bg-white text-slate-900 hover:bg-slate-100 px-6 py-3 rounded-lg text-sm font-bold transition-colors cursor-pointer">
               Pusat Panduan & FAQ
@@ -16,7 +16,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           
-          <div className="md:col-span-4">
+          <div data-aos="fade-up" data-aos-delay="100" className="md:col-span-4">
             <div className="flex items-center gap-2 mb-6">
               <div className="bg-teal-600 p-1.5 rounded-md text-white">
                  <Hexagon className="w-5 h-5" />
@@ -28,7 +28,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="md:col-span-3 md:col-start-6">
+          <div data-aos="fade-up" data-aos-delay="200" className="md:col-span-3 md:col-start-6">
              <h4 className="text-white font-bold mb-6 tracking-wide text-sm uppercase">Ruang Lingkup</h4>
              <ul className="space-y-3 text-sm text-slate-400 font-medium">
                <li><a href="#" className="hover:text-teal-400 transition-colors">Statistik Penyelesaian</a></li>
@@ -38,7 +38,7 @@ export default function Footer() {
              </ul>
           </div>
 
-          <div className="md:col-span-4">
+          <div data-aos="fade-up" data-aos-delay="300" className="md:col-span-4">
              <h4 className="text-white font-bold mb-6 tracking-wide text-sm uppercase">Kontak Resmi</h4>
             <ul className="space-y-4 text-sm text-slate-400 font-medium">
               <li className="flex items-start gap-3">
