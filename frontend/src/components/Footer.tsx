@@ -1,4 +1,4 @@
-import { Hexagon, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -17,10 +17,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           
           <div data-aos="fade-up" data-aos-delay="100" className="md:col-span-4">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="bg-blue-600 p-1.5 rounded-md text-white">
-                 <Hexagon className="w-5 h-5" />
-              </div>
+            <div className="flex items-center gap-3 mb-6">
+              <img src="/logo.png" alt="PorLapor" className="h-8 w-auto brightness-0 invert" />
               <span className="font-extrabold text-xl text-white tracking-tight leading-none block">PorLapor</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium">
