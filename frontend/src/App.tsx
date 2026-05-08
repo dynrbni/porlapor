@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import HowItWorks from './components/HowItWorks';
-import Footer from './components/Footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   useEffect(() => {
@@ -16,16 +17,13 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-200">
-      <Header />
-      
-      <main>
-        <Hero />
-        <HowItWorks />
-      </main>
-
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
   );
 }
 
