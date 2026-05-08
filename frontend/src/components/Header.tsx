@@ -26,10 +26,7 @@ export default function Header() {
           
           {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer">
-            <img src="/logo.png" alt="PorLapor" className="h-8 w-auto" />
-            <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
-              PorLapor
-            </span>
+            <img src="src/assets/porlapor_logo.png" alt="PorLapor" className="h-12 w-auto object-contain" />
           </div>
 
           {/* Nav */}
