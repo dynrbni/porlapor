@@ -2,17 +2,28 @@ import { ArrowRight, Search } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50 min-h-[90vh] flex items-center">
+      {/* Background Image & Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=2070&auto=format&fit=crop" 
+          alt="City aerial view" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-slate-50"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="text-center max-w-4xl mx-auto">
          
           
           <h1 data-aos="fade-up" className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-8 leading-[1.1]">
-            Kanal Pengaduan Publik <span className="text-teal-600">Terbuka & Akuntabel.</span>
+            Layanan Pengaduan Publik <span className="text-teal-600">Terbuka & Transparan.</span>
           </h1>
           
           <p data-aos="fade-up" data-aos-delay="100" className="text-lg sm:text-xl text-slate-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">
-            Sampaikan aspirasi, permintaan informasi, maupun pengaduan langsung kepada instansi berwenang. Semua laporan diproses secara transparan dan rahasia.
+            Sampaikan aspirasi, permintaan, informasi, maupun pengaduan langsung kepada instansi berwenang. Semua laporan diproses secara transparan dan rahasia.
           </p>
           
           <div data-aos="fade-up" data-aos-delay="200" className="flex flex-col sm:flex-row items-center justify-center gap-4">
