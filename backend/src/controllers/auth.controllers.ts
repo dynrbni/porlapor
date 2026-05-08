@@ -12,11 +12,13 @@ export const registerController = async (req: Request, res: Response) => {
         const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
         if (emailExisting) {
             return res.status(400).json({
+                status: 'error',
                 message: 'Email sudah terdaftar',
             });
         }
         if (phoneExisting) {
             return res.status(400).json({
+                status: 'error',
                 message: 'Nomor telepon sudah terdaftar',
             });
         }
@@ -27,6 +29,7 @@ export const registerController = async (req: Request, res: Response) => {
             });
             if (nikExisting) {
                 return res.status(400).json({
+                    status: 'error',
                     message: 'NIK sudah terdaftar',
                 });
             }
@@ -34,12 +37,14 @@ export const registerController = async (req: Request, res: Response) => {
         const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
         if (birthDate && !normalizedBirthDate) {
             return res.status(400).json({
+                status: 'error',
                 message: 'Format tanggal lahir tidak valid',
             });
         }
         const normalizedGender = normalizeGender(gender);
         if (normalizedGender === null) {
             return res.status(400).json({
+                status: 'error',
                 message: 'Gender tidak valid',
             });
         }
@@ -76,12 +81,19 @@ export const registerController = async (req: Request, res: Response) => {
             email: user.email, 
             role: user.role });
         res.status(201).json({
-            message: 'Registrasi User berhasil',
-            token,
-            data: user,
+            status: 'success',
+            data: {
+                user: {
+                    id: user.id,
+                    nama: user.name,
+                    email: user.email,
+                },
+                token,
+            },
         });
     } catch (error) {
         res.status(500).json({
+            status: 'error',
             message: 'Internal server error',
             error: error
         });
@@ -99,18 +111,21 @@ export const loginController = async (req: Request, res: Response) => {
         });
         if (userDeleted) {
             return res.status(404).json({
+                status: 'error',
                 message: 'User tidak ditemukan',
             });
         }
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
             return res.status(404).json({
+                status: 'error',
                 message: 'User tidak ditemukan',
             });
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({
+                status: 'error',
                 message: 'Password salah',
             });
         }
@@ -138,24 +153,19 @@ export const loginController = async (req: Request, res: Response) => {
             email: user.email, 
             role: user.role });
         res.status(200).json({
-            message: 'Login User berhasil',
-            token,
+            status: 'success',
             data: {
-                id: updatedUser.id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                phone: updatedUser.phone,
-                nik: updatedUser.nik,
-                address: updatedUser.address,
-                birthDate: updatedUser.birthDate,
-                gender: updatedUser.gender,
-                role: updatedUser.role,
-                createdAt: updatedUser.createdAt,
-                lastLoginAt: updatedUser.lastLoginAt,
+                user: {
+                    id: updatedUser.id,
+                    nama: updatedUser.name,
+                    email: updatedUser.email,
+                },
+                token,
             },
         });
     } catch (error) {
         res.status(500).json({
+            status: 'error',
             message: 'Internal server error',
         });
     }

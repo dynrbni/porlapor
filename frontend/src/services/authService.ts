@@ -38,7 +38,7 @@ export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
     try {
       const response = await apiClient.post('/auth/login', payload);
-      if (response.data.data?.token) {
+      if (response.data.status === 'success' && response.data.data?.token) {
         localStorage.setItem('auth_token', response.data.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data.user));
       }
@@ -50,8 +50,15 @@ export const authService = {
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
     try {
-      const response = await apiClient.post('/auth/register', payload);
-      if (response.data.data?.token) {
+      // Send as 'name' to backend, but accept 'nama' from frontend
+      const registerPayload = {
+        name: payload.nama,
+        email: payload.email,
+        password: payload.password,
+        passwordConfirm: payload.passwordConfirm,
+      };
+      const response = await apiClient.post('/auth/register', registerPayload);
+      if (response.data.status === 'success' && response.data.data?.token) {
         localStorage.setItem('auth_token', response.data.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data.user));
       }
