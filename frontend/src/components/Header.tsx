@@ -29,7 +29,7 @@ export default function Header() {
             <img 
               src="src/assets/porlapor_logo.png" 
               alt="PorLapor" 
-              className={`w-auto object-contain transition-all duration-500 ${isScrolled ? 'h-10' : 'h-14'}`} 
+              className={`w-auto object-contain transition-all duration-500 ${isScrolled ? 'h-14' : 'h-14'}`} 
             />
           </div>
 
