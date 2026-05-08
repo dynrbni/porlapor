@@ -23,7 +23,7 @@ export default function Hero() {
           </h1>
           
           <p data-aos="fade-up" data-aos-delay="100" className="text-lg sm:text-xl text-slate-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">
-            Sampaikan aspirasi, permintaan, informasi, maupun pengaduan langsung kepada instansi berwenang. Semua laporan diproses secara transparan dan rahasia.
+            Sampaikan laporan, aspirasi, permintaan, informasi, maupun pengaduan langsung kepada instansi berwenang. Semua laporan diproses secara transparan dan rahasia.
           </p>
           
           <div data-aos="fade-up" data-aos-delay="200" className="flex flex-col sm:flex-row items-center justify-center gap-4">

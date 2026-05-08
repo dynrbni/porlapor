@@ -21,7 +21,7 @@ export default function Footer() {
               <img src="src/assets/porlapor_logo.png" alt="PorLapor" className="h-18 w-auto object-contain  brightness-0 invert ml-[-24px]" />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium mt-[-10px]">
-              Platform CivicTech integrasi layanan masyarakat. Mewujudkan pemerintahan yang bersih, responsif, dan berbasis data real-time.
+              Platform pengaduan publik resmi yang dikelola oleh Pemerintah Republik Indonesia, dan didukung penuh oleh seluruh instansi pemerintah di Indonesia.
             </p>
           </div>
 
