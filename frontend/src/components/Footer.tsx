@@ -18,7 +18,7 @@ export default function Footer() {
           
           <div data-aos="fade-up" data-aos-delay="100" className="md:col-span-4">
             <div className="flex items-center gap-2 mb-6">
-              <div className="bg-teal-600 p-1.5 rounded-md text-white">
+              <div className="bg-blue-600 p-1.5 rounded-md text-white">
                  <Hexagon className="w-5 h-5" />
               </div>
               <span className="font-extrabold text-xl text-white tracking-tight leading-none block">PorLapor</span>
@@ -31,10 +31,10 @@ export default function Footer() {
           <div data-aos="fade-up" data-aos-delay="200" className="md:col-span-3 md:col-start-6">
              <h4 className="text-white font-bold mb-6 tracking-wide text-sm uppercase">Ruang Lingkup</h4>
              <ul className="space-y-3 text-sm text-slate-400 font-medium">
-               <li><a href="#" className="hover:text-teal-400 transition-colors">Statistik Penyelesaian</a></li>
-               <li><a href="#" className="hover:text-teal-400 transition-colors">Daftar Instansi</a></li>
-               <li><a href="#" className="hover:text-teal-400 transition-colors">Kebijakan Privasi Data</a></li>
-               <li><a href="#" className="hover:text-teal-400 transition-colors">Syarat & Ketentuan</a></li>
+               <li><a href="#" className="hover:text-blue-400 transition-colors">Statistik Penyelesaian</a></li>
+               <li><a href="#" className="hover:text-blue-400 transition-colors">Daftar Instansi</a></li>
+               <li><a href="#" className="hover:text-blue-400 transition-colors">Kebijakan Privasi Data</a></li>
+               <li><a href="#" className="hover:text-blue-400 transition-colors">Syarat & Ketentuan</a></li>
              </ul>
           </div>
 
@@ -42,15 +42,15 @@ export default function Footer() {
              <h4 className="text-white font-bold mb-6 tracking-wide text-sm uppercase">Kontak Resmi</h4>
             <ul className="space-y-4 text-sm text-slate-400 font-medium">
               <li className="flex items-start gap-3">
-                <Phone className="w-4 h-4 text-teal-500 mt-0.5" />
+                <Phone className="w-4 h-4 text-blue-500 mt-0.5" />
                 <span>Hotline: 1-400-LAPOR</span>
               </li>
               <li className="flex items-start gap-3">
-                <Mail className="w-4 h-4 text-teal-500 mt-0.5" />
+                <Mail className="w-4 h-4 text-blue-500 mt-0.5" />
                 <span>halo@porlapor.go.id</span>
               </li>
               <li className="flex items-start gap-3 border-t border-white/10 pt-4">
-                <MapPin className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">Jl. Jenderal Sudirman No.1, RT.1/RW.3, Gelora, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10270</span>
               </li>
             </ul>

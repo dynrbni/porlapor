@@ -26,7 +26,7 @@ export default function Header() {
           
           {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer">
-            <div className="bg-gradient-to-tr from-teal-600 to-teal-400 p-2 rounded-xl shadow-sm">
+            <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-2 rounded-xl shadow-sm">
               <Megaphone className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
@@ -42,7 +42,7 @@ export default function Header() {
                 href="#" 
                 className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   i === 0 
-                    ? 'text-teal-700 bg-teal-50/80' 
+                    ? 'text-blue-700 bg-blue-50/80' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               >
