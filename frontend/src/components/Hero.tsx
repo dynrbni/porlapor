@@ -7,15 +7,15 @@ export default function Hero() {
         <div className="text-center max-w-4xl mx-auto">
          
           
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-8 leading-[1.1]">
+          <h1 data-aos="fade-up" className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-8 leading-[1.1]">
             Kanal Pengaduan Publik <span className="text-teal-600">Terbuka & Akuntabel.</span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-slate-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">
+          <p data-aos="fade-up" data-aos-delay="100" className="text-lg sm:text-xl text-slate-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">
             Sampaikan aspirasi, permintaan informasi, maupun pengaduan langsung kepada instansi berwenang. Semua laporan diproses secara transparan dan rahasia.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div data-aos="fade-up" data-aos-delay="200" className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button className="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-teal-500/25 flex items-center justify-center gap-2 group cursor-pointer">
               Tulis Laporan Baru
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
