@@ -2,11 +2,11 @@ import { ArrowRight, Search } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50 min-h-[90vh] flex items-center">
+    <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50 min-h-screen flex items-center">
       {/* Background Image & Overlay */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://cdn.antaranews.com/cache/1200x800/2020/10/10/buruh.jpg" 
+          src="src/assets/hero_bg.jpg" 
           alt="City aerial view" 
           className="w-full h-full object-cover"
         />

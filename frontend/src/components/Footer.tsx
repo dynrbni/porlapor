@@ -18,10 +18,9 @@ export default function Footer() {
           
           <div data-aos="fade-up" data-aos-delay="100" className="md:col-span-4">
             <div className="flex items-center gap-3 mb-6">
-              <img src="/logo.png" alt="PorLapor" className="h-8 w-auto brightness-0 invert" />
-              <span className="font-extrabold text-xl text-white tracking-tight leading-none block">PorLapor</span>
+              <img src="src/assets/porlapor_logo.png" alt="PorLapor" className="h-18 w-auto object-contain  brightness-0 invert ml-[-24px]" />
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium">
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium mt-[-10px]">
               Platform CivicTech integrasi layanan masyarakat. Mewujudkan pemerintahan yang bersih, responsif, dan berbasis data real-time.
             </p>
           </div>
