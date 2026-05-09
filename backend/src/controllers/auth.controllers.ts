@@ -96,17 +96,17 @@ export const registerController = async (req: Request, res: Response) => {
         });
         const token = generateToken({ 
             id: user.id, 
-            email: user.email, 
             role: user.role });
         res.status(201).json({
-            status: 'success',
+            status: 'Registrasi berhasil',
+            token,
             data: {
                 user: {
                     id: user.id,
                     nama: user.name,
                     email: user.email,
+                    gender: user.gender,
                 },
-                token,
             },
         });
     } catch (error) {
@@ -168,17 +168,17 @@ export const loginController = async (req: Request, res: Response) => {
 
         const token = generateToken({ 
             id: user.id, 
-            email: user.email, 
             role: user.role });
         res.status(200).json({
-            status: 'success',
+            message: 'Login berhasil',
+            token,
             data: {
                 user: {
                     id: updatedUser.id,
                     nama: updatedUser.name,
                     email: updatedUser.email,
+                    gender: updatedUser.gender,
                 },
-                token,
             },
         });
     } catch (error) {
