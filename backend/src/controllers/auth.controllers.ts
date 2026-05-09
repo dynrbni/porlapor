@@ -7,9 +7,27 @@ import { normalizeGender } from '../utils/gender';
 
 export const registerController = async (req: Request, res: Response) => {
     try {
-        const { name, email, password, phone, nik, address, birthDate, gender } = req.body;
+        const {
+            name,
+            nama,
+            email,
+            password,
+            phone,
+            nik,
+            address,
+            birthDate,
+            gender,
+        } = req.body;
+        const fullName = name ?? nama;
+
+        if (!fullName || !email || !password || !phone || !nik || !address || !birthDate || !gender) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Semua data user wajib diisi: nama, email, password, phone, nik, address, birthDate, dan gender',
+            });
+        }
         const emailExisting = await prisma.user.findUnique({ where: { email } });
-        const phoneExisting = phone ? await prisma.user.findUnique({ where: { phone } }) : null;
+        const phoneExisting = await prisma.user.findUnique({ where: { phone } });
         if (emailExisting) {
             return res.status(400).json({
                 status: 'error',
@@ -34,15 +52,15 @@ export const registerController = async (req: Request, res: Response) => {
                 });
             }
         }
-        const normalizedBirthDate = birthDate ? normalizeBirthDate(birthDate) : null;
-        if (birthDate && !normalizedBirthDate) {
+        const normalizedBirthDate = normalizeBirthDate(birthDate);
+        if (!normalizedBirthDate) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Format tanggal lahir tidak valid',
             });
         }
         const normalizedGender = normalizeGender(gender);
-        if (normalizedGender === null) {
+        if (normalizedGender === null || normalizedGender === undefined) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Gender tidak valid',
@@ -52,14 +70,14 @@ export const registerController = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
             data: {
-                name,
+                name: fullName,
                 email,
                 password: hashedPassword,
                 phone,
                 nik,
                 address,
-                birthDate: normalizedBirthDate ?? undefined,
-                gender: normalizedGender ?? undefined,
+                birthDate: normalizedBirthDate,
+                gender: normalizedGender,
                 role: 'USER',
             },
             select: {
