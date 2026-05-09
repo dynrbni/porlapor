@@ -26,14 +26,14 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  name: string;           // wajib
-  email: string;          // wajib
-  password: string;       // wajib
-  phone?: string;         // opsional
-  nik?: string;           // opsional
-  address?: string;       // opsional
-  birthDate?: string;     // opsional, format: YYYY-MM-DD
-  gender?: 'LAKI_LAKI' | 'PEREMPUAN'; // opsional
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  nik: string;
+  address: string;
+  birthDate: string;
+  gender: 'LAKI_LAKI' | 'PEREMPUAN';
 }
 
 export interface AuthUser {

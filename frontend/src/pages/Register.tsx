@@ -76,8 +76,20 @@ export default function Register() {
     return true;
   };
 
+  const validateStep2 = (): boolean => {
+    setError('');
+    if (!form.phone.trim()) { setError('Nomor telepon wajib diisi.'); return false; }
+    if (!form.nik.trim()) { setError('NIK wajib diisi.'); return false; }
+    if (!form.birthDate.trim()) { setError('Tanggal lahir wajib diisi.'); return false; }
+    if (!form.gender) { setError('Jenis kelamin wajib dipilih.'); return false; }
+    if (!form.address.trim()) { setError('Alamat wajib diisi.'); return false; }
+    if (form.nik.trim().length !== 16) { setError('NIK harus 16 digit.'); return false; }
+    return true;
+  };
+
   const goNext = () => {
     if (step === 1 && !validateStep1()) return;
+    if (step === 2 && !validateStep2()) return;
     setError('');
     setStep((s) => s + 1);
     setTimeout(() => AOS.refreshHard(), 50);
@@ -92,6 +104,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) { setError('Anda harus menyetujui syarat dan ketentuan.'); return; }
+    if (!validateStep2()) return;
     setError('');
     setLoading(true);
     try {
@@ -99,11 +112,11 @@ export default function Register() {
         name: form.name,
         email: form.email,
         password: form.password,
-        phone: form.phone || undefined,
-        nik: form.nik || undefined,
-        address: form.address || undefined,
-        birthDate: form.birthDate || undefined,
-        gender: (form.gender as Gender) || undefined,
+        phone: form.phone,
+        nik: form.nik,
+        address: form.address,
+        birthDate: form.birthDate,
+        gender: form.gender as 'LAKI_LAKI' | 'PEREMPUAN',
       });
       if (response.status === 'success') {
         navigate('/');
@@ -307,44 +320,44 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-5">
 
               <p className="text-sm text-slate-500" data-aos="fade-up">
-                Semua field opsional — membantu verifikasi identitas Anda.
+                Semua data identitas di bawah ini wajib diisi untuk menyelesaikan pendaftaran.
               </p>
 
               <div data-aos="fade-up" data-aos-delay="60">
-                <label htmlFor="phone" className={labelCls}>Nomor Telepon</label>
+                <label htmlFor="phone" className={labelCls}>Nomor Telepon <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <Phone className="h-[18px] w-[18px] text-slate-400" />
                   </div>
-                  <input id="phone" type="tel" value={form.phone} onChange={set('phone')} placeholder="08xxxxxxxxxx" className={inputCls} />
+                  <input id="phone" type="tel" value={form.phone} onChange={set('phone')} required placeholder="08xxxxxxxxxx" className={inputCls} />
                 </div>
               </div>
 
               <div data-aos="fade-up" data-aos-delay="100">
-                <label htmlFor="nik" className={labelCls}>NIK (KTP)</label>
+                <label htmlFor="nik" className={labelCls}>NIK (KTP) <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <CreditCard className="h-[18px] w-[18px] text-slate-400" />
                   </div>
-                  <input id="nik" type="text" value={form.nik} onChange={set('nik')} maxLength={16} placeholder="16 digit NIK sesuai KTP" className={inputCls} />
+                  <input id="nik" type="text" value={form.nik} onChange={set('nik')} required maxLength={16} placeholder="16 digit NIK sesuai KTP" className={inputCls} />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div data-aos="fade-up" data-aos-delay="140">
-                  <label htmlFor="birthDate" className={labelCls}>Tanggal Lahir</label>
+                  <label htmlFor="birthDate" className={labelCls}>Tanggal Lahir <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                       <Calendar className="h-[18px] w-[18px] text-slate-400" />
                     </div>
-                    <input id="birthDate" type="date" value={form.birthDate} onChange={set('birthDate')} className={inputCls} />
+                    <input id="birthDate" type="date" value={form.birthDate} onChange={set('birthDate')} required className={inputCls} />
                   </div>
                 </div>
 
                 <div data-aos="fade-up" data-aos-delay="170">
-                  <label htmlFor="gender" className={labelCls}>Jenis Kelamin</label>
+                  <label htmlFor="gender" className={labelCls}>Jenis Kelamin <span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <select id="gender" value={form.gender} onChange={set('gender')}
+                    <select id="gender" value={form.gender} onChange={set('gender')} required
                       className="block w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 outline-none transition-all appearance-none cursor-pointer">
                       <option value="">-- Pilih --</option>
                       <option value="LAKI_LAKI">Laki-laki</option>
@@ -358,12 +371,12 @@ export default function Register() {
               </div>
 
               <div data-aos="fade-up" data-aos-delay="200">
-                <label htmlFor="address" className={labelCls}>Alamat Lengkap</label>
+                <label htmlFor="address" className={labelCls}>Alamat Lengkap <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <div className="absolute top-3.5 left-0 pl-3.5 flex items-start pointer-events-none">
                     <MapPin className="h-[18px] w-[18px] text-slate-400" />
                   </div>
-                  <textarea id="address" value={form.address} onChange={set('address')} rows={2}
+                  <textarea id="address" value={form.address} onChange={set('address')} required rows={2}
                     placeholder="Jl. Contoh No. 1, Kelurahan, Kota"
                     className="block w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 outline-none transition-all placeholder:text-slate-400 resize-none" />
                 </div>
