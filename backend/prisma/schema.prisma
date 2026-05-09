@@ -45,12 +45,12 @@ model User {
   id       String  @id @default(uuid())
   name     String
   email    String  @unique
-  password String  // disimpan dalam bentuk hash bcrypt
-  phone    String? @unique
-  nik      String? @unique
-  birthDate String? 
-  address  String?
-  gender   Gender?
+  password String  
+  phone    String @unique
+  nik      String @unique
+  birthDate String?
+  address  String
+  gender   Gender
 
   role     Role    @default(USER)
   isActive Boolean @default(true)
