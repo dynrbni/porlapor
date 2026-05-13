@@ -36,21 +36,35 @@ enum Gender {
   PEREMPUAN
 }
 
+enum PhotoSourceType {
+  LOCAL  // file diupload langsung (disimpan di storage, url = path lokalnya)
+  URL    // link eksternal langsung (e.g. dari Google, link publik, dll)
+}
+
 // ===================================================
 // MODEL: User
 // Satu model untuk ketiga role (USER, ADMIN, SUPERADMIN)
 // ===================================================
 
 model User {
-  id       String  @id @default(uuid())
-  name     String
-  email    String  @unique
-  password String  
-  phone    String @unique
-  nik      String @unique
+  id        String  @id @default(uuid())
+  name      String
+  email     String  @unique
+  password  String
+  phone     String  @unique
+  nik       String  @unique
   birthDate String?
-  address  String
-  gender   Gender
+  address   String
+  gender    Gender
+
+  // ── Foto Profil ──────────────────────────────────
+  // photoUrl  : path file lokal (misal /uploads/users/xxx.jpg)
+  //             ATAU link URL eksternal langsung
+  // photoSource: membedakan keduanya agar FE / storage handler tahu
+  //              cara merendernya (LOCAL = butuh base URL server,
+  //              URL = langsung pakai apa adanya)
+  photoUrl    String?
+  photoSource PhotoSourceType?
 
   role     Role    @default(USER)
   isActive Boolean @default(true)
@@ -61,20 +75,57 @@ model User {
   createdBy     User?  @relation("AdminCreator", fields: [createdById], references: [id])
   createdAdmins User[] @relation("AdminCreator")
 
-  reports    Report[]
-  statusLogs ReportStatusLog[]
-  spamLogs   SpamLog[]
+  reports      Report[]
+  statusLogs   ReportStatusLog[]
+  spamLogs     SpamLog[]
+  officialNotes OfficialNote[]
+  comments     Comment[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   lastLoginAt DateTime?
-  deletedAt DateTime?
+  deletedAt   DateTime?
 
   @@map("users")
 }
 
 // ===================================================
+// MODEL: Agency (Instansi Pemerintah)
+// Contoh: Dinas PU, Dinas Kebersihan, Dishub, dll.
+// Laporan akan di-forward ke agency berdasarkan kategori
+// atau secara manual oleh admin.
+// ===================================================
+
+model Agency {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  email       String? @unique
+  phone       String?
+  address     String?
+  isActive    Boolean @default(true)
+
+  // ── Foto / Logo Agency ───────────────────────────
+  // Sama seperti User, bisa upload file lokal atau pakai URL eksternal
+  photoUrl    String?
+  photoSource PhotoSourceType?
+
+  // Satu agency bisa menangani banyak kategori
+  categories Category[]
+  // Laporan yang di-assign ke agency ini
+  reports    Report[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("agencies")
+}
+
+// ===================================================
 // MODEL: Category (Jenis / Kategori Laporan)
+// Setiap kategori terhubung ke satu agency.
+// Saat laporan dibuat, report.agencyId otomatis diisi
+// dari category.agencyId (bisa di-override admin).
 // Contoh: Jalan Rusak → Dinas PU
 //         Sampah Menumpuk → Dinas Kebersihan
 // ===================================================
@@ -84,6 +135,10 @@ model Category {
   name        String
   description String?
   isActive    Boolean @default(true)
+
+  // Agency yang bertanggung jawab atas kategori ini
+  agencyId String?
+  agency   Agency? @relation(fields: [agencyId], references: [id])
 
   reports Report[]
 
@@ -98,13 +153,13 @@ model Category {
 // ===================================================
 
 model Report {
-  id          String       @id // Custom short ID generated safely in controller (e.g. REP-A1B2C3)
+  id          String       @id // Custom short ID, e.g. REP-A1B2C3 (generated di controller)
   title       String
   description String       @db.Text
   latitude    Float        // koordinat GPS dari device
   longitude   Float
   address     String?      // alamat hasil reverse geocoding (opsional)
-  imageUrl    String?      // URL foto laporan
+  imageUrl    String?      // URL foto laporan (bukti)
   status      ReportStatus @default(PENDING)
 
   userId String
@@ -113,7 +168,15 @@ model Report {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
-  statusLogs ReportStatusLog[]
+  // Agency yang menangani laporan ini.
+  // Defaultnya dari category.agencyId saat laporan dibuat,
+  // tapi ADMIN / SUPERADMIN bisa override / forward manual.
+  agencyId String?
+  agency   Agency? @relation(fields: [agencyId], references: [id])
+
+  statusLogs    ReportStatusLog[]
+  officialNotes OfficialNote[]
+  comments      Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,8 +186,8 @@ model Report {
 
 // ===================================================
 // MODEL: ReportStatusLog
-// Riwayat perubahan status laporan oleh admin
-// Berguna untuk transparansi ke masyarakat
+// Riwayat perubahan status laporan oleh admin.
+// Berguna untuk transparansi ke masyarakat.
 // ===================================================
 
 model ReportStatusLog {
@@ -144,8 +207,57 @@ model ReportStatusLog {
 }
 
 // ===================================================
+// MODEL: OfficialNote (Tindak Lanjut Resmi)
+// Hanya bisa dibuat oleh ADMIN atau SUPERADMIN.
+// Bersifat resmi, tampil sebagai respons instansi
+// yang terlihat oleh publik / pelapor.
+// Validasi role dilakukan di middleware / controller,
+// BUKAN di level Prisma.
+// ===================================================
+
+model OfficialNote {
+  id      String @id @default(uuid())
+  content String @db.Text
+
+  reportId String
+  report   Report @relation(fields: [reportId], references: [id])
+
+  // Harus ADMIN atau SUPERADMIN — dicek di controller
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("official_notes")
+}
+
+// ===================================================
+// MODEL: Comment (Komentar Publik)
+// Bisa diisi oleh semua role termasuk USER biasa.
+// Bersifat diskusi — warga lain bisa ikut berkomentar.
+// ===================================================
+
+model Comment {
+  id      String @id @default(uuid())
+  content String @db.Text
+
+  reportId String
+  report   Report @relation(fields: [reportId], references: [id])
+
+  // Semua role boleh komentar
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comments")
+}
+
+// ===================================================
 // MODEL: SpamLog
-// Anti-spam: maksimal 3 laporan per user per hari
+// Anti-spam: maksimal 3 laporan per user per hari.
 // ===================================================
 
 model SpamLog {
