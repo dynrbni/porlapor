@@ -73,7 +73,7 @@ export default function Header() {
 
           {/* Nav — desktop */}
           <nav className="hidden md:flex flex-[1_1_0%] justify-center items-center gap-1">
-            {['Beranda', 'Mekanisme', 'Statistik', 'Instansi'].map((item, i) => (
+            {['Beranda', 'Statistik', 'Instansi'].map((item, i) => (
               <a
                 key={item}
                 href="#"
@@ -168,7 +168,7 @@ export default function Header() {
         }`}>
           <div className="mx-4 mt-2 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-100 shadow-lg overflow-hidden">
             <nav className="flex flex-col p-3 gap-1">
-              {['Beranda', 'Mekanisme', 'Statistik', 'Instansi'].map((item, i) => (
+              {['Beranda', 'Statistik', 'Instansi'].map((item, i) => (
                 <a
                   key={item}
                   href="#"
