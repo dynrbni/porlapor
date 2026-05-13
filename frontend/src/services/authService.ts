@@ -38,17 +38,16 @@ export interface RegisterPayload {
 
 export interface AuthUser {
   id: string;
-  name: string;
+  nama: string;
   email: string;
 }
 
 export interface AuthResponse {
-  status: 'success' | 'error';
+  message?: string;
+  token?: string;
   data?: {
     user: AuthUser;
-    token: string;
   };
-  message?: string;
 }
 
 // ─── Auth Service ─────────────────────────────────────────────────────────────
@@ -58,30 +57,30 @@ export const authService = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
     try {
       const response = await apiClient.post<AuthResponse>('/auth/login', payload);
-      if (response.data.status === 'success' && response.data.data?.token) {
-        localStorage.setItem('auth_token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      // Cek berdasarkan ada/tidaknya token di response.data
+      if (response.data.token) {
+        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data?.user));
       }
       return response.data;
     } catch (error: any) {
-      throw error.response?.data || { status: 'error', message: 'Gagal terhubung ke server.' };
+      throw error.response?.data || { message: 'Gagal terhubung ke server.' };
     }
   },
 
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
     try {
-      // Hapus field kosong/undefined agar tidak dikirim ke backend
       const cleanPayload = Object.fromEntries(
         Object.entries(payload).filter(([, v]) => v !== undefined && v !== '')
       );
       const response = await apiClient.post<AuthResponse>('/auth/register', cleanPayload);
-      if (response.data.status === 'success' && response.data.data?.token) {
-        localStorage.setItem('auth_token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      if (response.data.token) {
+        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data?.user));
       }
       return response.data;
     } catch (error: any) {
-      throw error.response?.data || { status: 'error', message: 'Gagal terhubung ke server.' };
+      throw error.response?.data || { message: 'Gagal terhubung ke server.' };
     }
   },
 
