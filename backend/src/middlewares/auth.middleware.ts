@@ -3,8 +3,8 @@ import { verifyToken } from '../utils/jwt';
 
 export interface AuthPayload {
   id: string;
-  email: string;
   role: string;
+  email?: string;
 }
 
 export type AuthenticatedRequest = Request & { user: AuthPayload };
@@ -31,8 +31,8 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     });
   }
 
-  const { id, email, role } = decoded as Partial<AuthPayload>;
-  if (!id || !email || !role) {
+  const { id, role } = decoded as Partial<AuthPayload>;
+  if (!id || !role) {
     return res.status(401).json({
       message: 'Token tidak valid',
     });
