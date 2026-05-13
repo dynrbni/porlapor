@@ -53,7 +53,7 @@ export const getAgencies = async (req: Request, res: Response) => {
 
 export const updateAgency = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name, description, email, phone, address, photoUrl, photoSource, isActive } = req.body;
 
     const existingAgency = await prisma.agency.findUnique({ where: { id } });
@@ -92,7 +92,7 @@ export const updateAgency = async (req: Request, res: Response) => {
 
 export const deleteAgency = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const existingAgency = await prisma.agency.findUnique({ where: { id } });
     if (!existingAgency) {
