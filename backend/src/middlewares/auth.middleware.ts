@@ -38,7 +38,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     });
   }
 
-  (req as AuthenticatedRequest).user = { id, email, role };
+  (req as AuthenticatedRequest).user = { id, role };
   next();
 };
 
