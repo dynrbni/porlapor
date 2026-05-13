@@ -38,7 +38,7 @@ export const createOfficialNote = async (req: Request, res: Response) => {
 
 export const getOfficialNotesByReport = async (req: Request, res: Response) => {
   try {
-    const { reportId } = req.params;
+    const reportId = req.params.reportId as string;
 
     const notes = await prisma.officialNote.findMany({
       where: { reportId },
@@ -70,7 +70,7 @@ export const getOfficialNotesByReport = async (req: Request, res: Response) => {
 
 export const updateOfficialNote = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { content } = req.body;
     const user = (req as AuthenticatedRequest).user;
 
@@ -103,7 +103,7 @@ export const updateOfficialNote = async (req: Request, res: Response) => {
 
 export const deleteOfficialNote = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const user = (req as AuthenticatedRequest).user;
 
     const existingNote = await prisma.officialNote.findUnique({ where: { id } });
