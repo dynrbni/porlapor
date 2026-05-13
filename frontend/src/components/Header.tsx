@@ -73,18 +73,22 @@ export default function Header() {
 
           {/* Nav — desktop */}
           <nav className="hidden md:flex flex-[1_1_0%] justify-center items-center gap-1">
-            {['Beranda', 'Statistik', 'Instansi'].map((item, i) => (
-              <a
-                key={item}
-                href="#"
+            {[
+              { name: 'Beranda', path: '/' },
+              { name: 'Statistik', path: '/statistik' },
+              { name: 'Instansi', path: '/instansi' }
+            ].map((item, i) => (
+              <Link
+                key={item.name}
+                to={item.path}
                 className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   i === 0
                     ? 'text-blue-700 bg-blue-50/80'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               >
-                {item}
-              </a>
+                {item.name}
+              </Link>
             ))}
           </nav>
 
@@ -168,10 +172,14 @@ export default function Header() {
         }`}>
           <div className="mx-4 mt-2 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-100 shadow-lg overflow-hidden">
             <nav className="flex flex-col p-3 gap-1">
-              {['Beranda', 'Statistik', 'Instansi'].map((item, i) => (
-                <a
-                  key={item}
-                  href="#"
+              {[
+                { name: 'Beranda', path: '/' },
+                { name: 'Statistik', path: '/statistik' },
+                { name: 'Instansi', path: '/instansi' }
+              ].map((item, i) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
                     i === 0
@@ -179,8 +187,8 @@ export default function Header() {
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
-                  {item}
-                </a>
+                  {item.name}
+                </Link>
               ))}
             </nav>
 
