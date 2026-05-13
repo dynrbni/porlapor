@@ -4,7 +4,8 @@ import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export const createOfficialNote = async (req: Request, res: Response) => {
   try {
-    const { reportId, content } = req.body;
+    const reportId = req.params.reportId as string;
+    const { content } = req.body;
     const user = (req as AuthenticatedRequest).user;
 
     // Check if report exists

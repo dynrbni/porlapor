@@ -142,6 +142,19 @@ export const getReportById = async (req: Request, res: Response) => {
       include: {
         user: { select: reporterSelect() },
         category: { select: categorySelect() },
+        officialNotes: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+                photoUrl: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        }
       },
     });
 
