@@ -63,7 +63,7 @@ export default function Header() {
         }`}>
 
           {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer">
+          <div className="flex-[1_1_0%] flex items-center gap-3 cursor-pointer">
             <img
               src="src/assets/porlapor_logo.png"
               alt="PorLapor"
@@ -72,7 +72,7 @@ export default function Header() {
           </div>
 
           {/* Nav — desktop */}
-          <nav className="hidden md:flex items-center gap-1 ml-9">
+          <nav className="hidden md:flex flex-[1_1_0%] justify-center items-center gap-1">
             {['Beranda', 'Tentang Sistem', 'Statistik', 'Instansi'].map((item, i) => (
               <a
                 key={item}
@@ -89,7 +89,7 @@ export default function Header() {
           </nav>
 
           {/* Actions — desktop */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex flex-[1_1_0%] justify-end items-center gap-3">
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button

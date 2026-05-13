@@ -118,8 +118,9 @@ export default function Register() {
         birthDate: form.birthDate,
         gender: form.gender as 'LAKI_LAKI' | 'PEREMPUAN',
       });
-      if (response.status === 'success') {
+      if (response.token || response.message) {
         navigate('/');
+        window.location.reload();
       }
     } catch (err: any) {
       setError(err.message || 'Pendaftaran gagal. Silakan coba lagi.');

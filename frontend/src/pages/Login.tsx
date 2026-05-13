@@ -28,8 +28,10 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await authService.login({ email, password });
-      if (response.status === 'success') {
+      if (response.token || response.message) {
         navigate('/');
+        // Supaya state Header lgsg update kalau misalnya tidak pakai state management global (Redux/Zustand)
+        window.location.reload(); 
       }
     } catch (err: any) {
       setError(err.message || 'Login gagal. Silakan coba lagi.');

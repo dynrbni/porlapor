@@ -14,6 +14,18 @@ function App() {
       once: true,
       offset: 100,
     });
+    
+    // Pastikan animasi direfresh ketika seluruh aset website termuat 
+    // atau ketika ada interupsi navigasi dari halaman login/register
+    const handleLoad = () => AOS.refresh();
+    window.addEventListener('load', handleLoad);
+    
+    // Fallback jika assets lambat
+    setTimeout(() => {
+      AOS.refresh();
+    }, 500);
+
+    return () => window.removeEventListener('load', handleLoad);
   }, []);
 
   return (
