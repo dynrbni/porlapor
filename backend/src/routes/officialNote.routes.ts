@@ -12,7 +12,7 @@ router.use(authenticate);
 router.use(authorizeRoles('SUPERADMIN', 'ADMIN'));
 
 router.post('/report/:reportId', createOfficialNote);
-router.put('/:id', updateOfficialNote);
-router.delete('/:id', deleteOfficialNote);
+router.put('/report/:reportId/:id', updateOfficialNote);
+router.delete('/report/:reportId/:id', deleteOfficialNote);
 
 export default router;
