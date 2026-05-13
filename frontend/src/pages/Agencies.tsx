@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAgencies } from '../services/agencyService';
+import Header from '../components/Header';
 import type { Agency } from '../services/agencyService';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -30,8 +31,10 @@ const Agencies: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gray-50 flex items-center justify-center">
-      <div className="max-w-6xl w-full px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="pt-28 pb-12 flex items-start justify-center">
+        <div className="max-w-6xl w-full px-6 lg:px-8">
         <div className="text-center mb-10" data-aos="fade-up">
           <h1 className="text-3xl font-extrabold text-slate-800 sm:text-4xl">
             Daftar Instansi Terdaftar
@@ -56,26 +59,35 @@ const Agencies: React.FC = () => {
             <p>Memuat data instansi...</p>
           </div>
         ) : filteredAgencies.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-aos="fade-up" data-aos-delay="200">
+          <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
             {filteredAgencies.map((agency) => (
               <div
                 key={agency.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
+                className="flex items-center bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
               >
-                <div className="p-6">
+                <div className="w-40 h-40 bg-gray-100 flex-shrink-0">
+                  {agency.photoUrl ? (
+                    <img src={agency.photoUrl} alt={agency.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-400">No image</div>
+                  )}
+                </div>
+                <div className="p-6 flex-1">
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">
                     {agency.name}
                   </h3>
-                  {agency.phone && (
-                    <p className="text-sm text-slate-600 mb-1">
-                      <span className="font-medium">Telepon:</span> {agency.phone}
-                    </p>
-                  )}
-                  {agency.address && (
-                    <p className="text-sm text-slate-600">
-                      <span className="font-medium">Alamat:</span> {agency.address}
-                    </p>
-                  )}
+                  <div className="text-sm text-slate-600">
+                    {agency.phone && (
+                      <p className="mb-1">
+                        <span className="font-medium">Telepon:</span> {agency.phone}
+                      </p>
+                    )}
+                    {agency.address && (
+                      <p>
+                        <span className="font-medium">Alamat:</span> {agency.address}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

@@ -14,6 +14,7 @@ export interface Agency {
   name: string;
   address: string | null;
   phone: string | null;
+  photoUrl?: string | null;
   createdAt: string;
 }
 
