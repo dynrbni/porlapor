@@ -97,6 +97,7 @@ const Agencies: React.FC = () => {
             <p>Tidak ada instansi yang cocok dengan pencarian Anda.</p>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
