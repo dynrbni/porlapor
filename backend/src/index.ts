@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import reportRoutes from './routes/report.routes';
 import agencyRoutes from './routes/agency.routes';
+import officialNoteRoutes from './routes/officialNote.routes';
 
 dotenv.config();
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api', userRoutes)
 app.use('/api', categoryRoutes)
 app.use('/api', reportRoutes)
 app.use('/api/agencies', agencyRoutes)
+app.use('/api/official-notes', officialNoteRoutes)
 
 //auth routes
 app.use('/api/auth', authRoutes)
