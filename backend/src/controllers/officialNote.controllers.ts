@@ -23,6 +23,16 @@ export const createOfficialNote = async (req: Request, res: Response) => {
         reportId,
         authorId: user.id,
       },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            photoUrl: true,
+          },
+        },
+      },
     });
 
     return res.status(201).json({
@@ -88,6 +98,16 @@ export const updateOfficialNote = async (req: Request, res: Response) => {
     const updatedNote = await prisma.officialNote.update({
       where: { id },
       data: { content },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            photoUrl: true,
+          },
+        },
+      },
     });
 
     return res.status(200).json({
