@@ -43,7 +43,7 @@ export const createReport = async (req: Request, res: Response) => {
       });
     }
 
-    const { title, description, latitude, longitude, address, imageUrl, categoryId } = req.body;
+    const { title, description, latitude, longitude, address, imageUrl, categoryId, agencyId } = req.body;
     const lat = parseNumber(latitude);
     const lng = parseNumber(longitude);
 
@@ -75,6 +75,12 @@ export const createReport = async (req: Request, res: Response) => {
       trackingId += Math.floor(Math.random() * 10).toString();
     }
 
+    // Assign ke default agency kategori jika user tidak memilih instansi
+    let targetAgencyId = agencyId;
+    if (!targetAgencyId && categoryExists.agencyId) {
+      targetAgencyId = categoryExists.agencyId;
+    }
+
     const report = await prisma.report.create({
       data: {
         id: trackingId,
@@ -85,6 +91,7 @@ export const createReport = async (req: Request, res: Response) => {
         address,
         imageUrl,
         categoryId,
+        agencyId: targetAgencyId,
         userId: user.id,
       },
       include: {
@@ -158,7 +165,7 @@ export const getReportById = async (req: Request, res: Response) => {
 export const updateReport = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, latitude, longitude, address, imageUrl, status, categoryId } = req.body;
+    const { title, description, latitude, longitude, address, imageUrl, status, categoryId, agencyId } = req.body;
 
     const data: Prisma.ReportUpdateInput = {};
 
@@ -166,6 +173,9 @@ export const updateReport = async (req: Request, res: Response) => {
     if (description) data.description = description;
     if (address !== undefined) data.address = address;
     if (imageUrl !== undefined) data.imageUrl = imageUrl;
+    if (agencyId !== undefined) {
+      data.agency = agencyId ? { connect: { id: agencyId } } : { disconnect: true };
+    }
     if (status) {
       if (!Object.values(ReportStatus).includes(status)) {
         return res.status(400).json({
