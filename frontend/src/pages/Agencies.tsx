@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAgencies, Agency } from '../services/agencyService';
+import { getAgencies } from '../services/agencyService';
+import type { Agency } from '../services/agencyService';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
