@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { reportService } from '../services/reportService';
-import { categoryService, Category } from '../services/categoryService';
-import { getAgencies, Agency } from '../services/agencyService';
+import { categoryService } from '../services/categoryService';
+import type { Category } from '../services/categoryService';
+import { getAgencies } from '../services/agencyService';
+import type { Agency } from '../services/agencyService';
 import LocationPicker from './LocationPicker';
 import { Loader2 } from 'lucide-react';
 
