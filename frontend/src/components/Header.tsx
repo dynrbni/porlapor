@@ -1,6 +1,6 @@
 import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
 
 export default function Header() {
@@ -9,6 +9,7 @@ export default function Header() {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   
   const isAuthenticated = authService.isAuthenticated();
   const user = authService.getUser();
@@ -77,19 +78,22 @@ export default function Header() {
               { name: 'Beranda', path: '/' },
               { name: 'Statistik', path: '/statistik' },
               { name: 'Instansi', path: '/instansi' }
-            ].map((item, i) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  i === 0
-                    ? 'text-blue-700 bg-blue-50/80'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            ].map((item) => {
+              const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'text-blue-700 bg-blue-50/80'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Actions — desktop */}
@@ -176,20 +180,23 @@ export default function Header() {
                 { name: 'Beranda', path: '/' },
                 { name: 'Statistik', path: '/statistik' },
                 { name: 'Instansi', path: '/instansi' }
-              ].map((item, i) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                    i === 0
-                      ? 'text-blue-700 bg-blue-50'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              ].map((item) => {
+                const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? 'text-blue-700 bg-blue-50'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="flex flex-col gap-2 p-3 pt-0">
