@@ -80,6 +80,7 @@ model User {
   spamLogs     SpamLog[]
   officialNotes OfficialNote[]
   comments     Comment[]
+  likes        ReportLike[]
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -177,6 +178,7 @@ model Report {
   statusLogs    ReportStatusLog[]
   officialNotes OfficialNote[]
   comments      Comment[]
+  likes         ReportLike[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -273,4 +275,20 @@ model SpamLog {
 
   @@unique([userId, date])
   @@map("spam_logs")
+}
+
+// ===================================================
+// MODEL: ReportLike (Dukungan Laporan Public)
+// ===================================================
+
+model ReportLike {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  reportId  String
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reportId])
+  @@map("report_likes")
 }

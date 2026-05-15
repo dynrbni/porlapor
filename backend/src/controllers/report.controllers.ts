@@ -127,6 +127,12 @@ export const getAllReports = async (req: Request, res: Response) => {
       where,
       orderBy: { createdAt: 'desc' },
       include: {
+        _count: {
+          select: { likes: true }
+        },
+        likes: {
+          select: { userId: true }
+        },
         user: { select: reporterSelect() },
         category: { select: categorySelect() },
         officialNotes: {
@@ -170,6 +176,12 @@ export const getReportById = async (req: Request, res: Response) => {
     const report = await prisma.report.findUnique({
       where: { id: String(id) },
       include: {
+        _count: {
+          select: { likes: true }
+        },
+        likes: {
+          select: { userId: true }
+        },
         user: { select: reporterSelect() },
         category: { select: categorySelect() },
         officialNotes: {
@@ -184,6 +196,12 @@ export const getReportById = async (req: Request, res: Response) => {
             }
           },
           orderBy: { createdAt: 'desc' }
+        },
+        comments: {
+          include: {
+            author: { select: { id: true, name: true, role: true, photoUrl: true } }
+          },
+          orderBy: { createdAt: 'asc' }
         }
       },
     });
@@ -195,11 +213,7 @@ export const getReportById = async (req: Request, res: Response) => {
     }
 
     const { user } = req as AuthenticatedRequest;
-    if (user && user.role === 'USER' && report.userId !== user.id) {
-      return res.status(403).json({
-        message: 'Akses ditolak: Anda tidak memiliki akses ke laporan ini',
-      });
-    }
+    // Removed the restriction so public users can view report details for commenting/liking
 
     res.status(200).json({
       message: 'Berhasil mendapatkan data laporan',
@@ -333,6 +347,47 @@ export const addComment = async (req: Request, res: Response) => {
       message: 'Komentar berhasil ditambahkan',
       data: comment
     });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const toggleLike = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { user } = req as AuthenticatedRequest;
+
+    if (!user?.id) return res.status(401).json({ message: 'Token tidak valid' });
+
+    const report = await prisma.report.findUnique({
+      where: { id: String(id) },
+    });
+
+    if (!report) return res.status(404).json({ message: 'Laporan tidak ditemukan' });
+
+    const existingLike = await prisma.reportLike.findUnique({
+      where: {
+        userId_reportId: {
+          userId: user.id,
+          reportId: String(id)
+        }
+      }
+    });
+
+    if (existingLike) {
+      await prisma.reportLike.delete({
+        where: { id: existingLike.id }
+      });
+      res.status(200).json({ message: 'Laporan batal didukung', liked: false });
+    } else {
+      await prisma.reportLike.create({
+        data: {
+          userId: user.id,
+          reportId: String(id)
+        }
+      });
+      res.status(200).json({ message: 'Laporan didukung', liked: true });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }

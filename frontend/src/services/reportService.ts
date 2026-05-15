@@ -42,6 +42,11 @@ export interface Report {
   longitude: number;
   address: string;
   imageUrl?: string;
+  _count?: {
+    likes: number;
+  };
+  likes?: { userId: string }[];
+  user?: Author;
 }
 
 export const reportService = {
@@ -54,11 +59,19 @@ export const reportService = {
     const response = await apiClient.post<{ message: string; data: Comment }>(`/reports/${reportId}/comments`, { content });
     return response.data;
   },
+  toggleLike: async (reportId: string) => {
+    const response = await apiClient.post<{ message: string; liked: boolean }>(`/reports/${reportId}/like`);
+    return response.data;
+  },
   createReport: async (payload: { title: string; description: string; latitude: number; longitude: number; address: string; categoryId: string; agencyId?: string; imageUrl?: string }) => {
     const response = await apiClient.post('/reports', payload);
     return response.data;
   },
 
+  getAllReports: async () => {
+    const response = await apiClient.get<{ message: string; data: Report[] }>('/reports');
+    return response.data;
+  },
   getUserReports: async (userId: string) => {
     const response = await apiClient.get<{ message: string; data: Report[] }>(`/reports?userId=${userId}`);
     return response.data;

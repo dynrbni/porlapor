@@ -6,6 +6,7 @@ import {
   updateReport,
   deleteReport,
   addComment,
+  toggleLike
 } from '../controllers/report.controllers';
 import { authenticate } from '../middlewares/auth.middleware';
 
@@ -18,6 +19,7 @@ router.get('/reports', getAllReports);
 router.get('/reports/:id', getReportById);
 router.put('/reports/:id', updateReport);
 router.post('/reports/:id/comments', addComment);
+router.post('/reports/:id/like', toggleLike);
 router.delete('/reports/:id', deleteReport);
 
 export default router;
