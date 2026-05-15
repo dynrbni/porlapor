@@ -54,7 +54,7 @@ export default function Hero() {
       </div>
       
       {/* Background Grid Pattern (Subtle) */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none"></div>
+      <div className="absolute inset-0  opacity-[0.03] pointer-events-none"></div>
     </section>
   );
 }
