@@ -41,6 +41,7 @@ export interface Report {
   latitude: number;
   longitude: number;
   address: string;
+  imageUrl?: string;
 }
 
 export const reportService = {

@@ -114,7 +114,11 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {inProgressReports.length > 0 ? (
                   inProgressReports.map((report) => (
-                    <div key={report.id} className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition-shadow">
+                    <div 
+                      key={report.id} 
+                      onClick={() => navigate(`/dashboard/report/${report.id}`)}
+                      className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="font-semibold text-slate-900">{report.title}</h3>
                         {getStatusBadge(report.status)}
@@ -140,7 +144,11 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {completedReports.length > 0 ? (
                   completedReports.map((report) => (
-                    <div key={report.id} className="p-4 border border-slate-100 rounded-xl bg-slate-50">
+                    <div 
+                      key={report.id} 
+                      onClick={() => navigate(`/dashboard/report/${report.id}`)}
+                      className="p-4 border border-slate-100 rounded-xl bg-slate-50 hover:shadow-md transition-shadow cursor-pointer"
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="font-semibold text-slate-700">{report.title}</h3>
                         {getStatusBadge(report.status)}

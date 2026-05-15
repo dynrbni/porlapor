@@ -15,6 +15,7 @@ export default function CreateReportForm({ onSuccess }: { onSuccess: () => void 
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [address, setAddress] = useState('');
+  const [imageUrl, setImageUrl] = useState<string>('');
   
   const [categories, setCategories] = useState<Category[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -43,7 +44,8 @@ export default function CreateReportForm({ onSuccess }: { onSuccess: () => void 
         agencyId: agencyId || undefined,
         latitude,
         longitude,
-        address
+        address,
+        ...(imageUrl && { imageUrl })
       });
       onSuccess();
     } catch (err: any) {
@@ -127,6 +129,30 @@ export default function CreateReportForm({ onSuccess }: { onSuccess: () => void 
               setLongitude(lng);
               setAddress(addr);
             }} />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">Foto / Bukti Kejadian (Opsional)</label>
+          <div className="flex items-center gap-4">
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setImageUrl(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+            {imageUrl && (
+              <img src={imageUrl} alt="Preview" className="h-16 w-16 object-cover rounded-lg border border-slate-200" />
+            )}
           </div>
         </div>
 

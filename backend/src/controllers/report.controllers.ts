@@ -296,7 +296,7 @@ export const deleteReport = async (req: Request, res: Response) => {
     });
   }
 };
-\n
+
 export const addComment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
