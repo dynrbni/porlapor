@@ -51,43 +51,37 @@ const Dashboard = () => {
     <div className="min-h-screen bg-[#f3f4f6] selection:bg-blue-200 flex flex-col relative w-full overflow-x-hidden">
       <Header />
       
-      {/* Red Hero Profile Banner */}
-      <div className="w-full bg-[#c8203f] pt-28 pb-10 px-4 sm:px-6 relative overflow-hidden" 
-           style={{ backgroundImage: "linear-gradient(45deg, #c8203f 0%, #a41731 100%)" }}>
-        {/* Background Patterns (mock) */}
-        <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+      {/* Soft Blue Hero Profile Banner (PorLapor Style) */}
+      <div className="w-full bg-blue-600 pt-32 pb-12 px-4 sm:px-6 relative overflow-hidden" 
+           style={{ backgroundImage: "linear-gradient(to right, #2563eb, #1e40af)" }}>
+        {/* Background Patterns (cleaner, less intrusive) */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 40 0 0 Z" fill="none" stroke="white" strokeWidth="1"/>
+                 <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1.5" fill="white"/>
                  </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
+              <rect width="100%" height="100%" fill="url(#dots)" />
            </svg>
         </div>
 
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-10 relative z-10 w-full">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-slate-200 overflow-hidden shrink-0 shadow-lg">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10 w-full">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white/20 bg-slate-200 overflow-hidden shrink-0 shadow-xl">
              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'anon'}`} alt="Avatar" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 text-center md:text-left text-white mt-2 md:mt-0">
-             <h1 className="text-2xl sm:text-3xl font-semibold mb-2">{user?.name || 'Pengguna'}</h1>
+             <h1 className="text-3xl font-extrabold mb-1 tracking-tight">{user?.name || 'Pengguna'}</h1>
+             <p className="text-blue-100 text-sm font-medium">Bergabung sejak {new Date().getFullYear()}</p>
           </div>
-          <div className="flex flex-wrap justify-center md:justify-end items-center gap-8 md:gap-12 mt-4 md:mt-0 text-white">
-             <div className="text-center">
-                <div className="text-2xl font-bold">{reports.filter(r => r.user?.id === user?.id).length || 1}</div>
-                <div className="text-xs uppercase tracking-wider font-semibold opacity-80">laporan</div>
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-6 mt-6 md:mt-0 text-white">
+             <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 text-center">
+                <div className="text-3xl font-extrabold">{reports.filter(r => r.user?.id === user?.id).length || 0}</div>
+                <div className="text-xs uppercase tracking-wider font-semibold opacity-90 mt-1">Total Laporan</div>
              </div>
-             <div className="text-center">
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-xs uppercase tracking-wider font-semibold opacity-80">mengikuti</div>
-             </div>
-             <div className="text-center">
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-xs uppercase tracking-wider font-semibold opacity-80">pengikut</div>
-             </div>
-             <button className="px-6 py-2 border-2 border-white/80 hover:bg-white hover:text-[#c8203f] rounded transition-colors text-sm font-bold uppercase ml-0 md:ml-4 tracking-wider">
-               Ubah
+             
+             <button className="px-6 py-3 bg-white text-blue-600 hover:bg-blue-50 rounded-xl transition-colors text-sm font-bold shadow-sm">
+               Edit Profil
              </button>
           </div>
         </div>
@@ -102,51 +96,47 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               {/* Tabs */}
-              <div className="flex bg-white shadow-sm rounded-t-xl w-full border-b border-slate-200">
+              <div className="flex bg-slate-200/50 p-1.5 rounded-2xl w-full mb-8">
                 <button
                   onClick={() => setActiveTab('semua')}
-                  className={`py-4 px-6 text-sm font-bold transition-all relative ${activeTab === 'semua' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'}`}
+                  className={`flex-1 py-3 px-4 text-sm font-bold rounded-xl transition-all ${activeTab === 'semua' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-blue-600 hover:bg-white/50'}`}
                 >
-                  Semua
-                  {activeTab === 'semua' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"></div>}
+                  Semua Laporan
                 </button>
                 <button
                   onClick={() => setActiveTab('belum')}
-                  className={`py-4 px-6 text-sm font-bold transition-all relative ${activeTab === 'belum' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'}`}
+                  className={`flex-1 py-3 px-4 text-sm font-bold rounded-xl transition-all ${activeTab === 'belum' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-blue-600 hover:bg-white/50'}`}
                 >
-                  Belum
-                  {activeTab === 'belum' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"></div>}
+                  Menunggu
                 </button>
                 <button
                   onClick={() => setActiveTab('proses')}
-                  className={`py-4 px-6 text-sm font-bold transition-all relative ${activeTab === 'proses' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'}`}
+                  className={`flex-1 py-3 px-4 text-sm font-bold rounded-xl transition-all ${activeTab === 'proses' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-blue-600 hover:bg-white/50'}`}
                 >
-                  Proses
-                  {activeTab === 'proses' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"></div>}
+                  Sedang Diproses
                 </button>
                 <button
                   onClick={() => setActiveTab('selesai')}
-                  className={`py-4 px-6 text-sm font-bold transition-all relative ${activeTab === 'selesai' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'}`}
+                  className={`flex-1 py-3 px-4 text-sm font-bold rounded-xl transition-all ${activeTab === 'selesai' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-blue-600 hover:bg-white/50'}`}
                 >
                   Selesai
-                  {activeTab === 'selesai' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"></div>}
                 </button>
               </div>
 
-              <div className="bg-white border-x border-b border-slate-200 rounded-b-xl shadow-sm pb-2">
+              <div className="bg-transparent space-y-6">
                 {filteredReports.length > 0 ? (
                   filteredReports.map((report, idx) => (
-                    <div key={report.id} className={idx !== 0 ? 'border-t border-slate-100' : ''}>
+                    <div key={report.id} className="bg-white border text-left border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
                       <ReportCard report={report} user={report.user || user} currentUser={user} onLikeToggle={fetchUserAndReports} />
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-slate-500 text-sm py-16">
+                  <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center text-slate-500 text-sm py-16">
                     Tidak ada laporan pada kategori ini.
                   </div>
                 )}
-                <div className="p-4 text-center text-slate-500 text-sm border-t border-slate-100">
-                  There are no more pages left to load.
+                <div className="p-4 text-center text-slate-400 text-sm font-medium">
+                  Tidak ada laporan lain untuk ditampilkan.
                 </div>
               </div>
             </div>

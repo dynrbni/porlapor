@@ -45,39 +45,32 @@ export default function ReportCard({ report, user, currentUser, onLikeToggle }: 
         </div>
         <div className="flex-1 w-full overflow-hidden">
           <div className="flex flex-wrap items-center gap-x-2 w-full text-sm">
-            <h3 className="font-bold text-blue-600 truncate max-w-[200px] sm:max-w-xs">{user?.name || 'Pengguna'}</h3>
+            <h3 className="font-bold text-slate-800 truncate max-w-[200px] sm:max-w-xs">{user?.name || 'Pengguna'}</h3>
             <span className="text-slate-500 font-normal italic text-xs">(Anonim)</span>
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded ml-1"><Lock className="w-3 h-3" /> Rahasia</span>
-            <span className="text-[11px] text-slate-400 ml-auto whitespace-nowrap">{new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})} lalu</span>
+            <span className="flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-full ml-1"><Lock className="w-3 h-3" /> Rahasia</span>
+            <span className="text-[11px] text-slate-400 ml-auto whitespace-nowrap">{new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}</span>
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500 mt-1">
-            <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> Website</span>
-            <span className="flex items-center gap-1 text-amber-600"><Repeat className="w-3 h-3" /> Ditanggapi oleh Pelapor</span>
+            <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> Website PorLapor</span>
           </div>
         </div>
       </div>
 
-      <div className="text-xs font-medium text-slate-700 mb-3">
-        Terdisposisi ke <span className="font-bold text-black">{report.category?.name || 'Instansi Terkait'}</span>
+      <div className="text-xs font-medium text-slate-500 mb-3">
+        Kategori: <span className="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full">{report.category?.name || 'Umum'}</span>
       </div>
 
-      <h2 className="text-xl font-bold text-blue-700 mb-2 leading-tight">
+      <h2 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
         {report.title}
       </h2>
 
-      <p className="text-slate-700 text-sm leading-relaxed mb-1 line-clamp-3">
+      <p className="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-3">
         {report.description}
       </p>
-      <button className="text-blue-600 text-sm hover:underline mb-4 font-medium" onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/report/${report.id}`); }}>Selengkapnya</button>
-
-      <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-5">
-        <span className="flex items-center gap-1 tracking-wider"><span className="w-3 h-3 border border-slate-400 rounded-sm inline-flex items-center justify-center pt-[1px] opacity-80">R</span> {new Date(report.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/')}</span>
-        <span>|</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-slate-400 rounded-sm opacity-60"></span> {report.category?.name?.toUpperCase()}</span>
-      </div>
+      <button className="text-blue-600 text-sm hover:underline mb-4 font-semibold" onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/report/${report.id}`); }}>Baca Selengkapnya</button>
 
       {/* Footer Actions */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-3 font-medium text-[13px] text-slate-600 pb-2" onClick={(e) => e.stopPropagation()}>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3 font-medium text-[13px] text-slate-600 pb-2 border-t border-slate-100 pt-4" onClick={(e) => e.stopPropagation()}>
         <span className="text-slate-400 text-xs">#{report.id.substring(0,8).toUpperCase()}</span>
         
         {isMine && <button className="flex items-center gap-1.5 hover:text-blue-600 transition-colors"><CheckSquare className="w-4 h-4 text-blue-600" /> Tutup Laporan</button>}
