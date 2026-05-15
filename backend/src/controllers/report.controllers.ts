@@ -115,7 +115,16 @@ export const createReport = async (req: Request, res: Response) => {
 
 export const getAllReports = async (req: Request, res: Response) => {
   try {
+    const { userId } = req.query;
+    
+    // Build where clause
+    const where: Prisma.ReportWhereInput = {};
+    if (userId) {
+      where.userId = String(userId);
+    }
+
     const reports = await prisma.report.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: reporterSelect() },
