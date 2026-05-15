@@ -32,14 +32,14 @@ const Agencies: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-200">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 relative">
       <Header />
       
       {/* Redesigned Hero Section for Agencies */}
-      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden bg-slate-50">
+      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-16 overflow-hidden">
         {/* Background Gradients similar to landing */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 via-white/60 to-slate-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-50/70 via-slate-50 to-slate-50 pointer-events-none"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
@@ -90,9 +90,24 @@ const Agencies: React.FC = () => {
                 className="flex flex-col sm:flex-row items-stretch bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-slate-200/50 hover:border-slate-200 transition-all duration-300 group"
               >
                 {/* Image Section */}
-                <div className="w-full sm:w-64 h-48 sm:h-auto bg-slate-50 flex-shrink-0 relative overflow-hidden border-r border-slate-50">
+                <div className="w-full sm:w-64 h-48 sm:h-auto bg-slate-100/80 flex-shrink-0 relative overflow-hidden border-r border-slate-100/50">
                   {agency.photoUrl ? (
-                    <img src={agency.photoUrl} alt={agency.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <>
+                      <img 
+                        src={agency.photoUrl} 
+                        alt={agency.name} 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling;
+                          if (fallback) fallback.classList.remove('hidden');
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <div className="image-fallback hidden w-full h-full flex flex-col gap-2 items-center justify-center text-slate-400 bg-slate-200/50">
+                        <Building2 className="w-10 h-10 opacity-50" />
+                        <span className="text-sm font-medium">Gambar Rusak</span>
+                      </div>
+                    </>
                   ) : (
                     <div className="w-full h-full flex flex-col gap-2 items-center justify-center text-slate-400 bg-slate-100/50">
                       <Building2 className="w-10 h-10 opacity-50" />
@@ -131,7 +146,7 @@ const Agencies: React.FC = () => {
                     </div>
                     {/* Optional Action Button (Lihat Laporan dll) */}
                     <div className="hidden lg:block ml-6">
-                      <button className="whitespace-nowrap px-6 py-2.5 bg-white border-2 border-slate-100 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded-xl font-bold text-sm transition-all">
+                      <button className="whitespace-nowrap px-6 py-2.5 bg-white border-2 border-slate-200 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm">
                         Laporkan Sesuatu
                       </button>
                     </div>
