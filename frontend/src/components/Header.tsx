@@ -1,4 +1,4 @@
-import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -122,6 +122,14 @@ export default function Header() {
                   </div>
                   <div className="p-1">
                     <Link
+                      to="/dashboard"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                    <Link
                       to="/profile"
                       onClick={() => setProfileDropdownOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
@@ -212,6 +220,14 @@ export default function Header() {
                       <span className="text-xs text-slate-500">{user?.email || ''}</span>
                     </div>
                   </div>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-left px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
                   <Link
                     to="/profile"
                     onClick={() => setMobileOpen(false)}

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import { authService, User } from '../services/authService';
-import { reportService, Report } from '../services/reportService';
+import { authService } from '../services/authService';
+import type { AuthUser } from '../services/authService';
+import { reportService } from '../services/reportService';
+import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserAndReports = async () => {
       try {
-        const currentUser = authService.getCurrentUser();
+        const currentUser = authService.getUser();
         if (!currentUser) {
           navigate('/login');
           return;
