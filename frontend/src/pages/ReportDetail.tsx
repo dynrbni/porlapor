@@ -5,7 +5,20 @@ import { reportService } from '../services/reportService';
 import type { Report, OfficialNote, Comment } from '../services/reportService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
-import { ArrowLeft, MapPin, Calendar, CheckCircle, Clock, Send, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, CheckCircle, Clock, Send, ShieldAlert, Image as ImageIcon } from 'lucide-react';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function ReportDetail() {
   const { id } = useParams<{ id: string }>();
@@ -113,13 +126,36 @@ export default function ReportDetail() {
                 <p className="whitespace-pre-wrap leading-relaxed text-slate-700">{report.description}</p>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-xl flex items-start gap-3 border border-slate-100">
-                 <div className="bg-white p-2 rounded-lg shadow-sm">
-                   <MapPin className="w-5 h-5 text-red-500" />
+              {report.imageUrl && (
+                <div className="mb-8">
+                  <h3 className="font-semibold text-slate-900 text-sm mb-3 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-blue-500" />
+                    Foto / Bukti Kejadian
+                  </h3>
+                  <div className="rounded-xl overflow-hidden border border-slate-200">
+                    <img src={report.imageUrl} alt="Bukti Laporan" className="w-full max-h-[400px] object-cover" />
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-slate-50 p-4 rounded-xl flex flex-col gap-4 border border-slate-100">
+                 <div className="flex items-start gap-3">
+                   <div className="bg-white p-2 rounded-lg shadow-sm">
+                     <MapPin className="w-5 h-5 text-red-500" />
+                   </div>
+                   <div>
+                     <h3 className="font-semibold text-slate-900 text-sm mb-1">Lokasi Kejadian</h3>
+                     <p className="text-slate-600 text-sm leading-relaxed">{report.address || `${report.latitude}, ${report.longitude}`}</p>
+                   </div>
                  </div>
-                 <div>
-                   <h3 className="font-semibold text-slate-900 text-sm mb-1">Lokasi Kejadian</h3>
-                   <p className="text-slate-600 text-sm leading-relaxed">{report.address || `${report.latitude}, ${report.longitude}`}</p>
+                 <div className="h-48 w-full rounded-xl overflow-hidden border border-slate-200 z-0">
+                    <MapContainer center={[report.latitude, report.longitude]} zoom={15} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+                      <TileLayer
+                        attribution='&copy; OpenStreetMap'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[report.latitude, report.longitude]} />
+                    </MapContainer>
                  </div>
               </div>
             </div>

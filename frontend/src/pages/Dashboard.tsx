@@ -6,6 +6,7 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 import CreateReportForm from '../components/CreateReportForm';
+import ReportCard from '../components/ReportCard';
 import { PlusCircle, List } from 'lucide-react';
 
 const Dashboard = () => {
@@ -80,7 +81,7 @@ const Dashboard = () => {
         ) : (
           <>
         {/* Tabs */}
-        <div className="flex bg-slate-200/50 p-1 rounded-xl w-full sm:w-fit mb-8 max-w-sm">
+        <div className="flex bg-slate-200/50 p-1 rounded-xl w-full sm:w-fit mb-8 max-w-md mx-auto lg:mx-0">
           <button
             onClick={() => setActiveTab('list')}
             className={`flex items-center justify-center gap-2 flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all ${activeTab === 'list' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
@@ -114,20 +115,7 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {inProgressReports.length > 0 ? (
                   inProgressReports.map((report) => (
-                    <div 
-                      key={report.id} 
-                      onClick={() => navigate(`/dashboard/report/${report.id}`)}
-                      className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-semibold text-slate-900">{report.title}</h3>
-                        {getStatusBadge(report.status)}
-                      </div>
-                      <p className="text-sm text-slate-500 line-clamp-2 mb-3">{report.description}</p>
-                      <div className="text-xs text-slate-400">
-                        {new Date(report.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
-                      </div>
-                    </div>
+                    <ReportCard key={report.id} report={report} user={user} />
                   ))
                 ) : (
                   <p className="text-slate-500 text-sm text-center py-8">Tidak ada laporan yang sedang diproses.</p>
@@ -144,20 +132,7 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {completedReports.length > 0 ? (
                   completedReports.map((report) => (
-                    <div 
-                      key={report.id} 
-                      onClick={() => navigate(`/dashboard/report/${report.id}`)}
-                      className="p-4 border border-slate-100 rounded-xl bg-slate-50 hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-semibold text-slate-700">{report.title}</h3>
-                        {getStatusBadge(report.status)}
-                      </div>
-                      <p className="text-sm text-slate-500 line-clamp-2 mb-3">{report.description}</p>
-                      <div className="text-xs text-slate-400">
-                        Selesai pada {new Date(report.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
-                      </div>
-                    </div>
+                    <ReportCard key={report.id} report={report} user={user} />
                   ))
                 ) : (
                   <p className="text-slate-500 text-sm text-center py-8">Belum ada riwayat laporan yang selesai.</p>
