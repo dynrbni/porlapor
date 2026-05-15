@@ -32,14 +32,14 @@ const Agencies: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 relative">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 flex flex-col relative">
       <Header />
       
       {/* Redesigned Hero Section for Agencies */}
-      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-16 overflow-hidden">
+      <section className="relative pt-32 pb-12 lg:pt-40 lg:pb-12 z-10">
         {/* Background Gradients similar to landing */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-50/70 via-slate-50 to-slate-50 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-100/60 via-slate-50/80 to-transparent pointer-events-none"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
@@ -74,7 +74,7 @@ const Agencies: React.FC = () => {
       </section>
 
       {/* Main Content / List per instansi */}
-      <section className="pb-24 relative z-10">
+      <section className="pb-24 pt-4 lg:pt-8 w-full z-20 flex-1 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {loading ? (
             <div className="text-center text-slate-500 py-12" data-aos="fade-up">
