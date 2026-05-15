@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Agencies from './pages/Agencies';
 import Dashboard from './pages/Dashboard';
+import ReportDetail from './pages/ReportDetail';
 
 function App() {
   useEffect(() => {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/instansi" element={<Agencies />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/report/:id" element={<ReportDetail />} />
       </Routes>
     </Router>
   );

@@ -141,7 +141,15 @@ export const getAllReports = async (req: Request, res: Response) => {
             }
           },
           orderBy: { createdAt: 'desc' }
-        }
+        },
+
+        comments: {
+          include: {
+            author: { select: { id: true, name: true, role: true, photoUrl: true } }
+          },
+          orderBy: { createdAt: 'asc' }
+        },
+
       },
     });
 
@@ -183,6 +191,13 @@ export const getReportById = async (req: Request, res: Response) => {
     if (!report) {
       return res.status(404).json({
         message: 'Laporan tidak ditemukan',
+      });
+    }
+
+    const { user } = req as AuthenticatedRequest;
+    if (user && user.role === 'USER' && report.userId !== user.id) {
+      return res.status(403).json({
+        message: 'Akses ditolak: Anda tidak memiliki akses ke laporan ini',
       });
     }
 
@@ -279,5 +294,46 @@ export const deleteReport = async (req: Request, res: Response) => {
     res.status(500).json({
       message: 'Internal server error',
     });
+  }
+};
+\n
+export const addComment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const { user } = req as AuthenticatedRequest;
+
+    if (!user?.id) return res.status(401).json({ message: 'Token tidak valid' });
+    if (!content) return res.status(400).json({ message: 'Konten komentar tidak boleh kosong' });
+
+    const report = await prisma.report.findUnique({
+      where: { id: String(id) },
+      select: { userId: true }
+    });
+
+    if (!report) return res.status(404).json({ message: 'Laporan tidak ditemukan' });
+
+    // Cek apakah user yang comment adalah pemilik laporan (Jika role dia USER)
+    if (user.role === 'USER' && report.userId !== user.id) {
+      return res.status(403).json({ message: 'Akses ditolak: Anda hanya dapat mengomentari laporan Anda sendiri' });
+    }
+
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        reportId: String(id),
+        authorId: user.id
+      },
+      include: {
+        author: { select: { id: true, name: true, role: true, photoUrl: true } }
+      }
+    });
+
+    res.status(201).json({
+      message: 'Komentar berhasil ditambahkan',
+      data: comment
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

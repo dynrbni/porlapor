@@ -5,6 +5,7 @@ import {
   getReportById,
   updateReport,
   deleteReport,
+  addComment,
 } from '../controllers/report.controllers';
 import { authenticate } from '../middlewares/auth.middleware';
 
@@ -16,6 +17,7 @@ router.post('/reports', createReport);
 router.get('/reports', getAllReports);
 router.get('/reports/:id', getReportById);
 router.put('/reports/:id', updateReport);
+router.post('/reports/:id/comments', addComment);
 router.delete('/reports/:id', deleteReport);
 
 export default router;
