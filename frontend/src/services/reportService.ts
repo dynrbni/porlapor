@@ -31,6 +31,12 @@ export interface Report {
 }
 
 export const reportService = {
+  
+  createReport: async (payload: { title: string; description: string; latitude: number; longitude: number; address: string; categoryId: string; agencyId?: string; imageUrl?: string }) => {
+    const response = await apiClient.post('/reports', payload);
+    return response.data;
+  },
+
   getUserReports: async (userId: string) => {
     const response = await apiClient.get<{ message: string; data: Report[] }>(`/reports?userId=${userId}`);
     return response.data;

@@ -5,35 +5,39 @@ import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
+import CreateReportForm from '../components/CreateReportForm';
+import { PlusCircle, List } from 'lucide-react';
 
 const Dashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"list" | "create">("list");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserAndReports = async () => {
-      try {
-        const currentUser = authService.getUser();
-        if (!currentUser) {
-          navigate('/login');
-          return;
-        }
-        setUser(currentUser);
-        
-        const response = await reportService.getUserReports(currentUser.id);
-        const data = Array.isArray(response) ? response : response.data;
-        if (data) {
-          setReports(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch data', error);
-      } finally {
-        setLoading(false);
+  const fetchUserAndReports = async () => {
+    try {
+      setLoading(true);
+      const currentUser = authService.getUser();
+      if (!currentUser) {
+        navigate('/login');
+        return;
       }
-    };
+      setUser(currentUser);
+      
+      const response = await reportService.getUserReports(currentUser.id);
+      const data = Array.isArray(response) ? response : response.data;
+      if (data) {
+        setReports(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserAndReports();
   }, [navigate]);
 
@@ -64,8 +68,8 @@ const Dashboard = () => {
       <main className="flex-1 pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
         {user && (
           <div className="mb-10 text-center lg:text-left">
-            <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Halo, {user.name}</h1>
-            <p className="text-slate-600">Pantau perkembangan laporan pengaduan Anda di sini.</p>
+            <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Halo, {user.nama}</h1>
+            <p className="text-slate-600">Pantau perkembangan laporan pengaduan dan aspirasi Anda di sini.</p>
           </div>
         )}
 
@@ -74,8 +78,34 @@ const Dashboard = () => {
             <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
           </div>
         ) : (
+          <>
+        {/* Tabs */}
+        <div className="flex bg-slate-200/50 p-1 rounded-xl w-full sm:w-fit mb-8 max-w-sm">
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`flex items-center justify-center gap-2 flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all ${activeTab === 'list' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <List className="w-4 h-4" />
+            Laporan Saya
+          </button>
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`flex items-center justify-center gap-2 flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all ${activeTab === 'create' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <PlusCircle className="w-4 h-4" />
+            Buat Baru
+          </button>
+        </div>
+
+        {activeTab === 'create' ? (
+          <CreateReportForm onSuccess={() => {
+            setActiveTab('list');
+            fetchUserAndReports();
+          }} />
+        ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Kolom Kiri: Laporan Aktif/Diproses */}
+
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
               <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
@@ -127,6 +157,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>
