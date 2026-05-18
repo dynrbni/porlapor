@@ -38,6 +38,7 @@ export interface Report {
   status: string;
   createdAt: string;
   category: Category;
+  agencyId?: string | null;
   officialNotes?: OfficialNote[];
   comments?: Comment[];
   latitude: number;
@@ -49,6 +50,18 @@ export interface Report {
   };
   likes?: { userId: string }[];
   user?: Author;
+}
+
+export interface UpdateReportPayload {
+  title?: string;
+  description?: string;
+  status?: string;
+  categoryId?: string;
+  agencyId?: string | null;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  imageUrl?: string;
 }
 
 export const reportService = {
@@ -67,6 +80,16 @@ export const reportService = {
   },
   createReport: async (payload: { title: string; description: string; latitude: number; longitude: number; address: string; categoryId: string; agencyId?: string; imageUrl?: string }) => {
     const response = await apiClient.post('/reports', payload);
+    return response.data;
+  },
+
+  updateReport: async (id: string, payload: UpdateReportPayload) => {
+    const response = await apiClient.put<{ message: string; data: Report }>(`/reports/${id}`, payload);
+    return response.data;
+  },
+
+  addOfficialNote: async (reportId: string, content: string) => {
+    const response = await apiClient.post<{ message: string; data: OfficialNote }>(`/official-notes/report/${reportId}`, { content });
     return response.data;
   },
 

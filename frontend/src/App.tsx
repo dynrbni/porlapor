@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Agencies from './pages/Agencies';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminReportDetail from './pages/AdminReportDetail';
 import ReportDetail from './pages/ReportDetail';
 import CreateReport from './pages/CreateReport';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -64,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/report/:id" 
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN']}>
+              <AdminReportDetail />
             </ProtectedRoute>
           } 
         />

@@ -207,7 +207,7 @@ const AdminDashboard = () => {
                           </td>
                           <td className="p-4 text-center">
                             <button 
-                              onClick={() => navigate(`/dashboard/report/${report.id}`)}
+                              onClick={() => navigate(`/admin/report/${report.id}`)}
                               className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
                               title="Lihat Detail"
                             >
