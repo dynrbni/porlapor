@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Agencies from './pages/Agencies';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import ReportDetail from './pages/ReportDetail';
 
 function App() {
@@ -18,12 +19,9 @@ function App() {
       offset: 100,
     });
     
-    // Pastikan animasi direfresh ketika seluruh aset website termuat 
-    // atau ketika ada interupsi navigasi dari halaman login/register
     const handleLoad = () => AOS.refresh();
     window.addEventListener('load', handleLoad);
     
-    // Fallback jika assets lambat
     setTimeout(() => {
       AOS.refresh();
     }, 500);
@@ -39,6 +37,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/instansi" element={<Agencies />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/dashboard/report/:id" element={<ReportDetail />} />
       </Routes>
     </Router>
