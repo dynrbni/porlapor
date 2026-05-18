@@ -3,8 +3,11 @@ import apiClient from './authService';
 export interface Agency {
   id: string;
   name: string;
-  address: string | null;
-  phone: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  description?: string | null;
+  isActive?: boolean;
   photoUrl?: string | null;
   createdAt: string;
 }

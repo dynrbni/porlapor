@@ -3,19 +3,21 @@ import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import { createAgency, getAgencies } from '../services/agencyService';
-import type { CreateAgencyPayload } from '../services/agencyService';
+import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2 } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search } from 'lucide-react';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
 const AdminDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
   const [agenciesCount, setAgenciesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('semua');
+  const [agencyQuery, setAgencyQuery] = useState('');
   const [agencyModalOpen, setAgencyModalOpen] = useState(false);
   const [agencyLoading, setAgencyLoading] = useState(false);
   const [agencyError, setAgencyError] = useState('');
@@ -29,6 +31,8 @@ const AdminDashboard = () => {
     photoUrl: '',
   });
   const navigate = useNavigate();
+  const userDisplayName = user?.nama || user?.name || 'Admin';
+  const userInitial = userDisplayName.trim().charAt(0).toUpperCase() || 'A';
 
   const handleLogout = () => {
     authService.logout();
@@ -50,6 +54,7 @@ const AdminDashboard = () => {
       if (data) {
         setReports(data);
       }
+      setAgencies(agenciesResponse);
       setAgenciesCount(agenciesResponse.length);
     } catch (error) {
       console.error('Failed to fetch data', error);
@@ -128,9 +133,12 @@ const AdminDashboard = () => {
         payload.photoSource = 'URL';
       }
 
-      await createAgency(payload);
+      const created = await createAgency(payload);
       setAgencySuccess('Instansi berhasil ditambahkan.');
-      setAgenciesCount((prev) => prev + 1);
+      if (created.data) {
+        setAgencies((prev) => [created.data, ...prev]);
+        setAgenciesCount((prev) => prev + 1);
+      }
       resetAgencyForm();
     } catch (err: any) {
       console.error('Failed to create agency', err);
@@ -143,7 +151,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-col relative w-full overflow-x-hidden">
       {/* Admin Dashboard Header */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
+      <div id="overview" className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
             <div className="flex items-center gap-5">
@@ -174,27 +182,6 @@ const AdminDashboard = () => {
                 Kelola Admin
               </button>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 mb-6">
-            <Link
-              to="/"
-              className="px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
-            >
-              Beranda
-            </Link>
-            <Link
-              to="/instansi"
-              className="px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
-            >
-              Instansi
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="ml-auto px-4 py-2 rounded-xl text-sm font-semibold text-red-100 bg-red-500/20 hover:bg-red-500/30 transition-colors"
-            >
-              Keluar
-            </button>
           </div>
 
           {/* Admin Stat Cards */}
@@ -258,89 +245,249 @@ const AdminDashboard = () => {
             <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className="w-full">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-              <h2 className="text-xl font-extrabold text-slate-900">Daftar Laporan Masyarakat</h2>
-              
-              <div className="flex bg-slate-200/60 p-1.5 rounded-xl w-full md:w-auto overflow-x-auto">
-                {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 min-w-[90px] md:px-5 py-2 text-sm font-bold rounded-lg transition-all capitalize ${activeTab === tab ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-800'}`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="w-full lg:grid lg:grid-cols-[240px_1fr] lg:gap-6">
+            <aside className="lg:sticky lg:top-6 mb-6 lg:mb-0">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold">
+                    {userInitial}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
+                    <p className="text-xs text-slate-500">{user?.role || 'ADMIN'}</p>
+                  </div>
+                </div>
 
-            <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
-                      <th className="p-4">ID Laporan</th>
-                      <th className="p-4 min-w-[200px]">Pelapor</th>
-                      <th className="p-4 min-w-[300px]">Judul Info</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Tanggal</th>
-                      <th className="p-4 text-center">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredReports.length > 0 ? (
-                      filteredReports.map((report) => (
-                        <tr key={report.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-4 text-sm font-semibold text-slate-700">
-                            {report.id}
-                          </td>
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
-                                <img src={report.user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${report.user?.id || 'anon'}`} alt="" className="w-full h-full object-cover" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-bold text-slate-900">{report.user?.name || report.user?.nama || 'Anonim'}</p>
-                                <p className="text-xs text-slate-500">{report.user?.email || '-'}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <p className="text-sm font-bold text-slate-900 line-clamp-1">{report.title}</p>
-                            <p className="text-xs font-semibold text-indigo-600 mt-0.5">{report.category?.name || 'UMUM'}</p>
-                          </td>
-                          <td className="p-4">
-                            {getStatusBadge(report.status)}
-                          </td>
-                          <td className="p-4 text-sm font-medium text-slate-600">
-                            {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </td>
-                          <td className="p-4 text-center">
-                            <button 
-                              onClick={() => navigate(`/admin/report/${report.id}`)}
-                              className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
-                              title="Lihat Detail"
-                            >
-                              <ArrowRight className="w-5 h-5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={6} className="p-12 text-center">
-                          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Inbox className="w-8 h-8 text-slate-400" />
-                          </div>
-                          <h3 className="text-lg font-bold text-slate-800 mb-1">Data Kosong</h3>
-                          <p className="text-sm text-slate-500">Tidak ada laporan yang ditemukan untuk status "{activeTab}".</p>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                <nav className="space-y-2">
+                  <a
+                    href="#overview"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Ringkasan
+                    <span className="text-xs font-bold text-slate-500">{totalReports}</span>
+                  </a>
+                  <a
+                    href="#reports"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Laporan
+                    <span className="text-xs font-bold text-slate-500">{filteredReports.length}</span>
+                  </a>
+                  <a
+                    href="#agencies"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Instansi
+                    <span className="text-xs font-bold text-slate-500">{agenciesCount}</span>
+                  </a>
+                </nav>
+
+                <div className="border-t border-slate-100 pt-4 space-y-2">
+                  <Link
+                    to="/"
+                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  >
+                    Beranda
+                  </Link>
+                  <Link
+                    to="/instansi"
+                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  >
+                    Halaman Instansi
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Keluar
+                  </button>
+                </div>
               </div>
+            </aside>
+
+            <div className="space-y-8">
+              <section id="reports" className="space-y-4">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-slate-900">Panel Laporan</h2>
+                    <p className="text-sm text-slate-500">Pantau dan tindak lanjuti laporan masyarakat.</p>
+                  </div>
+
+                  <div className="flex bg-slate-200/60 p-1.5 rounded-xl w-full md:w-auto overflow-x-auto">
+                    {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`flex-1 min-w-[90px] md:px-5 py-2 text-sm font-bold rounded-lg transition-all capitalize ${activeTab === tab ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-800'}`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                          <th className="p-4">ID Laporan</th>
+                          <th className="p-4 min-w-[200px]">Pelapor</th>
+                          <th className="p-4 min-w-[300px]">Judul Info</th>
+                          <th className="p-4">Status</th>
+                          <th className="p-4">Tanggal</th>
+                          <th className="p-4 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredReports.length > 0 ? (
+                          filteredReports.map((report) => (
+                            <tr key={report.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="p-4 text-sm font-semibold text-slate-700">
+                                {report.id}
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                    <img
+                                      src={report.user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${report.user?.id || 'anon'}`}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-slate-900">{report.user?.name || report.user?.nama || 'Anonim'}</p>
+                                    <p className="text-xs text-slate-500">{report.user?.email || '-'}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <p className="text-sm font-bold text-slate-900 line-clamp-1">{report.title}</p>
+                                <p className="text-xs font-semibold text-indigo-600 mt-0.5">{report.category?.name || 'UMUM'}</p>
+                              </td>
+                              <td className="p-4">
+                                {getStatusBadge(report.status)}
+                              </td>
+                              <td className="p-4 text-sm font-medium text-slate-600">
+                                {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </td>
+                              <td className="p-4 text-center">
+                                <button
+                                  onClick={() => navigate(`/admin/report/${report.id}`)}
+                                  className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
+                                  title="Lihat Detail"
+                                >
+                                  <ArrowRight className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="p-12 text-center">
+                              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Inbox className="w-8 h-8 text-slate-400" />
+                              </div>
+                              <h3 className="text-lg font-bold text-slate-800 mb-1">Data Kosong</h3>
+                              <p className="text-sm text-slate-500">Tidak ada laporan yang ditemukan untuk status "{activeTab}".</p>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+
+              <section id="agencies" className="space-y-4">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-slate-900">Panel Instansi</h2>
+                    <p className="text-sm text-slate-500">Lihat daftar instansi yang menangani laporan.</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                    <div className="relative flex-1 min-w-[220px]">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={agencyQuery}
+                        onChange={(event) => setAgencyQuery(event.target.value)}
+                        placeholder="Cari instansi..."
+                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        setAgencyModalOpen(true);
+                        setAgencyError('');
+                        setAgencySuccess('');
+                      }}
+                      className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
+                    >
+                      Tambah Instansi
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                          <th className="p-4 min-w-[200px]">Nama Instansi</th>
+                          <th className="p-4 min-w-[160px]">Email</th>
+                          <th className="p-4 min-w-[140px]">Telepon</th>
+                          <th className="p-4 min-w-[260px]">Alamat</th>
+                          <th className="p-4">Dibuat</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {agencies
+                          .filter((agency) => {
+                            const query = agencyQuery.trim().toLowerCase();
+                            if (!query) return true;
+                            return (
+                              agency.name.toLowerCase().includes(query) ||
+                              (agency.address || '').toLowerCase().includes(query) ||
+                              (agency.email || '').toLowerCase().includes(query) ||
+                              (agency.phone || '').toLowerCase().includes(query)
+                            );
+                          })
+                          .map((agency) => (
+                            <tr key={agency.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                                    <Building2 className="w-4 h-4 text-slate-500" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-slate-900">{agency.name}</p>
+                                    {agency.description && (
+                                      <p className="text-xs text-slate-500 line-clamp-1">{agency.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4 text-sm text-slate-600">{agency.email || '-'}</td>
+                              <td className="p-4 text-sm text-slate-600">{agency.phone || '-'}</td>
+                              <td className="p-4 text-sm text-slate-600">{agency.address || '-'}</td>
+                              <td className="p-4 text-sm text-slate-600">
+                                {new Date(agency.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {agencies.length === 0 && (
+                    <div className="p-10 text-center text-slate-500">
+                      Belum ada instansi yang terdaftar.
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
           </div>
         )}
