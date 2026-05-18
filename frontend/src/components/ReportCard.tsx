@@ -42,7 +42,6 @@ export default function ReportCard({ report, currentUser, onLikeToggle }: Report
         return { color: 'bg-amber-100 text-amber-800 border-amber-200', icon: <Clock className="w-3.5 h-3.5" />, text: 'Menunggu' };
       case 'IN_PROGRESS':
         return { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: <Clock className="w-3.5 h-3.5" />, text: 'Sedang Diproses' };
-      case 'DONE':
       case 'RESOLVED':
         return { color: 'bg-emerald-100 text-emerald-800 border-emerald-200', icon: <CheckCircle2 className="w-3.5 h-3.5" />, text: 'Selesai' };
       case 'REJECTED':

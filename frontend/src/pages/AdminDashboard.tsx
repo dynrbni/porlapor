@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     switch(activeTab) {
       case 'pending': return r.status === 'PENDING' || r.status === 'IN_REVIEW';
       case 'proses': return r.status === 'IN_PROGRESS';
-      case 'selesai': return r.status === 'DONE' || r.status === 'RESOLVED';
+      case 'selesai': return r.status === 'RESOLVED';
       case 'ditolak': return r.status === 'REJECTED';
       default: return true;
     }
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
   const totalReports = reports.length;
   const pendingReports = reports.filter(r => r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
   const inProgressReports = reports.filter(r => r.status === 'IN_PROGRESS').length;
-  const doneReports = reports.filter(r => r.status === 'DONE' || r.status === 'RESOLVED').length;
+  const doneReports = reports.filter(r => r.status === 'RESOLVED').length;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -60,7 +60,6 @@ const AdminDashboard = () => {
         return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">Menunggu</span>;
       case 'IN_PROGRESS':
         return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">Diproses</span>;
-      case 'DONE':
       case 'RESOLVED':
         return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Selesai</span>;
       case 'REJECTED':

@@ -21,9 +21,14 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const currentUser = authService.getUser();
-      if (currentUser) setUser(currentUser);
-      
-      const response = await reportService.getAllReports();
+      if (!currentUser) {
+        setUser(null);
+        setReports([]);
+        return;
+      }
+      setUser(currentUser);
+
+      const response = await reportService.getUserReports(currentUser.id);
       const data = Array.isArray(response) ? response : response.data;
       if (data) {
         setReports(data);
@@ -43,7 +48,7 @@ const Dashboard = () => {
     switch(activeTab) {
       case 'belum': return r.status === 'PENDING' || r.status === 'IN_REVIEW';
       case 'proses': return r.status === 'IN_PROGRESS';
-      case 'selesai': return r.status === 'DONE' || r.status === 'RESOLVED';
+      case 'selesai': return r.status === 'RESOLVED';
       default: return true;
     }
   });
@@ -51,7 +56,7 @@ const Dashboard = () => {
   const myReports = reports.filter(r => r.user?.id === user?.id);
   const totalMyReports = myReports.length;
   const inProgressMyReports = myReports.filter(r => r.status === 'IN_PROGRESS' || r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
-  const doneMyReports = myReports.filter(r => r.status === 'DONE' || r.status === 'RESOLVED').length;
+  const doneMyReports = myReports.filter(r => r.status === 'RESOLVED').length;
 
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-200 flex flex-col relative w-full overflow-x-hidden">
