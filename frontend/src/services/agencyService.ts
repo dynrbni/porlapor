@@ -1,13 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './authService';
 
 export interface Agency {
   id: string;
@@ -18,7 +9,22 @@ export interface Agency {
   createdAt: string;
 }
 
+export interface CreateAgencyPayload {
+  name: string;
+  description?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  photoUrl?: string;
+  photoSource?: 'LOCAL' | 'URL';
+}
+
 export const getAgencies = async (): Promise<Agency[]> => {
   const response = await apiClient.get('/agencies');
   return response.data.data || [];
+};
+
+export const createAgency = async (payload: CreateAgencyPayload) => {
+  const response = await apiClient.post<{ message: string; data: Agency }>('/agencies', payload);
+  return response.data;
 };

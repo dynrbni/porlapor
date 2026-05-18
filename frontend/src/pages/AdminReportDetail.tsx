@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { getAgencies } from '../services/agencyService';
@@ -155,9 +154,7 @@ export default function AdminReportDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-indigo-200">
-      <Header />
-
-      <main className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <main className="pt-10 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <button
           onClick={() => navigate('/admin')}
           className="flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-6 transition-colors font-medium text-sm"

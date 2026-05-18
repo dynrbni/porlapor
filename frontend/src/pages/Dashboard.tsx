@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import Header from '../components/Header';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReportCard from '../components/ReportCard';
 import { Activity, CheckCircle2, Inbox } from 'lucide-react';
 
@@ -16,6 +15,12 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('semua');
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/');
+    window.location.reload();
+  };
 
   const fetchUserAndReports = async () => {
     try {
@@ -57,13 +62,12 @@ const Dashboard = () => {
   const totalMyReports = myReports.length;
   const inProgressMyReports = myReports.filter(r => r.status === 'IN_PROGRESS' || r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
   const doneMyReports = myReports.filter(r => r.status === 'RESOLVED').length;
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
 
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-200 flex flex-col relative w-full overflow-x-hidden">
-      <Header />
-      
       {/* Modern Dashboard Header */}
-      <div className="w-full bg-white border-b border-slate-200 pt-28 pb-8 px-4 sm:px-6 relative z-10">
+      <div className="w-full bg-white border-b border-slate-200 pt-10 pb-8 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto w-full">
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
             <div className="flex items-center gap-5">
@@ -83,10 +87,36 @@ const Dashboard = () => {
               >
                 + Buat Laporan
               </button>
-              <button className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors text-sm font-semibold shadow-sm hidden md:block">
-                Pengaturan
-              </button>
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mb-8">
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+            >
+              Beranda
+            </Link>
+            <Link
+              to="/instansi"
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+            >
+              Instansi
+            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+              >
+                Admin Panel
+              </Link>
+            )}
+            <button
+              onClick={handleLogout}
+              className="ml-auto px-4 py-2 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+            >
+              Keluar
+            </button>
           </div>
 
           {/* Stat Cards */}

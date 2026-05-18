@@ -1,20 +1,40 @@
 import { useEffect, useState } from 'react';
-import Header from '../components/Header';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
+import { createAgency, getAgencies } from '../services/agencyService';
+import type { CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
-import { useNavigate } from 'react-router-dom';
-import { Activity, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2 } from 'lucide-react';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
 const AdminDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
+  const [agenciesCount, setAgenciesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('semua');
+  const [agencyModalOpen, setAgencyModalOpen] = useState(false);
+  const [agencyLoading, setAgencyLoading] = useState(false);
+  const [agencyError, setAgencyError] = useState('');
+  const [agencySuccess, setAgencySuccess] = useState('');
+  const [agencyForm, setAgencyForm] = useState({
+    name: '',
+    description: '',
+    email: '',
+    phone: '',
+    address: '',
+    photoUrl: '',
+  });
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/');
+    window.location.reload();
+  };
 
   const fetchUserAndReports = async () => {
     try {
@@ -22,11 +42,15 @@ const AdminDashboard = () => {
       const currentUser = authService.getUser();
       if (currentUser) setUser(currentUser);
       
-      const response = await reportService.getAllReports();
-      const data = Array.isArray(response) ? response : response.data;
+      const [reportsResponse, agenciesResponse] = await Promise.all([
+        reportService.getAllReports(),
+        getAgencies(),
+      ]);
+      const data = Array.isArray(reportsResponse) ? reportsResponse : reportsResponse.data;
       if (data) {
         setReports(data);
       }
+      setAgenciesCount(agenciesResponse.length);
     } catch (error) {
       console.error('Failed to fetch data', error);
     } finally {
@@ -69,12 +93,57 @@ const AdminDashboard = () => {
     }
   };
 
+  const resetAgencyForm = () => {
+    setAgencyForm({
+      name: '',
+      description: '',
+      email: '',
+      phone: '',
+      address: '',
+      photoUrl: '',
+    });
+  };
+
+  const handleCreateAgency = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!agencyForm.name.trim()) {
+      setAgencyError('Nama instansi wajib diisi.');
+      return;
+    }
+
+    setAgencyLoading(true);
+    setAgencyError('');
+    setAgencySuccess('');
+
+    try {
+      const payload: CreateAgencyPayload = {
+        name: agencyForm.name.trim(),
+      };
+      if (agencyForm.description.trim()) payload.description = agencyForm.description.trim();
+      if (agencyForm.email.trim()) payload.email = agencyForm.email.trim();
+      if (agencyForm.phone.trim()) payload.phone = agencyForm.phone.trim();
+      if (agencyForm.address.trim()) payload.address = agencyForm.address.trim();
+      if (agencyForm.photoUrl.trim()) {
+        payload.photoUrl = agencyForm.photoUrl.trim();
+        payload.photoSource = 'URL';
+      }
+
+      await createAgency(payload);
+      setAgencySuccess('Instansi berhasil ditambahkan.');
+      setAgenciesCount((prev) => prev + 1);
+      resetAgencyForm();
+    } catch (err: any) {
+      console.error('Failed to create agency', err);
+      setAgencyError(err.response?.data?.message || 'Gagal menambahkan instansi.');
+    } finally {
+      setAgencyLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-col relative w-full overflow-x-hidden">
-      <Header />
-      
       {/* Admin Dashboard Header */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 pt-28 pb-8 px-4 sm:px-6 relative z-10 text-white">
+      <div className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
             <div className="flex items-center gap-5">
@@ -90,13 +159,46 @@ const AdminDashboard = () => {
               </div>
             </div>
             
-            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors text-sm font-semibold shadow-sm border border-indigo-400">
-              Kelola Admin
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setAgencyModalOpen(true);
+                  setAgencyError('');
+                  setAgencySuccess('');
+                }}
+                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors text-sm font-semibold shadow-sm border border-white/20"
+              >
+                Tambah Instansi
+              </button>
+              <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors text-sm font-semibold shadow-sm border border-indigo-400">
+                Kelola Admin
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              Beranda
+            </Link>
+            <Link
+              to="/instansi"
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              Instansi
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="ml-auto px-4 py-2 rounded-xl text-sm font-semibold text-red-100 bg-red-500/20 hover:bg-red-500/30 transition-colors"
+            >
+              Keluar
             </button>
           </div>
 
           {/* Admin Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl flex items-center justify-between">
               <div>
                  <p className="text-sm font-medium text-slate-400 mb-1">Total Laporan</p>
@@ -104,6 +206,16 @@ const AdminDashboard = () => {
               </div>
               <div className="w-12 h-12 bg-slate-700 rounded-xl shadow-sm border border-slate-600 flex items-center justify-center">
                  <Inbox className="w-6 h-6 text-slate-300" />
+              </div>
+            </div>
+
+            <div className="bg-teal-900/20 border border-teal-800/50 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-teal-400 mb-1">Total Instansi</p>
+                 <h3 className="text-3xl font-extrabold text-teal-300">{agenciesCount}</h3>
+              </div>
+              <div className="w-12 h-12 bg-teal-900/50 rounded-xl shadow-sm border border-teal-700 flex items-center justify-center">
+                 <Building2 className="w-6 h-6 text-teal-300" />
               </div>
             </div>
 
@@ -233,6 +345,131 @@ const AdminDashboard = () => {
           </div>
         )}
       </main>
+
+      {agencyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
+          <div className="bg-white w-full max-w-lg rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Tambah Instansi</h2>
+                <p className="text-xs text-slate-500">Lengkapi data instansi yang akan menerima laporan.</p>
+              </div>
+              <button
+                onClick={() => {
+                  setAgencyModalOpen(false);
+                  setAgencyError('');
+                  setAgencySuccess('');
+                }}
+                className="text-sm font-semibold text-slate-500 hover:text-slate-700"
+              >
+                Tutup
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAgency} className="px-6 py-5 space-y-4">
+              {agencyError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
+                  {agencyError}
+                </div>
+              )}
+              {agencySuccess && (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl p-3">
+                  {agencySuccess}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Nama Instansi *</label>
+                <input
+                  type="text"
+                  value={agencyForm.name}
+                  onChange={(event) => setAgencyForm((prev) => ({ ...prev, name: event.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                  placeholder="Contoh: Dinas Pekerjaan Umum"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Deskripsi</label>
+                <textarea
+                  rows={3}
+                  value={agencyForm.description}
+                  onChange={(event) => setAgencyForm((prev) => ({ ...prev, description: event.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                  placeholder="Ringkasan tugas instansi..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={agencyForm.email}
+                    onChange={(event) => setAgencyForm((prev) => ({ ...prev, email: event.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                    placeholder="instansi@email.go.id"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Telepon</label>
+                  <input
+                    type="text"
+                    value={agencyForm.phone}
+                    onChange={(event) => setAgencyForm((prev) => ({ ...prev, phone: event.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                    placeholder="021-xxxxxxx"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Alamat</label>
+                <input
+                  type="text"
+                  value={agencyForm.address}
+                  onChange={(event) => setAgencyForm((prev) => ({ ...prev, address: event.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                  placeholder="Alamat kantor instansi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">URL Foto Instansi (Opsional)</label>
+                <input
+                  type="url"
+                  value={agencyForm.photoUrl}
+                  onChange={(event) => setAgencyForm((prev) => ({ ...prev, photoUrl: event.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAgencyModalOpen(false);
+                    setAgencyError('');
+                    setAgencySuccess('');
+                  }}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={agencyLoading}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {agencyLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Simpan Instansi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
