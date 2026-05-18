@@ -9,7 +9,19 @@ const apiClient = axios.create({
   },
 });
 
-// ─── Interceptor: inject token ke setiap request ──────────────────────────────
+const decodeJwtPayload = (token: string): Record<string, unknown> | null => {
+  try {
+    const [, payload] = token.split('.');
+    if (!payload) return null;
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+    const json = atob(padded);
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+};
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token');
   if (token) {
@@ -18,8 +30,6 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-
-// ─── Interceptor Response: Handle 401 Unauthorized ─────────────────────────
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,8 +43,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface LoginPayload {
   email: string;
@@ -54,8 +62,11 @@ export interface RegisterPayload {
 
 export interface AuthUser {
   id: string;
-  nama: string;
-  email: string;
+  name?: string;
+  nama?: string;
+  email?: string;
+  role?: string;
+  photoUrl?: string;
 }
 
 export interface AuthResponse {
@@ -66,14 +77,10 @@ export interface AuthResponse {
   };
 }
 
-// ─── Auth Service ─────────────────────────────────────────────────────────────
-
 export const authService = {
-
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
     try {
       const response = await apiClient.post<AuthResponse>('/auth/login', payload);
-      // Cek berdasarkan ada/tidaknya token di response.data
       if (response.data.token) {
         localStorage.setItem('auth_token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data?.user));
@@ -111,7 +118,19 @@ export const authService = {
 
   getUser: (): AuthUser | null => {
     const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    if (!user) return null;
+    const parsed = JSON.parse(user) as AuthUser;
+    if (!parsed.role) {
+      const token = localStorage.getItem('auth_token');
+      const payload = token ? decodeJwtPayload(token) : null;
+      const role = payload?.role;
+      if (typeof role === 'string' && role.length > 0) {
+        const updatedUser = { ...parsed, role };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
+      }
+    }
+    return parsed;
   },
 
   isAuthenticated: (): boolean => {

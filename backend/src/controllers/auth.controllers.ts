@@ -106,6 +106,7 @@ export const registerController = async (req: Request, res: Response) => {
                     nama: user.name,
                     email: user.email,
                     gender: user.gender,
+                    role: user.role,
                 },
             },
         });
@@ -178,6 +179,7 @@ export const loginController = async (req: Request, res: Response) => {
                     nama: updatedUser.name,
                     email: updatedUser.email,
                     gender: updatedUser.gender,
+                    role: updatedUser.role,
                 },
             },
         });

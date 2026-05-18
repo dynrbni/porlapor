@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { reportService } from '../services/reportService';
-import type { Report, OfficialNote, Comment } from '../services/reportService';
+import type { Report } from '../services/reportService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { ArrowLeft, MapPin, Calendar, CheckCircle, Clock, Send, ShieldAlert, Image as ImageIcon } from 'lucide-react';
@@ -161,11 +161,11 @@ export default function ReportDetail() {
             </div>
 
             {/* Tindak Lanjut dari Admin (Official Notes) */}
-            {(report.officialNotes?.length > 0) && (
+            {((report.officialNotes?.length || 0) > 0) && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold text-slate-900 px-2">Tindak Lanjut Instansi</h2>
                 <div className="space-y-4">
-                  {report.officialNotes.map((note) => (
+                  {report.officialNotes?.map((note) => (
                     <div key={note.id} className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
                       <div className="flex items-center gap-3 mb-3">

@@ -2,8 +2,10 @@ import apiClient from './authService';
 
 export interface Author {
   id: string;
-  name: string;
-  role: string;
+  name?: string;
+  nama?: string;
+  role?: string;
+  email?: string;
   photoUrl?: string;
 }
 
@@ -36,11 +38,11 @@ export interface Report {
   status: string;
   createdAt: string;
   category: Category;
-  officialNotes: OfficialNote[];
-  comments: Comment[];
+  officialNotes?: OfficialNote[];
+  comments?: Comment[];
   latitude: number;
   longitude: number;
-  address: string;
+  address?: string;
   imageUrl?: string;
   _count?: {
     likes: number;

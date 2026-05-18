@@ -1,4 +1,4 @@
-import { Menu, X, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, ChevronDown, LayoutDashboard, Shield } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -14,7 +14,6 @@ export default function Header() {
   const isAuthenticated = authService.isAuthenticated();
   const user = authService.getUser();
 
-  // Inisial untuk avatar sementara, menggunakan field `nama` bukan `name` karena ini dari backend
   const userInitials = user?.nama
     ? user.nama
         .split(' ')
@@ -27,7 +26,7 @@ export default function Header() {
   const handleLogout = () => {
     authService.logout();
     navigate('/');
-    window.location.reload(); // Refresh state agar ter-update
+    window.location.reload(); 
   };
 
   useEffect(() => {
@@ -39,7 +38,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [mobileOpen]);
 
-  // Click outside listener untuk profile dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -66,7 +64,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-[1_1_0%] flex items-center gap-3 cursor-pointer">
             <img
-              src="src/assets/porlapor_logo.png"
+              src="/src/assets/porlapor_logo.png"
               alt="PorLapor"
               className="h-14 w-auto object-contain transition-all duration-500"
             />
@@ -104,7 +102,7 @@ export default function Header() {
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                  <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-bold shadow-sm ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' ? 'bg-indigo-600' : 'bg-blue-600'}`}>
                     {userInitials}
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
@@ -116,9 +114,12 @@ export default function Header() {
                     profileDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                   }`}
                 >
-                  <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                  <div className={`px-4 py-3 border-b border-slate-100 ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' ? 'bg-indigo-50/50' : 'bg-slate-50/50'}`}>
                     <p className="text-sm font-semibold text-slate-800 truncate">{user?.nama || 'User'}</p>
                     <p className="text-xs text-slate-500 truncate">{user?.email || ''}</p>
+                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded">ADMIN</span>
+                    )}
                   </div>
                   <div className="p-1">
                     <Link
@@ -127,8 +128,18 @@ export default function Header() {
                       className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Dashboard</span>
+                      <span>Dashboard Saya</span>
                     </Link>
+                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+                      >
+                        <Shield className="w-4 h-4" />
+                        <span>Admin Panel</span>
+                      </Link>
+                    )}
                     <Link
                       to="/profile"
                       onClick={() => setProfileDropdownOpen(false)}
@@ -172,102 +183,82 @@ export default function Header() {
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
             className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-            aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
-
-        {/* Dropdown — mobile */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}>
-          <div className="mx-4 mt-2 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-100 shadow-lg overflow-hidden">
-            <nav className="flex flex-col p-3 gap-1">
-              {[
-                { name: 'Beranda', path: '/' },
-                { name: 'Statistik', path: '/statistik' },
-                { name: 'Instansi', path: '/instansi' }
-              ].map((item) => {
-                const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setMobileOpen(false)}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? 'text-blue-700 bg-blue-50'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="flex flex-col gap-2 p-3 pt-0">
-              <div className="h-px bg-slate-100 mb-1" />
-              {isAuthenticated ? (
-                <>
-                  <div className="flex items-center gap-3 px-4 py-2 mb-1">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
-                      {userInitials}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-slate-800">{user?.nama || 'User'}</span>
-                      <span className="text-xs text-slate-500">{user?.email || ''}</span>
-                    </div>
-                  </div>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-left px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/profile"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-left px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-all"
-                  >
-                    Profil Saya
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setMobileOpen(false);
-                      handleLogout();
-                    }}
-                    className="flex items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Keluar</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-center text-sm font-semibold text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all"
-                  >
-                    Masuk
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm"
-                  >
-                    Buat Akun
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
       </header>
+
+      {/* Mobile Nav Overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-sm md:hidden pt-20">
+          <nav className="flex flex-col p-4 gap-2">
+            {[
+              { name: 'Beranda', path: '/' },
+              { name: 'Statistik', path: '/statistik' },
+              { name: 'Instansi', path: '/instansi' },
+            ].map((item) => (
+               <Link
+                 key={item.name}
+                 to={item.path}
+                 onClick={() => setMobileOpen(false)}
+                 className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl"
+               >
+                 {item.name}
+               </Link>
+            ))}
+            
+            <div className="h-px bg-slate-200 my-2" />
+            
+            {isAuthenticated ? (
+               <>
+                 <Link
+                   to="/dashboard"
+                   onClick={() => setMobileOpen(false)}
+                   className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl flex items-center gap-2"
+                 >
+                   <LayoutDashboard className="w-5 h-5" /> Dashboard Saya
+                 </Link>
+                 {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                   <Link
+                     to="/admin"
+                     onClick={() => setMobileOpen(false)}
+                     className="px-4 py-3 text-base font-semibold text-indigo-600 hover:bg-indigo-50 rounded-xl flex items-center gap-2"
+                   >
+                     <Shield className="w-5 h-5" /> Admin Panel
+                   </Link>
+                 )}
+                 <button
+                   onClick={() => {
+                     setMobileOpen(false);
+                     handleLogout();
+                   }}
+                   className="px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 rounded-xl text-left flex items-center gap-2"
+                 >
+                   <LogOut className="w-5 h-5" /> Keluar
+                 </button>
+               </>
+            ) : (
+               <div className="flex flex-col gap-2 mt-4">
+                 <Link
+                   to="/login"
+                   onClick={() => setMobileOpen(false)}
+                   className="w-full py-3 px-4 text-center text-slate-700 font-semibold border border-slate-200 rounded-xl"
+                 >
+                   Masuk
+                 </Link>
+                 <Link
+                   to="/register"
+                   onClick={() => setMobileOpen(false)}
+                   className="w-full py-3 px-4 text-center text-white bg-blue-600 font-semibold rounded-xl"
+                 >
+                   Buat Akun Baru
+                 </Link>
+               </div>
+            )}
+          </nav>
+        </div>
+      )}
     </>
   );
 }

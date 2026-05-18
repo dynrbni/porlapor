@@ -6,7 +6,7 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 import ReportCard from '../components/ReportCard';
-import { Activity, CheckCircle2, Clock, Inbox } from 'lucide-react';
+import { Activity, CheckCircle2, Inbox } from 'lucide-react';
 
 type Tab = 'semua' | 'belum' | 'proses' | 'selesai';
 
@@ -71,9 +71,17 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <button className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors text-sm font-semibold shadow-sm">
-              Pengaturan Profil
-            </button>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => navigate('/buat-laporan')}
+                className="px-5 py-2.5 bg-blue-600 border border-transparent text-white hover:bg-blue-700 rounded-xl transition-colors text-sm font-semibold shadow-sm"
+              >
+                + Buat Laporan
+              </button>
+              <button className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors text-sm font-semibold shadow-sm hidden md:block">
+                Pengaturan
+              </button>
+            </div>
           </div>
 
           {/* Stat Cards */}

@@ -5,7 +5,7 @@ import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CheckCircle2, Clock, Inbox, Users, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Activity, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight } from 'lucide-react';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 

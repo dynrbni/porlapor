@@ -10,6 +10,8 @@ import Agencies from './pages/Agencies';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ReportDetail from './pages/ReportDetail';
+import CreateReport from './pages/CreateReport';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   useEffect(() => {
@@ -32,13 +34,49 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/instansi" element={<Agencies />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/dashboard/report/:id" element={<ReportDetail />} />
+
+        {/* User-Only Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['USER']}>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buat-laporan" 
+          element={
+            <ProtectedRoute allowedRoles={['USER']}>
+              <CreateReport />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Admin-Only Routes */}
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Auth Required but any role can view report details */}
+        <Route 
+          path="/dashboard/report/:id" 
+          element={
+            <ProtectedRoute>
+              <ReportDetail />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   );
