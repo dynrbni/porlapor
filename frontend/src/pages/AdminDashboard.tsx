@@ -8,6 +8,7 @@ import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
+import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -24,6 +25,7 @@ const AdminDashboard = () => {
   const [agencyLoading, setAgencyLoading] = useState(false);
   const [agencyError, setAgencyError] = useState('');
   const [agencySuccess, setAgencySuccess] = useState('');
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [agencyForm, setAgencyForm] = useState({
     name: '',
     description: '',
@@ -410,7 +412,7 @@ const AdminDashboard = () => {
                               </td>
                               <td className="p-4 text-center">
                                 <button
-                                  onClick={() => navigate(`/admin/report/${report.id}`)}
+                                  onClick={() => setSelectedReportId(report.id)}
                                   className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
                                   title="Lihat Detail"
                                 >
@@ -533,6 +535,14 @@ const AdminDashboard = () => {
           )}
         </main>
       </div>
+
+      {selectedReportId && (
+        <AdminReportDetailPanel
+          reportId={selectedReportId}
+          onClose={() => setSelectedReportId(null)}
+          onUpdated={fetchUserAndReports}
+        />
+      )}
 
       {/* Agency Modal */}
       {agencyModalOpen && (
