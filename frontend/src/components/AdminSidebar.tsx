@@ -1,10 +1,13 @@
 import type { MouseEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { Building2, FileText, LayoutGrid, LogOut, Plus, X } from 'lucide-react';
 import type { AuthUser } from '../services/authService';
 
+export type AdminSection = 'overview' | 'reports' | 'agencies';
+
 interface AdminSidebarProps {
   user: AuthUser | null;
+  activeSection: AdminSection;
+  onNavigate: (section: AdminSection) => void;
   onLogout: () => void;
   onAddAgency?: () => void;
   mobileOpen: boolean;
@@ -12,42 +15,27 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { label: 'Ringkasan', href: '/admin#overview', hash: '#overview', icon: LayoutGrid },
-  { label: 'Laporan', href: '/admin#reports', hash: '#reports', icon: FileText },
-  { label: 'Instansi', href: '/admin#agencies', hash: '#agencies', icon: Building2 },
+  { id: 'overview' as const, label: 'Ringkasan', icon: LayoutGrid },
+  { id: 'reports' as const, label: 'Laporan', icon: FileText },
+  { id: 'agencies' as const, label: 'Instansi', icon: Building2 },
 ];
 
-export default function AdminSidebar({ user, onLogout, onAddAgency, mobileOpen, onCloseMobile }: AdminSidebarProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
+export default function AdminSidebar({
+  user,
+  activeSection,
+  onNavigate,
+  onLogout,
+  onAddAgency,
+  mobileOpen,
+  onCloseMobile,
+}: AdminSidebarProps) {
   const userDisplayName = user?.nama || user?.name || 'Admin';
   const userRole = user?.role || 'ADMIN';
   const userInitial = userDisplayName.trim().charAt(0).toUpperCase() || 'A';
-  const isReportDetail = location.pathname.startsWith('/admin/report');
 
-  const isActive = (hash: string) => {
-    if (isReportDetail && hash === '#reports') return true;
-    if (location.hash === hash) return true;
-    if (!location.hash && location.pathname === '/admin' && hash === '#overview') return true;
-    return false;
-  };
-
-  const handleNavClick = (hash: string) => (event: MouseEvent<HTMLButtonElement>) => {
+  const handleNavClick = (section: AdminSection) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const targetPath = '/admin';
-
-    if (location.pathname !== targetPath) {
-      navigate(`${targetPath}${hash}`);
-      onCloseMobile();
-      return;
-    }
-
-    const target = document.querySelector(hash);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    navigate(`${targetPath}${hash}`, { replace: true });
+    onNavigate(section);
     onCloseMobile();
   };
 
@@ -76,12 +64,12 @@ export default function AdminSidebar({ user, onLogout, onAddAgency, mobileOpen, 
         <nav className="space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.hash);
+            const active = activeSection === item.id;
             return (
               <button
                 key={item.label}
                 type="button"
-                onClick={handleNavClick(item.hash)}
+                onClick={handleNavClick(item.id)}
                 aria-current={active ? 'page' : undefined}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${
                   active

@@ -5,9 +5,9 @@ import { reportService } from '../services/reportService';
 import { createAgency, getAgencies } from '../services/agencyService';
 import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
-import AdminSidebar from '../components/AdminSidebar';
+import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [activeTab, setActiveTab] = useState<Tab>('semua');
   const [agencyQuery, setAgencyQuery] = useState('');
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
@@ -32,7 +33,6 @@ const AdminDashboard = () => {
     photoUrl: '',
   });
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     authService.logout();
@@ -66,14 +66,13 @@ const AdminDashboard = () => {
     fetchUserAndReports();
   }, [navigate]);
 
-  useEffect(() => {
-    if (!location.hash) return;
-    const targetId = location.hash.replace('#', '');
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [location.hash]);
+  const showOverview = activeSection === 'overview';
+  const showReports = activeSection === 'overview' || activeSection === 'reports';
+  const showAgencies = activeSection === 'overview' || activeSection === 'agencies';
+  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : 'Panel Instansi';
+  const sectionSubtitle = activeSection === 'reports'
+    ? 'Pantau dan tindak lanjuti laporan masyarakat.'
+    : 'Kelola instansi yang menangani laporan.';
 
   const filteredReports = reports.filter(r => {
     switch(activeTab) {
@@ -207,6 +206,8 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <AdminSidebar
         user={user}
+        activeSection={activeSection}
+        onNavigate={setActiveSection}
         onLogout={handleLogout}
         onAddAgency={() => {
           setAgencyModalOpen(true);
@@ -231,94 +232,106 @@ const AdminDashboard = () => {
         </div>
 
         {/* Dashboard Header */}
-        <div id="overview" className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
-          <div className="max-w-6xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-full bg-indigo-900 overflow-hidden shadow-inner border-2 border-indigo-500">
-                   <img src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'admin'}`} alt="Admin Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                   <h1 className="text-3xl font-extrabold tracking-tight">Admin Control Panel</h1>
-                   <p className="text-slate-400 text-sm mt-1 flex items-center gap-2">
-                     <ShieldAlert className="w-4 h-4 text-indigo-400" />
-                     Anda masuk sebagai {user?.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'}
-                   </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-slate-400 mb-1">Total Laporan</p>
-                   <h3 className="text-3xl font-extrabold text-white">{totalReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-slate-700 rounded-xl shadow-sm border border-slate-600 flex items-center justify-center">
-                   <Inbox className="w-6 h-6 text-slate-300" />
+        {showOverview ? (
+          <div id="overview" className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
+            <div className="max-w-6xl mx-auto w-full">
+              <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-full bg-indigo-900 overflow-hidden shadow-inner border-2 border-indigo-500">
+                     <img src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'admin'}`} alt="Admin Avatar" className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                     <h1 className="text-3xl font-extrabold tracking-tight">Admin Control Panel</h1>
+                     <p className="text-slate-400 text-sm mt-1 flex items-center gap-2">
+                       <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                       Anda masuk sebagai {user?.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'}
+                     </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-amber-900/20 border border-amber-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-amber-500 mb-1">Perlu Tinjauan</p>
-                   <h3 className="text-3xl font-extrabold text-amber-400">{pendingReports}</h3>
+              {/* Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                     <p className="text-sm font-medium text-slate-400 mb-1">Total Laporan</p>
+                     <h3 className="text-3xl font-extrabold text-white">{totalReports}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-slate-700 rounded-xl shadow-sm border border-slate-600 flex items-center justify-center">
+                     <Inbox className="w-6 h-6 text-slate-300" />
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-amber-900/50 rounded-xl shadow-sm border border-amber-700 flex items-center justify-center">
-                   <Clock className="w-6 h-6 text-amber-500" />
+
+                <div className="bg-amber-900/20 border border-amber-800/50 p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                     <p className="text-sm font-medium text-amber-500 mb-1">Perlu Tinjauan</p>
+                     <h3 className="text-3xl font-extrabold text-amber-400">{pendingReports}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-amber-900/50 rounded-xl shadow-sm border border-amber-700 flex items-center justify-center">
+                     <Clock className="w-6 h-6 text-amber-500" />
+                  </div>
+                </div>
+
+                <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                     <p className="text-sm font-medium text-blue-500 mb-1">Sedang Diproses</p>
+                     <h3 className="text-3xl font-extrabold text-blue-400">{inProgressReports}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-900/50 rounded-xl shadow-sm border border-blue-700 flex items-center justify-center">
+                     <Activity className="w-6 h-6 text-blue-500" />
+                  </div>
+                </div>
+
+                <div className="bg-emerald-900/20 border border-emerald-800/50 p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                     <p className="text-sm font-medium text-emerald-500 mb-1">Laporan Selesai</p>
+                     <h3 className="text-3xl font-extrabold text-emerald-400">{doneReports}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-900/50 rounded-xl shadow-sm border border-emerald-700 flex items-center justify-center">
+                     <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-blue-500 mb-1">Sedang Diproses</p>
-                   <h3 className="text-3xl font-extrabold text-blue-400">{inProgressReports}</h3>
+              <div className="mt-8 bg-slate-900/40 border border-slate-800 rounded-2xl p-5">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-slate-200">Ringkasan Instansi</h2>
+                  <span className="text-xs text-slate-400">Top {Math.min(agencyStats.length, 5)}</span>
                 </div>
-                <div className="w-12 h-12 bg-blue-900/50 rounded-xl shadow-sm border border-blue-700 flex items-center justify-center">
-                   <Activity className="w-6 h-6 text-blue-500" />
-                </div>
-              </div>
-
-              <div className="bg-emerald-900/20 border border-emerald-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-emerald-500 mb-1">Laporan Selesai</p>
-                   <h3 className="text-3xl font-extrabold text-emerald-400">{doneReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-emerald-900/50 rounded-xl shadow-sm border border-emerald-700 flex items-center justify-center">
-                   <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 bg-slate-900/40 border border-slate-800 rounded-2xl p-5">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-slate-200">Ringkasan Instansi</h2>
-                <span className="text-xs text-slate-400">Top {Math.min(agencyStats.length, 5)}</span>
-              </div>
-              {agencyStats.length > 0 ? (
-                <div className="mt-4 space-y-3">
-                  {agencyStats.slice(0, 5).map((agency) => (
-                    <div key={agency.id} className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
-                      <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-semibold text-slate-100">{agency.name}</p>
-                        <span className="text-xs font-bold text-slate-300">{agency.total} laporan</span>
+                {agencyStats.length > 0 ? (
+                  <div className="mt-4 space-y-3">
+                    {agencyStats.slice(0, 5).map((agency) => (
+                      <div key={agency.id} className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
+                        <div className="flex items-center justify-between gap-4">
+                          <p className="text-sm font-semibold text-slate-100">{agency.name}</p>
+                          <span className="text-xs font-bold text-slate-300">{agency.total} laporan</span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium">
+                          <span className="text-amber-300">Menunggu {agency.pending}</span>
+                          <span className="text-blue-300">Proses {agency.inProgress}</span>
+                          <span className="text-emerald-300">Selesai {agency.resolved}</span>
+                          <span className="text-red-300">Ditolak {agency.rejected}</span>
+                        </div>
                       </div>
-                      <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium">
-                        <span className="text-amber-300">Menunggu {agency.pending}</span>
-                        <span className="text-blue-300">Proses {agency.inProgress}</span>
-                        <span className="text-emerald-300">Selesai {agency.resolved}</span>
-                        <span className="text-red-300">Ditolak {agency.rejected}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
-              )}
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-full bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-8 relative z-10 text-white">
+            <div className="max-w-6xl mx-auto w-full">
+              <h1 className="text-2xl font-extrabold tracking-tight">{sectionTitle}</h1>
+              <p className="text-sm text-slate-400 mt-2 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                {sectionSubtitle}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full py-10">
@@ -329,6 +342,7 @@ const AdminDashboard = () => {
           ) : (
             <div className="space-y-8">
               {/* Reports Section */}
+              {showReports && (
               <section id="reports" className="space-y-4">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div>
@@ -421,8 +435,10 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </section>
+              )}
 
               {/* Agencies Section */}
+              {showAgencies && (
               <section id="agencies" className="space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
@@ -512,6 +528,7 @@ const AdminDashboard = () => {
                   )}
                 </div>
               </section>
+              )}
             </div>
           )}
         </main>

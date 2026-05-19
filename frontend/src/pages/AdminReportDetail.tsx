@@ -6,7 +6,7 @@ import { getAgencies } from '../services/agencyService';
 import type { Agency } from '../services/agencyService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
-import AdminSidebar from '../components/AdminSidebar';
+import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Menu } from 'lucide-react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -42,6 +42,7 @@ export default function AdminReportDetail() {
   const [savingNote, setSavingNote] = useState(false);
   const [error, setError] = useState('');
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
+  const sidebarSection: AdminSection = 'reports';
 
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedAgencyId, setSelectedAgencyId] = useState('');
@@ -171,6 +172,8 @@ export default function AdminReportDetail() {
     <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-row relative w-full overflow-x-hidden">
       <AdminSidebar
         user={user}
+        activeSection={sidebarSection}
+        onNavigate={() => navigate('/admin')}
         onLogout={handleLogout}
         mobileOpen={sidebarMobileOpen}
         onCloseMobile={() => setSidebarMobileOpen(false)}
