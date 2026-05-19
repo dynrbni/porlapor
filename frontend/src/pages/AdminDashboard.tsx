@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
+import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -139,7 +140,14 @@ const AdminDashboard = () => {
   }, [reports, agencies]);
 
   const topAgencyStats = agencyStats.slice(0, 5);
-  const maxAgencyTotal = topAgencyStats.reduce((max, agency) => (agency.total > max ? agency.total : max), 0);
+  const agencyChartData = topAgencyStats.map((agency) => ({
+    name: agency.name,
+    pending: agency.pending,
+    inProgress: agency.inProgress,
+    resolved: agency.resolved,
+    rejected: agency.rejected,
+    total: agency.total,
+  }));
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -303,34 +311,9 @@ const AdminDashboard = () => {
                   <h2 className="text-sm font-semibold text-slate-200">Ringkasan Instansi</h2>
                   <span className="text-xs text-slate-400">Top {Math.min(agencyStats.length, 5)}</span>
                 </div>
-                {topAgencyStats.length > 0 ? (
-                  <div className="mt-4 space-y-4">
-                    <div className="space-y-3">
-                      {topAgencyStats.map((agency) => {
-                        const percentage = maxAgencyTotal > 0 ? Math.round((agency.total / maxAgencyTotal) * 100) : 0;
-                        return (
-                          <div key={agency.id} className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
-                            <div className="flex items-center justify-between gap-4">
-                              <p className="text-sm font-semibold text-slate-100">{agency.name}</p>
-                              <span className="text-xs font-bold text-slate-300">{agency.total} laporan</span>
-                            </div>
-                            <div className="mt-3 h-2 w-full rounded-full bg-slate-800">
-                              <div
-                                className="h-2 rounded-full bg-gradient-to-r from-indigo-400 via-blue-400 to-emerald-400"
-                                style={{ width: `${percentage}%` }}
-                              />
-                            </div>
-                            <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium">
-                              <span className="text-amber-300">Menunggu {agency.pending}</span>
-                              <span className="text-blue-300">Proses {agency.inProgress}</span>
-                              <span className="text-emerald-300">Selesai {agency.resolved}</span>
-                              <span className="text-red-300">Ditolak {agency.rejected}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <p className="text-xs text-slate-400">Persentase dihitung dari total laporan instansi teratas.</p>
+                {agencyChartData.length > 0 ? (
+                  <div className="mt-4">
+                    <AdminAgencySummaryChart data={agencyChartData} />
                   </div>
                 ) : (
                   <p className="mt-3 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
