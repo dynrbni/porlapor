@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import { createAgency, getAgencies } from '../services/agencyService';
 import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
-import AdminSidebar from '../components/AdminSidebar';
+import { Link, useNavigate } from 'react-router-dom';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search } from 'lucide-react';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -15,10 +14,10 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [agenciesCount, setAgenciesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('semua');
   const [agencyQuery, setAgencyQuery] = useState('');
-  const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const [agencyModalOpen, setAgencyModalOpen] = useState(false);
   const [agencyLoading, setAgencyLoading] = useState(false);
   const [agencyError, setAgencyError] = useState('');
@@ -32,7 +31,8 @@ const AdminDashboard = () => {
     photoUrl: '',
   });
   const navigate = useNavigate();
-  const location = useLocation();
+  const userDisplayName = user?.nama || user?.name || 'Admin';
+  const userInitial = userDisplayName.trim().charAt(0).toUpperCase() || 'A';
 
   const handleLogout = () => {
     authService.logout();
@@ -55,6 +55,7 @@ const AdminDashboard = () => {
         setReports(data);
       }
       setAgencies(agenciesResponse);
+      setAgenciesCount(agenciesResponse.length);
     } catch (error) {
       console.error('Failed to fetch data', error);
     } finally {
@@ -65,15 +66,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUserAndReports();
   }, [navigate]);
-
-  useEffect(() => {
-    if (!location.hash) return;
-    const targetId = location.hash.replace('#', '');
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [location.hash]);
 
   const filteredReports = reports.filter(r => {
     switch(activeTab) {
@@ -89,53 +81,6 @@ const AdminDashboard = () => {
   const pendingReports = reports.filter(r => r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
   const inProgressReports = reports.filter(r => r.status === 'IN_PROGRESS').length;
   const doneReports = reports.filter(r => r.status === 'RESOLVED').length;
-
-  const agencyStats = useMemo(() => {
-    const agencyNameById = new Map<string, string>();
-    agencies.forEach((agency) => {
-      agencyNameById.set(agency.id, agency.name);
-    });
-
-    const stats = new Map<string, {
-      id: string;
-      name: string;
-      total: number;
-      pending: number;
-      inProgress: number;
-      resolved: number;
-      rejected: number;
-    }>();
-
-    reports.forEach((report) => {
-      const agencyId = report.agencyId || 'unassigned';
-      const name = agencyId === 'unassigned'
-        ? 'Belum Ditentukan'
-        : agencyNameById.get(agencyId) || 'Instansi Tidak Dikenal';
-
-      if (!stats.has(agencyId)) {
-        stats.set(agencyId, {
-          id: agencyId,
-          name,
-          total: 0,
-          pending: 0,
-          inProgress: 0,
-          resolved: 0,
-          rejected: 0,
-        });
-      }
-
-      const entry = stats.get(agencyId);
-      if (!entry) return;
-
-      entry.total += 1;
-      if (report.status === 'PENDING' || report.status === 'IN_REVIEW') entry.pending += 1;
-      if (report.status === 'IN_PROGRESS') entry.inProgress += 1;
-      if (report.status === 'RESOLVED') entry.resolved += 1;
-      if (report.status === 'REJECTED') entry.rejected += 1;
-    });
-
-    return Array.from(stats.values()).sort((a, b) => b.total - a.total);
-  }, [reports, agencies]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -192,6 +137,7 @@ const AdminDashboard = () => {
       setAgencySuccess('Instansi berhasil ditambahkan.');
       if (created.data) {
         setAgencies((prev) => [created.data, ...prev]);
+        setAgenciesCount((prev) => prev + 1);
       }
       resetAgencyForm();
     } catch (err: any) {
@@ -203,132 +149,163 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-row relative w-full overflow-x-hidden">
-      {/* Sidebar */}
-      <AdminSidebar
-        user={user}
-        onLogout={handleLogout}
-        onAddAgency={() => {
-          setAgencyModalOpen(true);
-          setAgencyError('');
-          setAgencySuccess('');
-        }}
-        mobileOpen={sidebarMobileOpen}
-        onCloseMobile={() => setSidebarMobileOpen(false)}
-      />
+    <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-col relative w-full overflow-x-hidden">
+      {/* Admin Dashboard Header */}
+      <div id="overview" className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-full bg-indigo-900 overflow-hidden shadow-inner border-2 border-indigo-500">
+                 <img src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'admin'}`} alt="Admin Avatar" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                 <h1 className="text-3xl font-extrabold tracking-tight">Admin Control Panel</h1>
+                 <p className="text-slate-400 text-sm mt-1 flex items-center gap-2">
+                   <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                   Anda masuk sebagai {user?.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'}
+                 </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setAgencyModalOpen(true);
+                  setAgencyError('');
+                  setAgencySuccess('');
+                }}
+                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors text-sm font-semibold shadow-sm border border-white/20"
+              >
+                Tambah Instansi
+              </button>
+              <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors text-sm font-semibold shadow-sm border border-indigo-400">
+                Kelola Admin
+              </button>
+            </div>
+          </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Mobile Header */}
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40">
-          <h2 className="font-bold text-slate-900">Admin Dashboard</h2>
-          <button
-            onClick={() => setSidebarMobileOpen(true)}
-            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-        </div>
-
-        {/* Dashboard Header */}
-        <div id="overview" className="w-full bg-slate-900 border-b border-slate-800 pt-10 pb-8 px-4 sm:px-6 relative z-10 text-white">
-          <div className="max-w-6xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-8">
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-full bg-indigo-900 overflow-hidden shadow-inner border-2 border-indigo-500">
-                   <img src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'admin'}`} alt="Admin Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                   <h1 className="text-3xl font-extrabold tracking-tight">Admin Control Panel</h1>
-                   <p className="text-slate-400 text-sm mt-1 flex items-center gap-2">
-                     <ShieldAlert className="w-4 h-4 text-indigo-400" />
-                     Anda masuk sebagai {user?.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'}
-                   </p>
-                </div>
+          {/* Admin Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-slate-400 mb-1">Total Laporan</p>
+                 <h3 className="text-3xl font-extrabold text-white">{totalReports}</h3>
+              </div>
+              <div className="w-12 h-12 bg-slate-700 rounded-xl shadow-sm border border-slate-600 flex items-center justify-center">
+                 <Inbox className="w-6 h-6 text-slate-300" />
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-slate-400 mb-1">Total Laporan</p>
-                   <h3 className="text-3xl font-extrabold text-white">{totalReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-slate-700 rounded-xl shadow-sm border border-slate-600 flex items-center justify-center">
-                   <Inbox className="w-6 h-6 text-slate-300" />
-                </div>
+            <div className="bg-teal-900/20 border border-teal-800/50 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-teal-400 mb-1">Total Instansi</p>
+                 <h3 className="text-3xl font-extrabold text-teal-300">{agenciesCount}</h3>
               </div>
-
-              <div className="bg-amber-900/20 border border-amber-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-amber-500 mb-1">Perlu Tinjauan</p>
-                   <h3 className="text-3xl font-extrabold text-amber-400">{pendingReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-amber-900/50 rounded-xl shadow-sm border border-amber-700 flex items-center justify-center">
-                   <Clock className="w-6 h-6 text-amber-500" />
-                </div>
-              </div>
-
-              <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-blue-500 mb-1">Sedang Diproses</p>
-                   <h3 className="text-3xl font-extrabold text-blue-400">{inProgressReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-blue-900/50 rounded-xl shadow-sm border border-blue-700 flex items-center justify-center">
-                   <Activity className="w-6 h-6 text-blue-500" />
-                </div>
-              </div>
-
-              <div className="bg-emerald-900/20 border border-emerald-800/50 p-5 rounded-2xl flex items-center justify-between">
-                <div>
-                   <p className="text-sm font-medium text-emerald-500 mb-1">Laporan Selesai</p>
-                   <h3 className="text-3xl font-extrabold text-emerald-400">{doneReports}</h3>
-                </div>
-                <div className="w-12 h-12 bg-emerald-900/50 rounded-xl shadow-sm border border-emerald-700 flex items-center justify-center">
-                   <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                </div>
+              <div className="w-12 h-12 bg-teal-900/50 rounded-xl shadow-sm border border-teal-700 flex items-center justify-center">
+                 <Building2 className="w-6 h-6 text-teal-300" />
               </div>
             </div>
 
-            <div className="mt-8 bg-slate-900/40 border border-slate-800 rounded-2xl p-5">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-slate-200">Ringkasan Instansi</h2>
-                <span className="text-xs text-slate-400">Top {Math.min(agencyStats.length, 5)}</span>
+            <div className="bg-amber-900/20 border border-amber-800/50 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-amber-500 mb-1">Perlu Tinjauan</p>
+                 <h3 className="text-3xl font-extrabold text-amber-400">{pendingReports}</h3>
               </div>
-              {agencyStats.length > 0 ? (
-                <div className="mt-4 space-y-3">
-                  {agencyStats.slice(0, 5).map((agency) => (
-                    <div key={agency.id} className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
-                      <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-semibold text-slate-100">{agency.name}</p>
-                        <span className="text-xs font-bold text-slate-300">{agency.total} laporan</span>
-                      </div>
-                      <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium">
-                        <span className="text-amber-300">Menunggu {agency.pending}</span>
-                        <span className="text-blue-300">Proses {agency.inProgress}</span>
-                        <span className="text-emerald-300">Selesai {agency.resolved}</span>
-                        <span className="text-red-300">Ditolak {agency.rejected}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
-              )}
+              <div className="w-12 h-12 bg-amber-900/50 rounded-xl shadow-sm border border-amber-700 flex items-center justify-center">
+                 <Clock className="w-6 h-6 text-amber-500" />
+              </div>
+            </div>
+
+            <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-blue-500 mb-1">Sedang Diproses</p>
+                 <h3 className="text-3xl font-extrabold text-blue-400">{inProgressReports}</h3>
+              </div>
+              <div className="w-12 h-12 bg-blue-900/50 rounded-xl shadow-sm border border-blue-700 flex items-center justify-center">
+                 <Activity className="w-6 h-6 text-blue-500" />
+              </div>
+            </div>
+
+            <div className="bg-emerald-900/20 border border-emerald-800/50 p-5 rounded-2xl flex items-center justify-between">
+              <div>
+                 <p className="text-sm font-medium text-emerald-500 mb-1">Laporan Selesai</p>
+                 <h3 className="text-3xl font-extrabold text-emerald-400">{doneReports}</h3>
+              </div>
+              <div className="w-12 h-12 bg-emerald-900/50 rounded-xl shadow-sm border border-emerald-700 flex items-center justify-center">
+                 <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full py-10">
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            </div>
-          ) : (
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-10 text-left">
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="w-full lg:grid lg:grid-cols-[240px_1fr] lg:gap-6">
+            <aside className="lg:sticky lg:top-6 mb-6 lg:mb-0">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold">
+                    {userInitial}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
+                    <p className="text-xs text-slate-500">{user?.role || 'ADMIN'}</p>
+                  </div>
+                </div>
+
+                <nav className="space-y-2">
+                  <a
+                    href="#overview"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Ringkasan
+                    <span className="text-xs font-bold text-slate-500">{totalReports}</span>
+                  </a>
+                  <a
+                    href="#reports"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Laporan
+                    <span className="text-xs font-bold text-slate-500">{filteredReports.length}</span>
+                  </a>
+                  <a
+                    href="#agencies"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    Instansi
+                    <span className="text-xs font-bold text-slate-500">{agenciesCount}</span>
+                  </a>
+                </nav>
+
+                <div className="border-t border-slate-100 pt-4 space-y-2">
+                  <Link
+                    to="/"
+                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  >
+                    Beranda
+                  </Link>
+                  <Link
+                    to="/instansi"
+                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  >
+                    Halaman Instansi
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Keluar
+                  </button>
+                </div>
+              </div>
+            </aside>
+
             <div className="space-y-8">
-              {/* Reports Section */}
               <section id="reports" className="space-y-4">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div>
@@ -422,7 +399,6 @@ const AdminDashboard = () => {
                 </div>
               </section>
 
-              {/* Agencies Section */}
               <section id="agencies" className="space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
@@ -513,11 +489,10 @@ const AdminDashboard = () => {
                 </div>
               </section>
             </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+      </main>
 
-      {/* Agency Modal */}
       {agencyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
           <div className="bg-white w-full max-w-lg rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
@@ -532,9 +507,9 @@ const AdminDashboard = () => {
                   setAgencyError('');
                   setAgencySuccess('');
                 }}
-                className="p-1 text-slate-500 hover:text-slate-700"
+                className="text-sm font-semibold text-slate-500 hover:text-slate-700"
               >
-                <X className="w-5 h-5" />
+                Tutup
               </button>
             </div>
 

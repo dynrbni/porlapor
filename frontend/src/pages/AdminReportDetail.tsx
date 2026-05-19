@@ -4,7 +4,10 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { getAgencies } from '../services/agencyService';
 import type { Agency } from '../services/agencyService';
-import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert } from 'lucide-react';
+import { authService } from '../services/authService';
+import type { AuthUser } from '../services/authService';
+import AdminSidebar from '../components/AdminSidebar';
+import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Menu } from 'lucide-react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -31,16 +34,23 @@ export default function AdminReportDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [report, setReport] = useState<Report | null>(null);
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
   const [error, setError] = useState('');
+  const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
 
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedAgencyId, setSelectedAgencyId] = useState('');
   const [noteText, setNoteText] = useState('');
+
+  useEffect(() => {
+    const currentUser = authService.getUser();
+    setUser(currentUser);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,9 +162,32 @@ export default function AdminReportDetail() {
     }
   };
 
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-indigo-200">
-      <main className="pt-10 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-row relative w-full overflow-x-hidden">
+      <AdminSidebar
+        user={user}
+        onLogout={handleLogout}
+        mobileOpen={sidebarMobileOpen}
+        onCloseMobile={() => setSidebarMobileOpen(false)}
+      />
+
+      <div className="flex-1 flex flex-col">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40">
+          <h2 className="font-bold text-slate-900">Report Detail</h2>
+          <button
+            onClick={() => setSidebarMobileOpen(true)}
+            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
+        <main className="flex-1 pt-10 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
         <button
           onClick={() => navigate('/admin')}
           className="flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-6 transition-colors font-medium text-sm"
@@ -359,7 +392,8 @@ export default function AdminReportDetail() {
             </div>
           </div>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
