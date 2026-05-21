@@ -18,6 +18,7 @@ export interface AdminAgencySummaryDatum {
 
 interface AdminAgencySummaryChartProps {
   data: AdminAgencySummaryDatum[];
+  className?: string;
 }
 
 const formatLabel = (value: string) => (value.length > 14 ? `${value.slice(0, 14)}...` : value);
@@ -54,10 +55,10 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   );
 };
 
-export default function AdminAgencySummaryChart({ data }: AdminAgencySummaryChartProps) {
+export default function AdminAgencySummaryChart({ data, className }: AdminAgencySummaryChartProps) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+    <div className={className}>
+      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
         <span className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ background: COLORS.pending }} />
           Menunggu
@@ -75,20 +76,20 @@ export default function AdminAgencySummaryChart({ data }: AdminAgencySummaryChar
           Ditolak
         </span>
       </div>
-      <div className="mt-4 h-64 w-full">
+      <div className="mt-4 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
             <XAxis
               dataKey="name"
               tickFormatter={formatLabel}
-              tick={{ fill: '#94A3B8', fontSize: 11 }}
+              tick={{ fill: '#64748B', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               interval={0}
               height={40}
             />
             <YAxis
-              tick={{ fill: '#94A3B8', fontSize: 11 }}
+              tick={{ fill: '#64748B', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}

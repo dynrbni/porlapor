@@ -40,19 +40,21 @@ export default function AdminSidebar({
   };
 
   const renderSidebarContent = (compact = false) => (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col font-['Manrope']">
       <div className="flex items-center justify-between px-5 py-6">
         <div className="flex items-center gap-3">
-          <img
-            src="/src/assets/porlapor_logo.png"
-            alt="PorLapor"
-            className="h-15 w-auto object-contain brightness-0 invert ml-6"
-          />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-sm font-semibold text-white">
+            P
+          </div>
+          <div>
+            <p className="text-sm font-['Space_Grotesk'] font-semibold text-slate-900">PorLapor</p>
+            <p className="text-xs text-slate-500">Admin Workspace</p>
+          </div>
         </div>
         {compact && (
           <button
             onClick={onCloseMobile}
-            className="rounded-lg p-2 text-slate-300 hover:bg-slate-800"
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
             aria-label="Tutup menu"
           >
             <X className="h-5 w-5" />
@@ -61,6 +63,9 @@ export default function AdminSidebar({
       </div>
 
       <div className="px-3">
+        <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+          Navigasi
+        </p>
         <nav className="space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -73,8 +78,8 @@ export default function AdminSidebar({
                 aria-current={active ? 'page' : undefined}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${
                   active
-                    ? 'bg-indigo-600/20 text-white border border-indigo-500/40'
-                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -90,7 +95,7 @@ export default function AdminSidebar({
               onAddAgency();
               onCloseMobile();
             }}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-600/20 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-600/30"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
           >
             <Plus className="h-4 w-4" />
             Tambah Instansi
@@ -98,19 +103,19 @@ export default function AdminSidebar({
         )}
       </div>
 
-      <div className="mt-auto border-t border-slate-800 px-5 py-5">
+      <div className="mt-auto border-t border-slate-200 px-5 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
             {userInitial}
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-white">{userDisplayName}</p>
-            <p className="text-xs text-slate-400">{userRole}</p>
+            <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
+            <p className="text-xs text-slate-500">{userRole}</p>
           </div>
         </div>
         <button
           onClick={onLogout}
-          className="mt-4 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-200 hover:bg-red-500/20"
+          className="mt-4 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
         >
           <LogOut className="h-4 w-4" />
           Keluar
@@ -121,14 +126,14 @@ export default function AdminSidebar({
 
   return (
     <>
-      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-slate-950 text-slate-200 border-r border-slate-800 min-h-screen">
+      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 min-h-screen backdrop-blur">
         {renderSidebarContent()}
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-slate-950/70" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-slate-950 text-slate-200 border-r border-slate-800 shadow-xl">
+          <div className="absolute inset-0 bg-slate-900/30" onClick={onCloseMobile} />
+          <aside className="absolute left-0 top-0 h-full w-72 bg-white text-slate-700 border-r border-slate-200 shadow-2xl">
             {renderSidebarContent(true)}
           </aside>
         </div>
