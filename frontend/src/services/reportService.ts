@@ -101,4 +101,8 @@ export const reportService = {
     const response = await apiClient.get<{ message: string; data: Report[] }>(`/reports?userId=${userId}`);
     return response.data;
   },
+  deleteReport: async (id: string) => {
+    const response = await apiClient.delete<{ message: string }>(`/reports/${id}`);
+    return response.data;
+  },
 };

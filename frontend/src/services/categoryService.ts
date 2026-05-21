@@ -12,4 +12,13 @@ export const categoryService = {
     const response = await apiClient.get('/categories');
     return response.data.data as Category[];
   }
+  ,
+  create: async (payload: { name: string; description?: string }) => {
+    const response = await apiClient.post<{ message: string; data: Category }>('/categories', payload);
+    return response.data;
+  },
+  delete: async (id: string) => {
+    const response = await apiClient.delete<{ message: string }>(`/categories/${id}`);
+    return response.data;
+  }
 };

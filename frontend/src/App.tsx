@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminReportDetail from './pages/AdminReportDetail';
 import ReportDetail from './pages/ReportDetail';
 import CreateReport from './pages/CreateReport';
+import SuperadminPanel from './pages/SuperadminPanel';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -75,6 +76,15 @@ function App() {
               <AdminReportDetail />
             </ProtectedRoute>
           } 
+        />
+
+        <Route
+          path="/superadmin"
+          element={
+            <ProtectedRoute allowedRoles={["SUPERADMIN"]}>
+              <SuperadminPanel />
+            </ProtectedRoute>
+          }
         />
 
         {/* Auth Required but any role can view report details */}
