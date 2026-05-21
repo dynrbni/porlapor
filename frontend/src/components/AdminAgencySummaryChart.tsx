@@ -1,4 +1,4 @@
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const COLORS = {
   pending: '#F59E0B',
@@ -40,14 +40,14 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   const labelText = typeof label === 'string' ? label : String(label ?? '');
 
   return (
-    <div className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 shadow-lg">
-      <p className="text-sm font-semibold text-white">{labelText}</p>
-      <p className="text-slate-400">Total: {total}</p>
+    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 shadow-lg">
+      <p className="text-sm font-semibold text-slate-900">{labelText}</p>
+      <p className="text-slate-500">Total: {total}</p>
       <div className="mt-2 space-y-1">
         {payloadItems.map((entry) => (
           <div key={String(entry.dataKey)} className="flex items-center justify-between gap-2">
-            <span className="text-slate-300">{entry.name}</span>
-            <span className="text-slate-100 font-semibold">{entry.value}</span>
+            <span className="text-slate-500">{entry.name}</span>
+            <span className="text-slate-900 font-semibold">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -79,17 +79,18 @@ export default function AdminAgencySummaryChart({ data, className }: AdminAgency
       <div className="mt-4 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
+            <CartesianGrid vertical={false} stroke="#E2E8F0" />
             <XAxis
               dataKey="name"
               tickFormatter={formatLabel}
-              tick={{ fill: '#64748B', fontSize: 11 }}
+              tick={{ fill: '#94A3B8', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               interval={0}
               height={40}
             />
             <YAxis
-              tick={{ fill: '#64748B', fontSize: 11 }}
+              tick={{ fill: '#94A3B8', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}

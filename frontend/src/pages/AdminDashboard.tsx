@@ -6,10 +6,11 @@ import { createAgency, getAgencies } from '../services/agencyService';
 import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ShieldAlert, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
+import AdminReportTrendChart from '../components/AdminReportTrendChart';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -155,6 +156,37 @@ const AdminDashboard = () => {
       .slice(0, 5);
   }, [reports]);
 
+  const reportTimeline = useMemo(() => {
+    const formatKey = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const days = 7;
+    const today = new Date();
+    const items = Array.from({ length: days }, (_, index) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (days - 1 - index));
+      return {
+        key: formatKey(date),
+        label: date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+        total: 0,
+      };
+    });
+
+    const map = new Map(items.map((item) => [item.key, item]));
+    reports.forEach((report) => {
+      const date = new Date(report.createdAt);
+      const key = formatKey(date);
+      const entry = map.get(key);
+      if (entry) entry.total += 1;
+    });
+
+    return items.map(({ label, total }) => ({ label, total }));
+  }, [reports]);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
@@ -221,7 +253,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] text-slate-900 selection:bg-indigo-200/40 flex flex-row relative w-full overflow-x-hidden font-['Manrope']">
+    <div className="min-h-screen bg-[#f7f8fb] text-slate-900 selection:bg-indigo-200/40 flex flex-row relative w-full overflow-x-hidden">
       {/* Sidebar */}
       <AdminSidebar
         user={user}
@@ -242,7 +274,7 @@ const AdminDashboard = () => {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_55%),radial-gradient(circle_at_80%_20%,_rgba(16,185,129,0.08),_transparent_55%)]" />
         {/* Mobile Header */}
         <div className="lg:hidden bg-white/90 border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur">
-          <h2 className="font-['Space_Grotesk'] text-lg font-semibold text-slate-900">Admin Dashboard</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Admin Dashboard</h2>
           <button
             onClick={() => setSidebarMobileOpen(true)}
             className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
@@ -256,7 +288,7 @@ const AdminDashboard = () => {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-2">
               <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">PorLapor Admin</p>
-              <h1 className="text-3xl font-['Space_Grotesk'] font-semibold text-slate-900">
+              <h1 className="text-3xl font-semibold text-slate-900">
                 {showOverview ? 'Dashboard Ringkasan' : sectionTitle}
               </h1>
               <p className="text-sm text-slate-500">
@@ -268,7 +300,7 @@ const AdminDashboard = () => {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setActiveSection('reports')}
-                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
+                className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
               >
                 Lihat Laporan
               </button>
@@ -278,7 +310,7 @@ const AdminDashboard = () => {
                   setAgencyError('');
                   setAgencySuccess('');
                 }}
-                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
               >
                 Tambah Instansi
               </button>
@@ -296,113 +328,154 @@ const AdminDashboard = () => {
           </div>
 
           {showOverview && (
-            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total Laporan</p>
-                    <h3 className="mt-2 text-3xl font-['Space_Grotesk'] font-semibold text-slate-900">{totalReports}</h3>
+            <>
+              <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total Laporan</p>
+                      <h3 className="mt-2 text-2xl font-semibold text-slate-900">{totalReports}</h3>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                      <Inbox className="h-5 w-5" />
+                    </div>
                   </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
-                    <Inbox className="h-5 w-5" />
+                </div>
+
+                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Perlu Tinjauan</p>
+                      <h3 className="mt-2 text-2xl font-semibold text-amber-700">{pendingReports}</h3>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-blue-200 bg-blue-50/70 p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Sedang Diproses</p>
+                      <h3 className="mt-2 text-2xl font-semibold text-blue-700">{inProgressReports}</h3>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                      <Activity className="h-5 w-5" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Laporan Selesai</p>
+                      <h3 className="mt-2 text-2xl font-semibold text-emerald-700">{doneReports}</h3>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Perlu Tinjauan</p>
-                    <h3 className="mt-2 text-3xl font-['Space_Grotesk'] font-semibold text-amber-700">{pendingReports}</h3>
+              <div className="mt-6 grid gap-6 lg:grid-cols-7">
+                <div className="lg:col-span-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tren Laporan</p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">Performa 7 Hari Terakhir</h2>
+                      <p className="text-sm text-slate-500">Jumlah laporan masuk per hari.</p>
+                    </div>
+                    <span className="text-xs text-slate-400">Update otomatis</span>
                   </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Sedang Diproses</p>
-                    <h3 className="mt-2 text-3xl font-['Space_Grotesk'] font-semibold text-blue-700">{inProgressReports}</h3>
-                  </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
-                    <Activity className="h-5 w-5" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Laporan Selesai</p>
-                    <h3 className="mt-2 text-3xl font-['Space_Grotesk'] font-semibold text-emerald-700">{doneReports}</h3>
-                  </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-                    <CheckCircle2 className="h-5 w-5" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showOverview && (
-            <div className="mt-6 grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Ringkasan Instansi</p>
-                    <h2 className="mt-1 text-lg font-['Space_Grotesk'] font-semibold text-slate-900">Distribusi Laporan</h2>
-                    <p className="text-sm text-slate-500">Top {Math.min(agencyStats.length, 5)} instansi berdasarkan total laporan.</p>
-                  </div>
-                  <span className="text-xs text-slate-400">Update otomatis</span>
-                </div>
-                {agencyChartData.length > 0 ? (
                   <div className="mt-5">
-                    <AdminAgencySummaryChart
-                      className="rounded-xl border border-slate-200 bg-white p-4"
-                      data={agencyChartData}
-                    />
+                    <AdminReportTrendChart data={reportTimeline} />
                   </div>
-                ) : (
-                  <p className="mt-5 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
-                )}
+                </div>
+
+                <div className="lg:col-span-3 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Aktivitas Terbaru</p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">Laporan Masuk</h2>
+                    </div>
+                    <button
+                      onClick={() => setActiveSection('reports')}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+                    >
+                      Lihat semua
+                    </button>
+                  </div>
+                  <div className="mt-5 space-y-4">
+                    {recentReports.length > 0 ? (
+                      recentReports.map((report) => (
+                        <div key={report.id} className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800 line-clamp-1">{report.title}</p>
+                            <p className="text-xs text-slate-500">
+                              {(report.user?.name || report.user?.nama || 'Anonim')} •{' '}
+                              {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </p>
+                          </div>
+                          {getStatusBadge(report.status)}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-400">Belum ada laporan terbaru.</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Aktivitas Terbaru</p>
-                    <h2 className="mt-1 text-lg font-['Space_Grotesk'] font-semibold text-slate-900">Laporan Masuk</h2>
+              <div className="mt-6 grid gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Ringkasan Instansi</p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">Distribusi Laporan</h2>
+                      <p className="text-sm text-slate-500">Top {Math.min(agencyStats.length, 5)} instansi berdasarkan total laporan.</p>
+                    </div>
+                    <span className="text-xs text-slate-400">Update otomatis</span>
                   </div>
-                  <button
-                    onClick={() => setActiveSection('reports')}
-                    className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-                  >
-                    Lihat semua
-                  </button>
-                </div>
-                <div className="mt-5 space-y-4">
-                  {recentReports.length > 0 ? (
-                    recentReports.map((report) => (
-                      <div key={report.id} className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
-                        <div>
-                          <p className="text-sm font-semibold text-slate-800 line-clamp-1">{report.title}</p>
-                          <p className="text-xs text-slate-500">
-                            {(report.user?.name || report.user?.nama || 'Anonim')} •{' '}
-                            {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                          </p>
-                        </div>
-                        {getStatusBadge(report.status)}
-                      </div>
-                    ))
+                  {agencyChartData.length > 0 ? (
+                    <div className="mt-5">
+                      <AdminAgencySummaryChart
+                        className="rounded-md border border-slate-200 bg-white p-4"
+                        data={agencyChartData}
+                      />
+                    </div>
                   ) : (
-                    <p className="text-sm text-slate-400">Belum ada laporan terbaru.</p>
+                    <p className="mt-5 text-sm text-slate-400">Belum ada laporan yang tercatat untuk instansi.</p>
                   )}
                 </div>
+
+                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Top Instansi</p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">Performa Teratas</h2>
+                    </div>
+                    <span className="text-xs text-slate-400">Top {Math.min(topAgencyStats.length, 5)}</span>
+                  </div>
+                  <div className="mt-5 space-y-4">
+                    {topAgencyStats.length > 0 ? (
+                      topAgencyStats.map((agency) => (
+                        <div key={agency.id} className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900 line-clamp-1">{agency.name}</p>
+                            <p className="text-xs text-slate-500">Menunggu {agency.pending} • Proses {agency.inProgress} • Selesai {agency.resolved}</p>
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700">{agency.total}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-400">Belum ada instansi aktif.</p>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 
@@ -420,16 +493,16 @@ const AdminDashboard = () => {
               <section id="reports" className="space-y-4">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-extrabold text-slate-900">Panel Laporan</h2>
+                    <h2 className="text-lg font-semibold text-slate-900">Panel Laporan</h2>
                     <p className="text-sm text-slate-500">Pantau dan tindak lanjuti laporan masyarakat.</p>
                   </div>
 
-                  <div className="flex bg-slate-200/60 p-1.5 rounded-xl w-full md:w-auto overflow-x-auto">
+                  <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
                     {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 min-w-[90px] md:px-5 py-2 text-sm font-bold rounded-lg transition-all capitalize ${activeTab === tab ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-800'}`}
+                        className={`min-w-[90px] px-4 py-2 text-sm font-medium rounded-sm transition-all capitalize ${activeTab === tab ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
                       >
                         {tab}
                       </button>
@@ -437,7 +510,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
@@ -516,7 +589,7 @@ const AdminDashboard = () => {
               <section id="agencies" className="space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-extrabold text-slate-900">Panel Instansi</h2>
+                    <h2 className="text-lg font-semibold text-slate-900">Panel Instansi</h2>
                     <p className="text-sm text-slate-500">Lihat daftar instansi yang menangani laporan.</p>
                   </div>
 
@@ -528,7 +601,7 @@ const AdminDashboard = () => {
                         value={agencyQuery}
                         onChange={(event) => setAgencyQuery(event.target.value)}
                         placeholder="Cari instansi..."
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                        className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-colors text-sm"
                       />
                     </div>
                     <button
@@ -537,14 +610,14 @@ const AdminDashboard = () => {
                         setAgencyError('');
                         setAgencySuccess('');
                       }}
-                      className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
+                      className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
                     >
                       Tambah Instansi
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
