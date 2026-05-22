@@ -5,8 +5,12 @@ import { reportService } from '../services/reportService';
 import { createAgency, getAgencies } from '../services/agencyService';
 import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import type { Report } from '../services/reportService';
+import { categoryService } from '../services/categoryService';
+import type { Category } from '../services/categoryService';
+import { userService } from '../services/userService';
+import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Trash2, PlusCircle, UserPlus, Tag } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
@@ -18,6 +22,8 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [activeTab, setActiveTab] = useState<Tab>('semua');
@@ -28,6 +34,9 @@ const AdminDashboard = () => {
   const [agencyError, setAgencyError] = useState('');
   const [agencySuccess, setAgencySuccess] = useState('');
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [catName, setCatName] = useState('');
+  const [catDesc, setCatDesc] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
   const [agencyForm, setAgencyForm] = useState({
     name: '',
     description: '',
@@ -69,6 +78,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUserAndReports();
   }, [navigate]);
+
+  useEffect(() => {
+    if (activeSection === 'superadmin') {
+      navigate('/superadmin');
+    }
+  }, [activeSection, navigate]);
 
   const showOverview = activeSection === 'overview';
   const showReports = activeSection === 'reports';
@@ -315,16 +330,6 @@ const AdminDashboard = () => {
                 Tambah Instansi
               </button>
             </div>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              {user?.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'} aktif
-            </span>
-            <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-              {user?.nama || user?.name || 'Admin'}
-            </span>
           </div>
 
           {showOverview && (
