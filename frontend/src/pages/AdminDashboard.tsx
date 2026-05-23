@@ -355,11 +355,6 @@ const AdminDashboard = () => {
         activeSection={activeSection}
         onNavigate={setActiveSection}
         onLogout={handleLogout}
-        onAddAgency={() => {
-          setAgencyModalOpen(true);
-          setAgencyError('');
-          setAgencySuccess('');
-        }}
         mobileOpen={sidebarMobileOpen}
         onCloseMobile={() => setSidebarMobileOpen(false)}
       />
@@ -576,23 +571,16 @@ const AdminDashboard = () => {
               {/* Reports Section */}
               {showReports && (
               <section id="reports" className="space-y-4">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Panel Laporan</h2>
-                    <p className="text-sm text-slate-500">Pantau dan tindak lanjuti laporan masyarakat.</p>
-                  </div>
-
-                  <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
-                    {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`min-w-[90px] px-4 py-2 text-sm font-medium rounded-sm transition-all capitalize ${activeTab === tab ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
+                <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+                  {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`min-w-[90px] px-4 py-2 text-sm font-medium rounded-sm transition-all capitalize ${activeTab === tab ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
@@ -672,34 +660,27 @@ const AdminDashboard = () => {
               {/* Agencies Section */}
               {showAgencies && (
               <section id="agencies" className="space-y-4">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Panel Instansi</h2>
-                    <p className="text-sm text-slate-500">Lihat daftar instansi yang menangani laporan.</p>
+                <div className="flex flex-col sm:flex-row gap-2 w-full">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={agencyQuery}
+                      onChange={(event) => setAgencyQuery(event.target.value)}
+                      placeholder="Cari instansi..."
+                      className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-colors text-sm"
+                    />
                   </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                    <div className="relative flex-1 min-w-[220px]">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={agencyQuery}
-                        onChange={(event) => setAgencyQuery(event.target.value)}
-                        placeholder="Cari instansi..."
-                        className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-colors text-sm"
-                      />
-                    </div>
-                    <button
-                      onClick={() => {
-                        setAgencyModalOpen(true);
-                        setAgencyError('');
-                        setAgencySuccess('');
-                      }}
-                      className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
-                    >
-                      Tambah Instansi
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      setAgencyModalOpen(true);
+                      setAgencyError('');
+                      setAgencySuccess('');
+                    }}
+                    className="whitespace-nowrap px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
+                  >
+                    Tambah Instansi
+                  </button>
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
@@ -765,24 +746,18 @@ const AdminDashboard = () => {
               {/* Users Section */}
               {showUsers && (
               <section id="users" className="space-y-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Manajemen Pengguna</h2>
-                    <p className="text-sm text-slate-500">Lihat daftar pengguna sistem, promosi, atau hapus akun.</p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Admin</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{adminUsers}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Akun Aktif</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers - adminUsers}</p>
-                    </div>
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Admin</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{adminUsers}</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Akun Aktif</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers - adminUsers}</p>
                   </div>
                 </div>
 
@@ -856,24 +831,18 @@ const AdminDashboard = () => {
               {/* Categories Section */}
               {showCategories && (
               <section id="categories" className="space-y-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Manajemen Kategori</h2>
-                    <p className="text-sm text-slate-500">Kelola kategori laporan yang tersedia di sistem.</p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Aktif</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{activeCategories}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Nonaktif</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories - activeCategories}</p>
-                    </div>
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Aktif</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{activeCategories}</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Nonaktif</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories - activeCategories}</p>
                   </div>
                 </div>
 

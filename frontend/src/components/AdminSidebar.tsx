@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { Building2, FileText, LayoutGrid, LogOut, Plus, X, Users, Tag } from 'lucide-react';
+import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag } from 'lucide-react';
 import type { AuthUser } from '../services/authService';
 
 export type AdminSection = 'overview' | 'reports' | 'agencies' | 'users' | 'categories' | 'superadmin';
@@ -9,7 +9,6 @@ interface AdminSidebarProps {
   activeSection: AdminSection;
   onNavigate: (section: AdminSection) => void;
   onLogout: () => void;
-  onAddAgency?: () => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -27,7 +26,6 @@ export default function AdminSidebar({
   activeSection,
   onNavigate,
   onLogout,
-  onAddAgency,
   mobileOpen,
   onCloseMobile,
 }: AdminSidebarProps) {
