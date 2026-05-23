@@ -406,28 +406,25 @@ const AdminDashboard = () => {
                     <p className="text-sm text-slate-500">Lihat daftar instansi yang menangani laporan.</p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                    <div className="relative flex-1 min-w-[220px]">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={agencyQuery}
-                        onChange={(event) => setAgencyQuery(event.target.value)}
-                        placeholder="Cari instansi..."
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
-                      />
-                    </div>
-                    <button
-                      onClick={() => {
-                        setAgencyModalOpen(true);
-                        setAgencyError('');
-                        setAgencySuccess('');
-                      }}
-                      className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
-                    >
-                      Tambah Instansi
-                    </button>
-                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full lg:flex-1">
+  <div className="relative flex-1">
+    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+
+    <input
+      type="text"
+      value={agencyQuery}
+      onChange={(event) => setAgencyQuery(event.target.value)}
+      placeholder="Cari instansi..."
+      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+    />
+  </div>
+
+  <button
+    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
+  >
+    Tambah Instansi
+  </button>
+</div>
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">

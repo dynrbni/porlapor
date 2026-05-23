@@ -10,7 +10,7 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Trash2, PlusCircle, UserPlus, Tag } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
@@ -22,8 +22,8 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [activeTab, setActiveTab] = useState<Tab>('semua');
@@ -34,9 +34,6 @@ const AdminDashboard = () => {
   const [agencyError, setAgencyError] = useState('');
   const [agencySuccess, setAgencySuccess] = useState('');
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
-  const [catName, setCatName] = useState('');
-  const [catDesc, setCatDesc] = useState('');
-  const [creatingCategory, setCreatingCategory] = useState(false);
   const [agencyForm, setAgencyForm] = useState({
     name: '',
     description: '',
@@ -59,15 +56,19 @@ const AdminDashboard = () => {
       const currentUser = authService.getUser();
       if (currentUser) setUser(currentUser);
       
-      const [reportsResponse, agenciesResponse] = await Promise.all([
+      const [reportsResponse, agenciesResponse, usersResponse, categoriesResponse] = await Promise.all([
         reportService.getAllReports(),
         getAgencies(),
+        userService.getAll(),
+        categoryService.getAll(),
       ]);
       const data = Array.isArray(reportsResponse) ? reportsResponse : reportsResponse.data;
       if (data) {
         setReports(data);
       }
       setAgencies(agenciesResponse);
+      setUsers(usersResponse);
+      setCategories(categoriesResponse);
     } catch (error) {
       console.error('Failed to fetch data', error);
     } finally {
@@ -79,19 +80,21 @@ const AdminDashboard = () => {
     fetchUserAndReports();
   }, [navigate]);
 
-  useEffect(() => {
-    if (activeSection === 'superadmin') {
-      navigate('/superadmin');
-    }
-  }, [activeSection, navigate]);
-
   const showOverview = activeSection === 'overview';
   const showReports = activeSection === 'reports';
   const showAgencies = activeSection === 'agencies';
-  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : 'Panel Instansi';
+  const showUsers = activeSection === 'users';
+  const showCategories = activeSection === 'categories';
+  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : 'Ringkasan';
   const sectionSubtitle = activeSection === 'reports'
     ? 'Pantau dan tindak lanjuti laporan masyarakat.'
-    : 'Kelola instansi yang menangani laporan.';
+    : activeSection === 'agencies'
+    ? 'Kelola instansi yang menangani laporan.'
+    : activeSection === 'users'
+    ? 'Lihat semua pengguna, promosi, atau hapus akun.'
+    : activeSection === 'categories'
+    ? 'Kelola kategori laporan yang tersedia di sistem.'
+    : 'Pantau performa laporan, instansi, dan aktivitas terbaru secara real-time.';
 
   const filteredReports = reports.filter(r => {
     switch(activeTab) {
@@ -264,6 +267,79 @@ const AdminDashboard = () => {
       setAgencyError(err.response?.data?.message || 'Gagal menambahkan instansi.');
     } finally {
       setAgencyLoading(false);
+    }
+  };
+
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState('');
+  const [categorySuccess, setCategorySuccess] = useState('');
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      setCategoryError('Nama kategori wajib diisi.');
+      return;
+    }
+
+    setCategoryLoading(true);
+    setCategoryError('');
+    setCategorySuccess('');
+
+    try {
+      await categoryService.create({
+        name: categoryForm.name.trim(),
+        description: categoryForm.description.trim() || undefined,
+      });
+      setCategorySuccess('Kategori berhasil ditambahkan.');
+      setCategoryForm({ name: '', description: '' });
+      await fetchUserAndReports();
+    } catch (err: any) {
+      console.error('Failed to create category', err);
+      setCategoryError(err.response?.data?.message || 'Gagal menambahkan kategori.');
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!window.confirm('Yakin ingin menghapus kategori ini?')) return;
+
+    try {
+      await categoryService.delete(id);
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+      setCategorySuccess('Kategori berhasil dihapus.');
+    } catch (err: any) {
+      console.error('Failed to delete category', err);
+      setCategoryError(err.response?.data?.message || 'Gagal menghapus kategori.');
+    }
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    if (!window.confirm('Yakin ingin menghapus pengguna ini?')) return;
+
+    try {
+      await userService.deleteUser(id);
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+      setCategorySuccess('Pengguna berhasil dihapus.');
+    } catch (err: any) {
+      console.error('Failed to delete user', err);
+      setCategoryError(err.response?.data?.message || 'Gagal menghapus pengguna.');
+    }
+  };
+
+  const handlePromoteUser = async (id: string) => {
+    if (!window.confirm('Promosi pengguna ini menjadi ADMIN?')) return;
+
+    try {
+      await userService.promote(id, 'ADMIN');
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, role: 'ADMIN' } : u))
+      );
+      setCategorySuccess('Pengguna berhasil dipromosi.');
+    } catch (err: any) {
+      console.error('Failed to promote user', err);
+      setCategoryError(err.response?.data?.message || 'Gagal mempromosi pengguna.');
     }
   };
 
@@ -485,7 +561,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Main Content */}
-        {(showReports || showAgencies) && (
+        {(showOverview || showReports || showAgencies || showUsers || showCategories) && (
         <main className="flex-1 px-6 pb-16">
           {loading ? (
             <div className="flex justify-center items-center py-20">
@@ -676,6 +752,198 @@ const AdminDashboard = () => {
                   {agencies.length === 0 && (
                     <div className="p-10 text-center text-slate-500">
                       Belum ada instansi yang terdaftar.
+                    </div>
+                  )}
+                </div>
+              </section>
+              )}
+
+              {/* Users Section */}
+              {showUsers && (
+              <section id="users" className="space-y-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Manajemen Pengguna</h2>
+                  <p className="text-sm text-slate-500">Lihat daftar pengguna sistem, promosi, atau hapus akun.</p>
+                </div>
+
+                <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                          <th className="p-4 min-w-[200px]">Nama</th>
+                          <th className="p-4 min-w-[180px]">Email</th>
+                          <th className="p-4 min-w-[120px]">Role</th>
+                          <th className="p-4 min-w-[160px]">Telepon</th>
+                          <th className="p-4">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {users.map((u) => (
+                          <tr key={u.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                                  <Users className="w-4 h-4 text-slate-500" />
+                                </div>
+                                <p className="text-sm font-semibold text-slate-900">{u.name || u.nama || 'N/A'}</p>
+                              </div>
+                            </td>
+                            <td className="p-4 text-sm text-slate-600">{u.email}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                                u.role === 'SUPERADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                                u.role === 'ADMIN' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                                'bg-slate-100 text-slate-800 border border-slate-200'
+                              }`}>{u.role}</span>
+                            </td>
+                            <td className="p-4 text-sm text-slate-600">{u.phone || '-'}</td>
+                            <td className="p-4">
+                              <div className="flex items-center gap-2">
+                                {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && (
+                                  <button
+                                    onClick={() => handlePromoteUser(u.id)}
+                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                    title="Promosi ke ADMIN"
+                                  >
+                                    <UserPlus className="w-4 h-4" />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleDeleteUser(u.id)}
+                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                  title="Hapus pengguna"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {users.length === 0 && (
+                    <div className="p-10 text-center text-slate-500">
+                      Belum ada pengguna terdaftar.
+                    </div>
+                  )}
+                </div>
+              </section>
+              )}
+
+              {/* Categories Section */}
+              {showCategories && (
+              <section id="categories" className="space-y-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Manajemen Kategori</h2>
+                  <p className="text-sm text-slate-500">Kelola kategori laporan yang tersedia di sistem.</p>
+                </div>
+
+                {/* Add Category Form */}
+                <div className="bg-white border border-slate-200 shadow-sm rounded-lg p-6 space-y-4">
+                  <h3 className="font-semibold text-slate-900">Tambah Kategori Baru</h3>
+                  {categoryError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
+                      {categoryError}
+                    </div>
+                  )}
+                  {categorySuccess && (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg p-3">
+                      {categorySuccess}
+                    </div>
+                  )}
+                  <form onSubmit={handleCreateCategory} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Nama Kategori *</label>
+                      <input
+                        type="text"
+                        value={categoryForm.name}
+                        onChange={(e) => setCategoryForm((prev) => ({ ...prev, name: e.target.value }))}
+                        placeholder="Contoh: Jalan Rusak"
+                        className="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Deskripsi</label>
+                      <textarea
+                        rows={2}
+                        value={categoryForm.description}
+                        onChange={(e) => setCategoryForm((prev) => ({ ...prev, description: e.target.value }))}
+                        placeholder="Deskripsi kategori laporan..."
+                        className="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setCategoryForm({ name: '', description: '' })}
+                        className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={categoryLoading}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {categoryLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                        Simpan Kategori
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Categories List */}
+                <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                          <th className="p-4 min-w-[200px]">Nama Kategori</th>
+                          <th className="p-4 min-w-[300px]">Deskripsi</th>
+                          <th className="p-4">Status</th>
+                          <th className="p-4">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {categories.map((cat) => (
+                          <tr key={cat.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                                  <Tag className="w-4 h-4 text-slate-500" />
+                                </div>
+                                <p className="text-sm font-semibold text-slate-900">{cat.name}</p>
+                              </div>
+                            </td>
+                            <td className="p-4 text-sm text-slate-600 line-clamp-2">{cat.description || '-'}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                                cat.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-800 border border-slate-200'
+                              }`}>{cat.isActive ? 'Aktif' : 'Nonaktif'}</span>
+                            </td>
+                            <td className="p-4">
+                              <button
+                                onClick={() => handleDeleteCategory(cat.id)}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                title="Hapus kategori"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {categories.length === 0 && (
+                    <div className="p-10 text-center text-slate-500">
+                      Belum ada kategori yang terdaftar.
                     </div>
                   )}
                 </div>
