@@ -1,7 +1,6 @@
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import HowItWorks from '../components/HowItWorks';
-import ReportTracker from '../components/ReportTracker';
 import Footer from '../components/Footer';
 
 export default function Home() {
@@ -11,7 +10,6 @@ export default function Home() {
       
       <main>
         <Hero />
-        <ReportTracker />
         <HowItWorks />
       </main>
 
