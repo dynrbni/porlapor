@@ -87,6 +87,12 @@ function App() {
           }
         />
 
+        {/* Public report viewing route */}
+        <Route 
+          path="/laporan/:id" 
+          element={<ReportDetail />} 
+        />
+
         {/* Auth Required but any role can view report details */}
         <Route 
           path="/dashboard/report/:id" 

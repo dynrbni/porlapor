@@ -40,12 +40,9 @@ export default function ReportDetail() {
     const fetchDetail = async () => {
       try {
         const currentUser = authService.getUser();
-        if (!currentUser) {
-          navigate('/login');
-          return;
+        if (currentUser) {
+          setUser(currentUser);
         }
-
-        setUser(currentUser);
 
         if (id) {
           const res = await reportService.getReportById(id);
@@ -267,22 +264,36 @@ export default function ReportDetail() {
                   )}
 
                   <div className="border-t border-slate-100 pt-4">
-                    <form onSubmit={handleSendComment} className="flex gap-2">
-                      <input
-                        type="text"
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="Tulis komentar singkat di sini..."
-                        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white"
-                      />
-                      <button
-                        type="submit"
-                        disabled={sendingComment || !commentText.trim()}
-                        className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <Send className="h-5 w-5" />
-                      </button>
-                    </form>
+                    {!user ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
+                        <p className="text-sm text-amber-900 font-medium mb-3">
+                          Silakan login untuk memberikan komentar
+                        </p>
+                        <button
+                          onClick={() => navigate('/login', { state: { from: `/laporan/${id}` } })}
+                          className="inline-flex items-center justify-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                        >
+                          Login Sekarang
+                        </button>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSendComment} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          placeholder="Tulis komentar singkat di sini..."
+                          className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white"
+                        />
+                        <button
+                          type="submit"
+                          disabled={sendingComment || !commentText.trim()}
+                          className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Send className="h-5 w-5" />
+                        </button>
+                      </form>
+                    )}
                     <p className="mt-2 text-[11px] text-slate-400">Komentar bersifat privat antara pelapor dan instansi terkait.</p>
                   </div>
                 </div>

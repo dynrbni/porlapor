@@ -2,6 +2,7 @@ import { ArrowRight, Search, Calendar, MapPin, Tag, CheckCircle2, Clock, AlertCi
 import { useState } from 'react';
 import { reportService, type Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 export default function Hero() {
   const [searchId, setSearchId] = useState('');
@@ -9,6 +10,15 @@ export default function Hero() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const isAuthenticated = authService.isAuthenticated();
+
+  const handleCreateReport = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/buat-laporan' } });
+    } else {
+      navigate('/buat-laporan');
+    }
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +133,7 @@ export default function Hero() {
           
           <div data-aos="fade-up" data-aos-delay="200" className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
-              onClick={() => navigate('/buat-laporan')}
+              onClick={handleCreateReport}
               className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 group cursor-pointer"
             >
               Tulis Laporan Baru
@@ -292,6 +302,14 @@ export default function Hero() {
                   </div>
                 )}
               </div>
+
+              <button
+                onClick={() => navigate(`/laporan/${searchResult.id}`)}
+                className="mt-4 w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-sm flex items-center justify-center gap-2"
+              >
+                Lihat Detail Lengkap
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
