@@ -1,4 +1,4 @@
-import apiClient from './authService';
+import apiClient, { publicApiClient } from './authService';
 
 export interface Author {
   id: string;
@@ -67,7 +67,7 @@ export interface UpdateReportPayload {
 export const reportService = {
   
   getReportById: async (id: string) => {
-    const response = await apiClient.get<{ message: string; data: Report }>(`/reports/${id}`);
+    const response = await publicApiClient.get<{ message: string; data: Report }>(`/reports/${id}`);
     return response.data;
   },
   addComment: async (reportId: string, content: string) => {

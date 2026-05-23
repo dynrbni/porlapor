@@ -8,6 +8,13 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+// Public API client without 401 redirect (for public pages)
+export const publicApiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 const decodeJwtPayload = (token: string): Record<string, unknown> | null => {
   try {
@@ -29,6 +36,13 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+  publicApiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
 
 apiClient.interceptors.response.use(
   (response) => response,

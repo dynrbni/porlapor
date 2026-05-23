@@ -35,6 +35,7 @@ export default function ReportDetail() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -50,6 +51,7 @@ export default function ReportDetail() {
         }
       } catch (error) {
         console.error('Failed to load report detail', error);
+        setError('Laporan tidak ditemukan atau tidak dapat diakses');
       } finally {
         setLoading(false);
       }
@@ -114,14 +116,26 @@ export default function ReportDetail() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0))]" />
 
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(user ? '/dashboard' : '/')}
           className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
         >
           <ArrowLeft className="h-4 w-4" />
-          Kembali ke Dashboard
+          {user ? 'Kembali ke Dashboard' : 'Kembali ke Beranda'}
         </button>
 
-        {loading ? (
+        {error ? (
+          <div className="mx-auto max-w-xl rounded-[2rem] border border-red-200 bg-red-50 px-8 py-16 text-center shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-500">Error</p>
+            <h1 className="mt-3 text-2xl font-semibold text-red-900">{error}</h1>
+            <button
+              onClick={() => navigate('/')}
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-6 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali ke Beranda
+            </button>
+          </div>
+        ) : loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
           </div>
