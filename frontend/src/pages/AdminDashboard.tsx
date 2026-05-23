@@ -110,6 +110,10 @@ const AdminDashboard = () => {
   const pendingReports = reports.filter(r => r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
   const inProgressReports = reports.filter(r => r.status === 'IN_PROGRESS').length;
   const doneReports = reports.filter(r => r.status === 'RESOLVED').length;
+  const totalUsers = users.length;
+  const totalCategories = categories.length;
+  const adminUsers = users.filter((item) => item.role === 'ADMIN').length;
+  const activeCategories = categories.filter((item) => item.isActive).length;
 
   const agencyStats = useMemo(() => {
     const agencyNameById = new Map<string, string>();
@@ -761,9 +765,25 @@ const AdminDashboard = () => {
               {/* Users Section */}
               {showUsers && (
               <section id="users" className="space-y-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Manajemen Pengguna</h2>
-                  <p className="text-sm text-slate-500">Lihat daftar pengguna sistem, promosi, atau hapus akun.</p>
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">Manajemen Pengguna</h2>
+                    <p className="text-sm text-slate-500">Lihat daftar pengguna sistem, promosi, atau hapus akun.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Admin</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{adminUsers}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Akun Aktif</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalUsers - adminUsers}</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
@@ -836,9 +856,25 @@ const AdminDashboard = () => {
               {/* Categories Section */}
               {showCategories && (
               <section id="categories" className="space-y-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Manajemen Kategori</h2>
-                  <p className="text-sm text-slate-500">Kelola kategori laporan yang tersedia di sistem.</p>
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">Manajemen Kategori</h2>
+                    <p className="text-sm text-slate-500">Kelola kategori laporan yang tersedia di sistem.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Total</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Aktif</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{activeCategories}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:col-span-1 col-span-2">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Nonaktif</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{totalCategories - activeCategories}</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Add Category Form */}

@@ -91,19 +91,6 @@ export default function AdminSidebar({
           })}
 
         </nav>
-
-        {onAddAgency && (
-          <button
-            onClick={() => {
-              onAddAgency();
-              onCloseMobile();
-            }}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah Instansi
-          </button>
-        )}
       </div>
 
       <div className="mt-auto border-t border-slate-200 px-5 py-5">
