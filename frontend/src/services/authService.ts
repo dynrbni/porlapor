@@ -80,6 +80,7 @@ export interface AuthUser {
   nama?: string;
   email?: string;
   role?: string;
+  agencyId?: string;
   photoUrl?: string;
 }
 

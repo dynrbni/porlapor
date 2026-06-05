@@ -90,6 +90,7 @@ export const registerController = async (req: Request, res: Response) => {
                 birthDate: true,
                 gender: true,
                 role: true,
+                agencyId: true,
                 createdAt: true,
                 lastLoginAt: true,
             },
@@ -107,6 +108,7 @@ export const registerController = async (req: Request, res: Response) => {
                     email: user.email,
                     gender: user.gender,
                     role: user.role,
+                    agencyId: user.agencyId,
                 },
             },
         });
@@ -162,6 +164,7 @@ export const loginController = async (req: Request, res: Response) => {
                 birthDate: true,
                 gender: true,
                 role: true,
+                agencyId: true,
                 createdAt: true,
                 lastLoginAt: true,
             },
@@ -180,6 +183,7 @@ export const loginController = async (req: Request, res: Response) => {
                     email: updatedUser.email,
                     gender: updatedUser.gender,
                     role: updatedUser.role,
+                    agencyId: updatedUser.agencyId,
                 },
             },
         });

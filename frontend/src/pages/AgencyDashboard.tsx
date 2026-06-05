@@ -18,7 +18,7 @@ import AdminReportTrendChart from '../components/AdminReportTrendChart';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
-const AdminDashboard = () => {
+const AgencyDashboard = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -65,7 +65,11 @@ const AdminDashboard = () => {
       ]);
       const data = Array.isArray(reportsResponse) ? reportsResponse : reportsResponse.data;
       if (data) {
-        setReports(data);
+        if (currentUser?.agencyId) {
+          setReports(data.filter((r: Report) => r.agencyId === currentUser.agencyId));
+        } else {
+          setReports(data);
+        }
       }
       setAgencies(agenciesResponse);
       setUsers(usersResponse);
@@ -81,22 +85,13 @@ const AdminDashboard = () => {
     fetchUserAndReports();
   }, [navigate]);
 
-  const isSubAdmin = user?.role === 'ADMIN';
   const showOverview = activeSection === 'overview';
   const showReports = activeSection === 'reports';
-  const showAgencies = !isSubAdmin && activeSection === 'agencies';
-  const showUsers = !isSubAdmin && activeSection === 'users';
-  const showCategories = !isSubAdmin && activeSection === 'categories';
-  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : 'Ringkasan';
-  const sectionSubtitle = activeSection === 'reports'
-    ? 'Pantau dan tindak lanjuti laporan masyarakat.'
-    : activeSection === 'agencies'
-    ? 'Kelola instansi yang menangani laporan.'
-    : activeSection === 'users'
-    ? 'Lihat semua pengguna, promosi, atau hapus akun.'
-    : activeSection === 'categories'
-    ? 'Kelola kategori laporan yang tersedia di sistem.'
-    : 'Pantau performa laporan, instansi, dan aktivitas terbaru secara real-time.';
+  const showAgencies = false;
+  const showUsers = false;
+  const showCategories = false;
+  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : 'Ringkasan';
+  const sectionSubtitle = activeSection === 'reports' ? 'Pantau dan tindak lanjuti laporan masyarakat.' : 'Pantau performa laporan dan aktivitas terbaru secara real-time.';
 
   const filteredReports = reports.filter(r => {
     switch(activeTab) {
@@ -381,7 +376,7 @@ const AdminDashboard = () => {
         <div className="px-6 pt-8 pb-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">PorLapor Admin</p>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">Dashboard Instansi</p>
               <h1 className="text-3xl font-semibold text-slate-900">
                 {showOverview ? 'Dashboard Ringkasan' : sectionTitle}
               </h1>
@@ -398,16 +393,7 @@ const AdminDashboard = () => {
               >
                 Lihat Laporan
               </button>
-              <button
-                onClick={() => {
-                  setAgencyModalOpen(true);
-                  setAgencyError('');
-                  setAgencySuccess('');
-                }}
-                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
-              >
-                Tambah Instansi
-              </button>
+              
             </div>
           </div>
 
@@ -675,16 +661,7 @@ const AdminDashboard = () => {
                       className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-colors text-sm"
                     />
                   </div>
-                  <button
-                    onClick={() => {
-                      setAgencyModalOpen(true);
-                      setAgencyError('');
-                      setAgencySuccess('');
-                    }}
-                    className="whitespace-nowrap px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
-                  >
-                    Tambah Instansi
-                  </button>
+                  
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
@@ -1111,4 +1088,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AgencyDashboard;

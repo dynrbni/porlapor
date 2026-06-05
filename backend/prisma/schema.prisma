@@ -67,6 +67,11 @@ model User {
   photoSource PhotoSourceType?
 
   role     Role    @default(USER)
+
+  // Relasi ke Agency (Jika ini adalah ADMIN dari sebuah instansi)
+  agencyId    String?
+  agency      Agency?  @relation(fields: [agencyId], references: [id])
+
   isActive Boolean @default(true)
 
   // Relasi: siapa yang membuat akun admin ini
@@ -113,6 +118,10 @@ model Agency {
 
   // Satu agency bisa menangani banyak kategori
   categories Category[]
+  
+  // Pegawai / Admin yang mengelola instansi ini
+  users      User[]
+
   // Laporan yang di-assign ke agency ini
   reports    Report[]
 

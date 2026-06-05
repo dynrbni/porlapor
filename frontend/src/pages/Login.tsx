@@ -29,8 +29,14 @@ export default function Login() {
     try {
       const response = await authService.login({ email, password });
       if (response.token || response.message) {
-        navigate('/');
-        // Supaya state Header lgsg update kalau misalnya tidak pakai state management global (Redux/Zustand)
+        const user = authService.getUser();
+        if (user?.role === 'SUPERADMIN') {
+          navigate('/superadmin');
+        } else if (user?.role === 'ADMIN') {
+          navigate('/agency');
+        } else {
+          navigate('/dashboard');
+        }
         window.location.reload(); 
       }
     } catch (err: any) {

@@ -16,6 +16,7 @@ export interface CreateAgencyPayload {
   name: string;
   description?: string;
   email?: string;
+  password?: string;
   phone?: string;
   address?: string;
   photoUrl?: string;

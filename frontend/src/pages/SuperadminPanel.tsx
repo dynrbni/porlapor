@@ -5,12 +5,14 @@ import { categoryService } from '../services/categoryService';
 import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
+import { getAgencies, createAgency } from '../services/agencyService';
+import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield } from 'lucide-react';
+import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2 } from 'lucide-react';
 
-type SuperadminSection = 'categories' | 'users' | 'reports';
+type SuperadminSection = 'categories' | 'users' | 'reports' | 'agencies';
 
 const SuperadminPanel = () => {
   const [user] = useState<AuthUser | null>(authService.getUser());
@@ -18,6 +20,17 @@ const SuperadminPanel = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [agencyName, setAgencyName] = useState('');
+  const [agencyDesc, setAgencyDesc] = useState('');
+  const [agencyEmail, setAgencyEmail] = useState('');
+  const [agencyPassword, setAgencyPassword] = useState('');
+  const [agencyPhone, setAgencyPhone] = useState('');
+  const [agencyAddress, setAgencyAddress] = useState('');
+  const [creatingAgency, setCreatingAgency] = useState(false);
+  const [agencyError, setAgencyError] = useState('');
+  const [agencySuccess, setAgencySuccess] = useState('');
+
   const [loading, setLoading] = useState(true);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const [catName, setCatName] = useState('');
@@ -34,12 +47,14 @@ const SuperadminPanel = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [cats, us, resp] = await Promise.all([
+      const [cats, ags, us, resp] = await Promise.all([
         categoryService.getAll(),
+        getAgencies(),
         userService.getAll(),
         reportService.getAllReports(),
       ]);
       setCategories(cats);
+      setAgencies(ags);
       setUsers(us);
       setReports(resp.data || []);
     } catch (e) {
@@ -64,6 +79,40 @@ const SuperadminPanel = () => {
       </div>
     );
   }
+
+  
+  const handleCreateAgency = async () => {
+    if (!agencyName.trim()) {
+      setAgencyError('Nama instansi wajib diisi.');
+      return;
+    }
+    setCreatingAgency(true);
+    setAgencyError('');
+    setAgencySuccess('');
+    try {
+      const payload: CreateAgencyPayload = { name: agencyName.trim() };
+      if (agencyDesc.trim()) payload.description = agencyDesc.trim();
+      if (agencyEmail.trim()) payload.email = agencyEmail.trim();
+      if (agencyPassword.trim()) payload.password = agencyPassword.trim();
+      if (agencyPhone.trim()) payload.phone = agencyPhone.trim();
+      if (agencyAddress.trim()) payload.address = agencyAddress.trim();
+      
+      await createAgency(payload);
+      setAgencySuccess('Instansi berhasil ditambahkan.');
+      setAgencyName('');
+      setAgencyDesc('');
+      setAgencyEmail('');
+      setAgencyPassword('');
+      setAgencyPhone('');
+      setAgencyAddress('');
+      await fetchAll();
+    } catch (e: any) {
+      console.error('create agency', e);
+      setAgencyError(e.response?.data?.message || 'Gagal menambahkan instansi.');
+    } finally {
+      setCreatingAgency(false);
+    }
+  };
 
   const handleCreateCategory = async () => {
     if (!catName.trim()) return;
@@ -123,6 +172,7 @@ const SuperadminPanel = () => {
   const navItems = [
     { id: 'categories' as const, label: 'Kategori', icon: Tag },
     { id: 'users' as const, label: 'Pengguna', icon: Users },
+    { id: 'agencies' as const, label: 'Instansi', icon: Building2 },
     { id: 'reports' as const, label: 'Laporan', icon: FileText },
   ];
 
@@ -255,6 +305,115 @@ const SuperadminPanel = () => {
           </div>
         ) : (
           <div className="flex-1 px-6 pb-8">
+            
+            {/* Agencies Section */}
+            {activeSection === 'agencies' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <h2 className="text-lg font-semibold mb-4">Buat Instansi Baru</h2>
+                  {agencyError && <div className="mb-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm">{agencyError}</div>}
+                  {agencySuccess && <div className="mb-4 bg-emerald-50 text-emerald-700 p-3 rounded-lg text-sm">{agencySuccess}</div>}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="col-span-1 md:col-span-2">
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Nama Instansi *</label>
+                      <input
+                        value={agencyName}
+                        onChange={e => setAgencyName(e.target.value)}
+                        placeholder="Contoh: Dinas Pekerjaan Umum"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Deskripsi</label>
+                      <textarea
+                        value={agencyDesc}
+                        onChange={e => setAgencyDesc(e.target.value)}
+                        placeholder="Ringkasan tugas instansi"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20 resize-none"
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                      <input
+                        type="email"
+                        value={agencyEmail}
+                        onChange={e => setAgencyEmail(e.target.value)}
+                        placeholder="instansi@email.go.id"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Password (Untuk Login Admin)</label>
+                      <input
+                        type="text"
+                        value={agencyPassword}
+                        onChange={e => setAgencyPassword(e.target.value)}
+                        placeholder="Minimal 6 karakter"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Telepon</label>
+                      <input
+                        value={agencyPhone}
+                        onChange={e => setAgencyPhone(e.target.value)}
+                        placeholder="021-xxxxxxx"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Alamat</label>
+                      <input
+                        value={agencyAddress}
+                        onChange={e => setAgencyAddress(e.target.value)}
+                        placeholder="Alamat kantor"
+                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2 flex justify-end">
+                      <button
+                        onClick={handleCreateAgency}
+                        disabled={creatingAgency || !agencyName.trim()}
+                        className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                      >
+                        {creatingAgency ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
+                        {creatingAgency ? 'Menyimpan...' : 'Simpan Instansi'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <h2 className="text-lg font-semibold mb-4">Daftar Instansi</h2>
+                  <div className="space-y-3">
+                    {agencies.length > 0 ? (
+                      agencies.map((agency) => (
+                        <div
+                          key={agency.id}
+                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                              <Building2 className="w-5 h-5 text-slate-500" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-slate-900">{agency.name}</p>
+                              <p className="text-sm text-slate-600">{agency.email || '-'} • {agency.phone || '-'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-slate-500">
+                        Belum ada instansi.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Categories Section */}
             {activeSection === 'categories' && (
               <div className="space-y-6">

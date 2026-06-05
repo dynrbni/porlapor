@@ -68,6 +68,7 @@ export default function AdminSidebar({
         </p>
         <nav className="space-y-2">
           {navItems.map((item) => {
+            if (userRole === 'ADMIN' && (item.id === 'agencies' || item.id === 'users' || item.id === 'categories')) return null;
             const Icon = item.icon;
             const active = activeSection === item.id;
             return (

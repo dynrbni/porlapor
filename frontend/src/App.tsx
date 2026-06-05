@@ -13,6 +13,7 @@ import AdminReportDetail from './pages/AdminReportDetail';
 import ReportDetail from './pages/ReportDetail';
 import CreateReport from './pages/CreateReport';
 import SuperadminPanel from './pages/SuperadminPanel';
+import AgencyDashboard from './pages/AgencyDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -64,8 +65,16 @@ function App() {
         <Route 
           path="/admin" 
           element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN']}>
+            <ProtectedRoute allowedRoles={['SUPERADMIN']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/agency" 
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AgencyDashboard />
             </ProtectedRoute>
           } 
         />
