@@ -12,11 +12,14 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
+// Public routes
+router.get('/reports', getAllReports);
+router.get('/reports/:id', getReportById);
+
+// Protected routes
 router.use('/reports', authenticate);
 
 router.post('/reports', createReport);
-router.get('/reports', getAllReports);
-router.get('/reports/:id', getReportById);
 router.put('/reports/:id', updateReport);
 router.post('/reports/:id/comments', addComment);
 router.post('/reports/:id/like', toggleLike);

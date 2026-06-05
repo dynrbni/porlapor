@@ -94,7 +94,7 @@ export const reportService = {
   },
 
   getAllReports: async () => {
-    const response = await apiClient.get<{ message: string; data: Report[] }>('/reports');
+    const response = await publicApiClient.get<{ message: string; data: Report[] }>('/reports');
     return response.data;
   },
   getUserReports: async (userId: string) => {
