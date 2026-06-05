@@ -9,7 +9,7 @@ router.get('/report/:reportId', getOfficialNotesByReport);
 
 // Endpoint yg butuh autentikasi & hanya SUPERADMIN dan ADMIN
 router.use(authenticate);
-router.use(authorizeRoles('SUPERADMIN', 'ADMIN'));
+router.use(authorizeRoles('SUPERADMIN', 'ADMIN', 'AGENCY'));
 
 router.post('/report/:reportId', createOfficialNote);
 router.put('/report/:reportId/:id', updateOfficialNote);

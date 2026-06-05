@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.use('/users', authenticate);
 
-router.get('/users', authorizeRoles('ADMIN', 'SUPERADMIN'), getAllUsers);
+router.get('/users', authorizeRoles('ADMIN', 'SUPERADMIN', 'AGENCY'), getAllUsers);
 router.get('/users/me', getProfile);
-router.get('/users/:id', authorizeRoles('ADMIN', 'SUPERADMIN'), getUserById);
+router.get('/users/:id', authorizeRoles('ADMIN', 'SUPERADMIN', 'AGENCY'), getUserById);
 router.put('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);
 

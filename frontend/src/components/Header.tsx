@@ -102,7 +102,7 @@ export default function Header() {
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200"
                 >
-                  <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-bold shadow-sm ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' ? 'bg-indigo-600' : 'bg-blue-600'}`}>
+                  <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-bold shadow-sm ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY' ? 'bg-indigo-600' : 'bg-blue-600'}`}>
                     {userInitials}
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
@@ -114,10 +114,10 @@ export default function Header() {
                     profileDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                   }`}
                 >
-                  <div className={`px-4 py-3 border-b border-slate-100 ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' ? 'bg-indigo-50/50' : 'bg-slate-50/50'}`}>
+                  <div className={`px-4 py-3 border-b border-slate-100 ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY' ? 'bg-indigo-50/50' : 'bg-slate-50/50'}`}>
                     <p className="text-sm font-semibold text-slate-800 truncate">{user?.nama || 'User'}</p>
                     <p className="text-xs text-slate-500 truncate">{user?.email || ''}</p>
-                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY') && (
                       <span className="inline-block mt-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded">ADMIN</span>
                     )}
                   </div>
@@ -130,7 +130,7 @@ export default function Header() {
                       <LayoutDashboard className="w-4 h-4" />
                       <span>Dashboard Saya</span>
                     </Link>
-                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                    {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY') && (
                       <Link
                         to="/admin"
                         onClick={() => setProfileDropdownOpen(false)}
@@ -219,7 +219,7 @@ export default function Header() {
                  >
                    <LayoutDashboard className="w-5 h-5" /> Dashboard Saya
                  </Link>
-                 {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN') && (
+                 {(user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY') && (
                    <Link
                      to="/admin"
                      onClick={() => setMobileOpen(false)}

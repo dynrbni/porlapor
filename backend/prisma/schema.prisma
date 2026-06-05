@@ -19,7 +19,8 @@ datasource db {
 
 enum Role {
   USER        // masyarakat biasa, bisa buat laporan
-  ADMIN       // pegawai instansi, kelola laporan
+  AGENCY      // pegawai instansi, kelola laporan
+  ADMIN       // admin internal sistem
   SUPERADMIN  // bisa semua + bisa tambah/kelola admin
 }
 

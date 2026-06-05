@@ -62,7 +62,7 @@ const Dashboard = () => {
   const totalMyReports = myReports.length;
   const inProgressMyReports = myReports.filter(r => r.status === 'IN_PROGRESS' || r.status === 'PENDING' || r.status === 'IN_REVIEW').length;
   const doneMyReports = myReports.filter(r => r.status === 'RESOLVED').length;
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY';
   const sortedMyReports = [...myReports].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const recentMyReports = sortedMyReports.slice(0, 3);
 

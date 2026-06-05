@@ -9,7 +9,7 @@ router.get('/', getAgencies);
 
 // Endpoint yg butuh autentikasi & hanya SUPERADMIN dan ADMIN
 router.use(authenticate);
-router.use(authorizeRoles('SUPERADMIN', 'ADMIN'));
+router.use(authorizeRoles('SUPERADMIN', 'ADMIN', 'AGENCY'));
 
 router.post('/', createAgency);
 router.put('/:id', updateAgency);

@@ -265,7 +265,7 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
                               <p className="text-sm font-bold text-slate-900">
                                 {note.author?.name}
                                 <span className="text-xs font-medium text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded ml-2">
-                                  {note.author?.role || 'ADMIN'}
+                                  {note.author?.role || 'AGENCY'}
                                 </span>
                               </p>
                               <p className="text-xs text-slate-500">

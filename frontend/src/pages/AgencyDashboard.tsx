@@ -769,14 +769,14 @@ const AgencyDashboard = () => {
                             <td className="p-4">
                               <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
                                 u.role === 'SUPERADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                                u.role === 'ADMIN' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                                u.role === 'ADMIN' || u.role === 'AGENCY' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
                                 'bg-slate-100 text-slate-800 border border-slate-200'
                               }`}>{u.role}</span>
                             </td>
                             <td className="p-4 text-sm text-slate-600">{u.phone || '-'}</td>
                             <td className="p-4">
                               <div className="flex items-center gap-2">
-                                {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && (
+                                {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
                                   <button
                                     onClick={() => handlePromoteUser(u.id)}
                                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"

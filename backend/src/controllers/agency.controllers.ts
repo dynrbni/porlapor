@@ -34,7 +34,7 @@ export const createAgency = async (req: Request, res: Response) => {
               nik: `AGENCY_${crypto.randomUUID().substring(0,8)}`,
               address: address || '-',
               gender: 'LAKI_LAKI',
-              role: 'ADMIN',
+              role: 'AGENCY',
               agencyId: agency.id
            }
         });

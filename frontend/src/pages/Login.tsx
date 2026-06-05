@@ -33,6 +33,8 @@ export default function Login() {
         if (user?.role === 'SUPERADMIN') {
           navigate('/superadmin');
         } else if (user?.role === 'ADMIN') {
+          navigate('/admin');
+        } else if (user?.role === 'AGENCY') {
           navigate('/agency');
         } else {
           navigate('/dashboard');

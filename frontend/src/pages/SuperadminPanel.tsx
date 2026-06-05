@@ -492,7 +492,7 @@ const SuperadminPanel = () => {
                           <p className="text-sm text-slate-600 truncate">{u.email} • {u.role || 'USER'}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && (
+                          {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
                             <button
                               onClick={() => handlePromote(u.id)}
                               className="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
