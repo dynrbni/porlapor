@@ -1,4 +1,4 @@
-import apiClient from './authService';
+import apiClient, { publicApiClient } from './authService';
 
 export interface Agency {
   id: string;
@@ -24,7 +24,7 @@ export interface CreateAgencyPayload {
 }
 
 export const getAgencies = async (): Promise<Agency[]> => {
-  const response = await apiClient.get('/agencies');
+  const response = await publicApiClient.get('/agencies');
   return response.data.data || [];
 };
 

@@ -1,4 +1,4 @@
-import apiClient from './authService';
+import apiClient, { publicApiClient } from './authService';
 
 export interface User {
   id: string;
@@ -15,7 +15,7 @@ export interface User {
 
 export const userService = {
   getAll: async (): Promise<User[]> => {
-    const response = await apiClient.get('/users');
+    const response = await publicApiClient.get('/users');
     return response.data.data || [];
   },
   deleteUser: async (id: string) => {

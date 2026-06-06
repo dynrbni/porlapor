@@ -1,4 +1,4 @@
-import apiClient from './authService';
+import apiClient, { publicApiClient } from './authService';
 
 export interface Category {
   id: string;
@@ -9,8 +9,8 @@ export interface Category {
 
 export const categoryService = {
   getAll: async () => {
-    const response = await apiClient.get('/categories');
-    return response.data.data as Category[];
+    const response = await publicApiClient.get('/categories');
+    return response.data.data || [];
   }
   ,
   create: async (payload: { name: string; description?: string }) => {
