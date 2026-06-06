@@ -100,12 +100,11 @@ const AdminDashboard = () => {
     fetchUserAndReports();
   }, [navigate]);
 
-  const isSubAdmin = user?.role === 'ADMIN';
   const showOverview = activeSection === 'overview';
   const showReports = activeSection === 'reports';
-  const showAgencies = !isSubAdmin && activeSection === 'agencies';
-  const showUsers = !isSubAdmin && activeSection === 'users';
-  const showCategories = !isSubAdmin && activeSection === 'categories';
+  const showAgencies = activeSection === 'agencies';
+  const showUsers = activeSection === 'users';
+  const showCategories = activeSection === 'categories';
   const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : 'Ringkasan';
   const sectionSubtitle = activeSection === 'reports'
     ? 'Pantau dan tindak lanjuti laporan masyarakat.'
