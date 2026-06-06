@@ -6,6 +6,7 @@ import type { Report } from '../services/reportService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import { ArrowLeft, Calendar, CheckCircle, Clock, FileText, Image as ImageIcon, MapPin, MessageCircle, Send, ShieldAlert, Sparkles, User } from 'lucide-react';
+import { getPhotoUrl } from '../services/authService';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -215,9 +216,16 @@ export default function ReportDetail() {
                       <div key={note.id} className="relative overflow-hidden rounded-[1.5rem] border border-blue-100 bg-blue-50/60 p-5">
                         <div className="absolute left-0 top-0 h-full w-1 bg-blue-500" />
                         <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-sm font-semibold text-blue-700 shadow-sm">
-                            {note.author?.name?.charAt(0).toUpperCase() || 'A'}
-                          </div>
+                          {(() => {
+                            const url = getPhotoUrl(note.author?.photoUrl);
+                            return url ? (
+                              <img src={url} alt="" className="h-10 w-10 shrink-0 rounded-2xl object-cover shadow-sm" />
+                            ) : (
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-sm font-semibold text-blue-700 shadow-sm">
+                                {note.author?.name?.charAt(0).toUpperCase() || <User className="w-5 h-5" />}
+                              </div>
+                            );
+                          })()}
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <p className="text-sm font-semibold text-slate-900">{note.author?.name || 'Admin'}</p>

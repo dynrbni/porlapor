@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const SERVER_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -90,6 +91,13 @@ export interface AuthResponse {
   data?: {
     user: AuthUser;
   };
+}
+
+export function getPhotoUrl(photoUrl?: string | null): string | null {
+  if (!photoUrl) return null;
+  if (photoUrl.startsWith('http')) return photoUrl;
+  if (photoUrl.startsWith('/uploads')) return `${SERVER_BASE_URL}${photoUrl}`;
+  return photoUrl;
 }
 
 export const authService = {

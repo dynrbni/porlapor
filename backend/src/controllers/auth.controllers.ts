@@ -165,6 +165,7 @@ export const loginController = async (req: Request, res: Response) => {
                 gender: true,
                 role: true,
                 agencyId: true,
+                photoUrl: true,
                 createdAt: true,
                 lastLoginAt: true,
             },
@@ -184,6 +185,7 @@ export const loginController = async (req: Request, res: Response) => {
                     gender: updatedUser.gender,
                     role: updatedUser.role,
                     agencyId: updatedUser.agencyId,
+                    photoUrl: updatedUser.photoUrl,
                 },
             },
         });

@@ -3,7 +3,8 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { getAgencies } from '../services/agencyService';
 import type { Agency } from '../services/agencyService';
-import { Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, X } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, X, User } from 'lucide-react';
+import { getPhotoUrl } from '../services/authService';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -267,9 +268,17 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
                         <div key={note.id} className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-5 relative overflow-hidden">
                           <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
                           <div className="flex items-center gap-3 mb-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
-                              {note.author?.name?.charAt(0).toUpperCase()}
-                            </div>
+                            {(() => {
+                              const url = getPhotoUrl(note.author?.photoUrl);
+                              return url ? (
+                                <img src={url} alt="" className="w-8 h-8 rounded-full object-cover shadow-sm" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                  {note.author?.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+                                </div>
+                              );
+                            })()}
+                            
                             <div>
                               <p className="text-sm font-bold text-slate-900">
                                 {note.author?.name}

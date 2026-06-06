@@ -1,4 +1,4 @@
-import apiClient, { publicApiClient } from './authService';
+import apiClient from './authService';
 
 export interface User {
   id: string;
@@ -31,7 +31,7 @@ export interface ProfileData {
 
 export const userService = {
   getAll: async (): Promise<User[]> => {
-    const response = await publicApiClient.get('/users');
+    const response = await apiClient.get('/users');
     return response.data.data || [];
   },
   createUser: async (payload: { name: string; email: string; password: string; role?: string }) => {

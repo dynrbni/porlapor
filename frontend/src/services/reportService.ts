@@ -52,6 +52,16 @@ export interface Report {
   user?: Author;
 }
 
+export interface ReportStats {
+  totalReports: number;
+  totalAgencies: number;
+  totalUsers: number;
+  reportsByStatus: { status: string; count: number }[];
+  reportsByAgency: { agencyId: string; agencyName: string; count: number }[];
+  recentReports: Report[];
+  dailyReports: { date: string; count: number }[];
+}
+
 export interface UpdateReportPayload {
   title?: string;
   description?: string;
@@ -63,6 +73,11 @@ export interface UpdateReportPayload {
   address?: string;
   imageUrl?: string;
 }
+
+export const getStats = async (): Promise<ReportStats> => {
+  const response = await publicApiClient.get<{ message: string; data: ReportStats }>('/reports/stats');
+  return response.data.data;
+};
 
 export const reportService = {
   

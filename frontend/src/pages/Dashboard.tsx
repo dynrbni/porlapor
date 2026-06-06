@@ -5,7 +5,8 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { Link, useNavigate } from 'react-router-dom';
 import ReportCard from '../components/ReportCard';
-import { Activity, ArrowRight, CheckCircle2, Clock3, Inbox, LayoutDashboard, MapPin, Sparkles } from 'lucide-react';
+import { Activity, ArrowRight, CheckCircle2, Clock3, Inbox, LayoutDashboard, MapPin, Sparkles, User } from 'lucide-react';
+import { getPhotoUrl } from '../services/authService';
 
 type Tab = 'semua' | 'belum' | 'proses' | 'selesai';
 
@@ -135,11 +136,16 @@ const Dashboard = () => {
 
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <div className="h-16 w-16 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
-                      <img
-                        src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'anon'}`}
-                        alt="Avatar"
-                        className="h-full w-full object-cover"
-                      />
+                      {(() => {
+                        const url = getPhotoUrl(user?.photoUrl);
+                        return url ? (
+                          <img src={url} alt="Avatar" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-2xl font-bold text-slate-400">
+                            {user?.nama?.charAt(0)?.toUpperCase() || <User className="w-8 h-8" />}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div className="space-y-1">
@@ -287,11 +293,16 @@ const Dashboard = () => {
                   <div className="space-y-5 px-6 py-6">
                     <div className="flex items-center gap-4">
                       <div className="h-14 w-14 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-                        <img
-                          src={user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.nama || 'anon'}`}
-                          alt="Avatar"
-                          className="h-full w-full object-cover"
-                        />
+                        {(() => {
+                          const url = getPhotoUrl(user?.photoUrl);
+                          return url ? (
+                            <img src={url} alt="Avatar" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-xl font-bold text-slate-400">
+                              {user?.nama?.charAt(0)?.toUpperCase() || <User className="w-6 h-6" />}
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-slate-900">{user?.nama || 'Pengguna'}</p>

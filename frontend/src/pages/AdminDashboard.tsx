@@ -10,7 +10,8 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin, User as UserIcon } from 'lucide-react';
+import { getPhotoUrl } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
@@ -658,11 +659,16 @@ const AdminDashboard = () => {
                               <td className="p-4">
                                 <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
-                                    <img
-                                      src={report.user?.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${report.user?.id || 'anon'}`}
-                                      alt=""
-                                      className="w-full h-full object-cover"
-                                    />
+                                    {(() => {
+                                      const url = getPhotoUrl(report.user?.photoUrl);
+                                      return url ? (
+                                        <img src={url} alt="" className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-500">
+                                          {report.user?.name?.charAt(0)?.toUpperCase() || report.user?.nama?.charAt(0)?.toUpperCase() || <UserIcon className="w-4 h-4" />}
+                                        </div>
+                                      );
+                                    })()}
                                   </div>
                                   <div>
                                     <p className="text-sm font-bold text-slate-900">{report.user?.name || report.user?.nama || 'Anonim'}</p>
@@ -951,8 +957,17 @@ const AdminDashboard = () => {
                           <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                             <td className="p-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                                  <Users className="w-4 h-4 text-slate-500" />
+                                <div className="w-8 h-8 rounded-full bg-slate-100 overflow-hidden">
+                                  {(() => {
+                                    const url = getPhotoUrl(u.photoUrl);
+                                    return url ? (
+                                      <img src={url} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-500">
+                                        {(u.name || u.nama || 'U').charAt(0).toUpperCase()}
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                                 <p className="text-sm font-semibold text-slate-900">{u.name || u.nama || 'N/A'}</p>
                               </div>

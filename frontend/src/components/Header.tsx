@@ -1,7 +1,7 @@
-import { Menu, X, LogOut, ChevronDown, LayoutDashboard, Shield } from 'lucide-react';
+import { Menu, X, LogOut, ChevronDown, LayoutDashboard, Shield, User } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { authService, getPhotoUrl } from '../services/authService';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -102,9 +102,17 @@ export default function Header() {
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200"
                 >
-                  <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-bold shadow-sm ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY' ? 'bg-indigo-600' : 'bg-blue-600'}`}>
-                    {userInitials}
-                  </div>
+                  {user?.photoUrl ? (
+                    <img
+                      src={getPhotoUrl(user.photoUrl) || ''}
+                      alt=""
+                      className="w-8 h-8 rounded-full object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-bold shadow-sm ${user?.role === 'ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'AGENCY' ? 'bg-indigo-600' : 'bg-blue-600'}`}>
+                      {userInitials}
+                    </div>
+                  )}
                   <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 

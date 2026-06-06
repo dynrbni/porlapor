@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getAgencies } from '../services/agencyService';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import type { Agency } from '../services/agencyService';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Search, Building2, Phone, MapPin } from 'lucide-react';
+import { getPhotoUrl } from '../services/authService';
 
 const Agencies: React.FC = () => {
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -32,12 +34,11 @@ const Agencies: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 flex flex-col relative">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 flex flex-col">
       <Header />
       
-      {/* Redesigned Hero Section for Agencies */}
-      <section className="relative pt-32 pb-12 lg:pt-40 lg:pb-12 z-10">
-        {/* Background Gradients similar to landing */}
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-12 lg:pt-40 lg:pb-16 z-10">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-blue-100/60 via-slate-50/80 to-transparent pointer-events-none"></div>
         </div>
@@ -64,7 +65,6 @@ const Agencies: React.FC = () => {
           </div>
         </div>
         
-        {/* Editorial aesthetic blurs and decoration */}
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 pointer-events-none">
           <div className="w-96 h-96 bg-blue-200/40 rounded-full blur-3xl"></div>
         </div>
@@ -74,7 +74,7 @@ const Agencies: React.FC = () => {
       </section>
 
       {/* Main Content / List per instansi */}
-      <section className="pb-24 pt-4 lg:pt-8 w-full z-20 flex-1 bg-slate-50">
+      <section className="pb-24 pt-4 lg:pt-8 w-full z-20 flex-1">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {loading ? (
             <div className="text-center text-slate-500 py-12" data-aos="fade-up">
@@ -94,7 +94,7 @@ const Agencies: React.FC = () => {
                   {agency.photoUrl ? (
                     <>
                       <img 
-                        src={agency.photoUrl} 
+                        src={getPhotoUrl(agency.photoUrl) || ''} 
                         alt={agency.name} 
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -163,6 +163,8 @@ const Agencies: React.FC = () => {
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

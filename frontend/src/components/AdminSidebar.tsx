@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
-import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag, MapPin } from 'lucide-react';
+import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag, MapPin, User } from 'lucide-react';
 import type { AuthUser } from '../services/authService';
+import { getPhotoUrl } from '../services/authService';
 import porlaporLogo from '../assets/porlapor_logo.png';
 
 export type AdminSection = 'overview' | 'reports' | 'agencies' | 'users' | 'categories' | 'superadmin' | 'explore';
@@ -42,8 +43,9 @@ export default function AdminSidebar({
   };
 
   const renderSidebarContent = (compact = false) => (
-      <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-5 py-6">
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* Header - Logo */}
+      <div className="flex items-center justify-between px-5 py-6 shrink-0">
         <div className="flex items-center gap-3">
           <img src={porlaporLogo} alt="PorLapor" className="h-16 w-auto ml-[-11px]" />
         </div>
@@ -58,26 +60,8 @@ export default function AdminSidebar({
         )}
       </div>
 
-      <div className="border-b border-slate-200 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
-            {userInitial}
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
-            <p className="text-xs text-slate-500">{userRole}</p>
-          </div>
-        </div>
-        <button
-          onClick={onLogout}
-          className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
-        >
-          <LogOut className="h-4 w-4" />
-          Keluar
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-3 pt-4">
+      {/* Nav Items - flex-1 tapi overflow-hidden biar ga bisa discroll */}
+      <div className="flex-1 overflow-hidden px-3 pt-2">
         <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
           Navigasi
         </p>
@@ -105,19 +89,46 @@ export default function AdminSidebar({
           })}
         </nav>
       </div>
+
+      {/* Profile + Logout - di bawah */}
+      <div className="border-t border-slate-200 px-5 py-4 shrink-0">
+        <div className="flex items-center gap-3">
+          {(() => {
+            const url = getPhotoUrl(user?.photoUrl);
+            return url ? (
+              <img src={url} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white shrink-0">
+                {userInitial}
+              </div>
+            );
+          })()}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-slate-900 truncate">{userDisplayName}</p>
+            <p className="text-xs text-slate-500">{userRole}</p>
+          </div>
+        </div>
+        <button
+          onClick={onLogout}
+          className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4" />
+          Keluar
+        </button>
+      </div>
     </div>
   );
 
   return (
     <>
-      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 h-screen sticky top-0 backdrop-blur">
+      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 h-screen sticky top-0 backdrop-blur overflow-hidden">
         {renderSidebarContent()}
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/30" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white text-slate-700 border-r border-slate-200 shadow-2xl">
+          <aside className="absolute left-0 top-0 h-full w-72 bg-white text-slate-700 border-r border-slate-200 shadow-2xl overflow-hidden">
             {renderSidebarContent(true)}
           </aside>
         </div>

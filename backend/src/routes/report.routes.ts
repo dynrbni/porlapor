@@ -3,6 +3,7 @@ import {
   createReport,
   getAllReports,
   getReportById,
+  getReportStats,
   updateReport,
   deleteReport,
   addComment,
@@ -13,6 +14,7 @@ import { authenticate } from '../middlewares/auth.middleware';
 const router = express.Router();
 
 // Public routes
+router.get('/reports/stats', getReportStats);
 router.get('/reports', getAllReports);
 router.get('/reports/:id', getReportById);
 

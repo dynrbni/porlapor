@@ -21,6 +21,7 @@ function reporterSelect() {
     nik: true,
     birthDate: true,
     createdAt: true,
+    photoUrl: true,
   };
 }
 
@@ -305,6 +306,101 @@ export const deleteReport = async (req: Request, res: Response) => {
       message: 'Laporan berhasil dihapus',
     });
   } catch (error) {
+    res.status(500).json({
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getReportStats = async (req: Request, res: Response) => {
+  try {
+    const [
+      totalReports,
+      totalAgencies,
+      totalUsers,
+      reportsByStatus,
+      reportsByAgency,
+      recentReports,
+    ] = await Promise.all([
+      prisma.report.count(),
+      prisma.agency.count({ where: { isActive: true } }),
+      prisma.user.count({ where: { isActive: true } }),
+      prisma.report.groupBy({
+        by: ['status'],
+        _count: { id: true },
+      }),
+      prisma.report.groupBy({
+        by: ['agencyId'],
+        _count: { id: true },
+        where: { agencyId: { not: null } },
+        orderBy: { _count: { id: 'desc' } },
+        take: 10,
+      }),
+      prisma.report.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        include: {
+          user: { select: reporterSelect() },
+          category: { select: categorySelect() },
+          _count: { select: { likes: true } },
+        },
+      }),
+    ]);
+
+    // Fetch agency names for reportsByAgency
+    const agencyIds = reportsByAgency.map((r) => r.agencyId).filter(Boolean) as string[];
+    const agencies = agencyIds.length > 0
+      ? await prisma.agency.findMany({
+          where: { id: { in: agencyIds } },
+          select: { id: true, name: true },
+        })
+      : [];
+    const agencyMap = new Map(agencies.map((a) => [a.id, a.name]));
+
+    const reportsByAgencyWithNames = reportsByAgency.map((r) => ({
+      agencyId: r.agencyId,
+      agencyName: agencyMap.get(r.agencyId ?? '') || 'Unknown',
+      count: r._count.id,
+    }));
+
+    // Daily report counts for last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const dailyReportsRaw = await prisma.report.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const dailyMap = new Map<string, number>();
+    dailyReportsRaw.forEach((r) => {
+      const dateKey = r.createdAt.toISOString().split('T')[0];
+      dailyMap.set(dateKey, (dailyMap.get(dateKey) || 0) + 1);
+    });
+
+    const dailyReports = Array.from(dailyMap.entries()).map(([date, count]) => ({
+      date,
+      count,
+    }));
+
+    res.status(200).json({
+      message: 'Statistik berhasil didapatkan',
+      data: {
+        totalReports,
+        totalAgencies,
+        totalUsers,
+        reportsByStatus: reportsByStatus.map((r) => ({
+          status: r.status as string,
+          count: r._count.id,
+        })),
+        reportsByAgency: reportsByAgencyWithNames,
+        recentReports,
+        dailyReports,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching stats:', error);
     res.status(500).json({
       message: 'Internal server error',
     });

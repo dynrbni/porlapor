@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Agencies from './pages/Agencies';
+import Statistik from './pages/Statistik';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminReportDetail from './pages/AdminReportDetail';
@@ -42,6 +43,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/instansi" element={<Agencies />} />
+        <Route path="/statistik" element={<Statistik />} />
 
         {/* User-Only Routes */}
         <Route 
