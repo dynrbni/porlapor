@@ -327,11 +327,6 @@ export const addComment = async (req: Request, res: Response) => {
 
     if (!report) return res.status(404).json({ message: 'Laporan tidak ditemukan' });
 
-    // Cek apakah user yang comment adalah pemilik laporan (Jika role dia USER)
-    if (user.role === 'USER' && report.userId !== user.id) {
-      return res.status(403).json({ message: 'Akses ditolak: Anda hanya dapat mengomentari laporan Anda sendiri' });
-    }
-
     const comment = await prisma.comment.create({
       data: {
         content,
