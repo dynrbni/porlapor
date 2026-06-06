@@ -374,7 +374,8 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] text-slate-900 selection:bg-indigo-200/40 flex flex-row relative w-full overflow-x-hidden">
+    <div className="h-screen bg-[#f7f8fb] text-slate-900 selection:bg-indigo-200/40 flex flex-row relative w-full overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_55%),radial-gradient(circle_at_80%_20%,_rgba(16,185,129,0.08),_transparent_55%)]" />
       {/* Sidebar */}
       <AdminSidebar
         user={user}
@@ -386,8 +387,7 @@ const AdminDashboard = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col relative">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_55%),radial-gradient(circle_at_80%_20%,_rgba(16,185,129,0.08),_transparent_55%)]" />
+      <div className="flex-1 flex flex-col relative overflow-y-auto">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white/90 border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur">
           <h2 className="text-lg font-semibold text-slate-900">Admin Dashboard</h2>

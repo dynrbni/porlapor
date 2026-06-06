@@ -169,7 +169,7 @@ export default function AdminReportDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-indigo-200 flex flex-row relative w-full overflow-x-hidden">
+    <div className="h-screen bg-slate-50 selection:bg-indigo-200 flex flex-row relative w-full overflow-hidden">
       <AdminSidebar
         user={user}
         activeSection={sidebarSection}
@@ -179,7 +179,7 @@ export default function AdminReportDetail() {
         onCloseMobile={() => setSidebarMobileOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40">
           <h2 className="font-bold text-slate-900">Report Detail</h2>
