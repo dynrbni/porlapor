@@ -45,7 +45,7 @@ export default function AdminSidebar({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-6">
         <div className="flex items-center gap-3">
-          <img src={porlaporLogo} alt="PorLapor" className="h-8 w-auto" />
+          <img src={porlaporLogo} alt="PorLapor" className="h-12 w-auto" />
         </div>
         {compact && (
           <button
