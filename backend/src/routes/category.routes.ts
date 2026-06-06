@@ -10,12 +10,13 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.use('/categories', authenticate);
-
-router.post('/categories', createCategory);
+// Public: anyone can read categories
 router.get('/categories', getAllCategories);
 router.get('/categories/:id', getCategoryById);
-router.put('/categories/:id', updateCategory);
-router.delete('/categories/:id', deleteCategory);
+
+// Protected: only authenticated users can mutate
+router.post('/categories', authenticate, createCategory);
+router.put('/categories/:id', authenticate, updateCategory);
+router.delete('/categories/:id', authenticate, deleteCategory);
 
 export default router;

@@ -56,22 +56,41 @@ const AdminDashboard = () => {
       setLoading(true);
       const currentUser = authService.getUser();
       if (currentUser) setUser(currentUser);
-      
-      const [reportsResponse, agenciesResponse, usersResponse, categoriesResponse] = await Promise.all([
+
+      // Fetch all data independently so one failure doesn't block others
+      const [reportsResult, agenciesResult, usersResult, categoriesResult] = await Promise.allSettled([
         reportService.getAllReports(),
         getAgencies(),
         userService.getAll(),
         categoryService.getAll(),
       ]);
-      const data = Array.isArray(reportsResponse) ? reportsResponse : reportsResponse.data;
-      if (data) {
-        setReports(data);
+
+      if (reportsResult.status === 'fulfilled') {
+        const data = Array.isArray(reportsResult.value) ? reportsResult.value : reportsResult.value.data;
+        if (data) setReports(data);
+      } else {
+        console.error('Failed to fetch reports:', reportsResult.reason);
       }
-      setAgencies(agenciesResponse);
-      setUsers(usersResponse);
-      setCategories(categoriesResponse);
+
+      if (agenciesResult.status === 'fulfilled') {
+        setAgencies(agenciesResult.value);
+      } else {
+        console.error('Failed to fetch agencies:', agenciesResult.reason);
+      }
+
+      if (usersResult.status === 'fulfilled') {
+        setUsers(usersResult.value);
+      } else {
+        console.error('Failed to fetch users:', usersResult.reason);
+      }
+
+      if (categoriesResult.status === 'fulfilled') {
+        setCategories(categoriesResult.value);
+      } else {
+        console.error('Failed to fetch categories:', categoriesResult.reason);
+      }
     } catch (error) {
-      console.error('Failed to fetch data', error);
+      console.error('Failed to fetch dashboard data', error);
     } finally {
       setLoading(false);
     }
