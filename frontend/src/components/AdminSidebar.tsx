@@ -42,7 +42,7 @@ export default function AdminSidebar({
   };
 
   const renderSidebarContent = (compact = false) => (
-    <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-6">
         <div className="flex items-center gap-3">
           <img src={porlaporLogo} alt="PorLapor" className="h-16 w-auto ml-[-11px]" />
@@ -58,7 +58,26 @@ export default function AdminSidebar({
         )}
       </div>
 
-      <div className="px-3">
+      <div className="border-b border-slate-200 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
+            {userInitial}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
+            <p className="text-xs text-slate-500">{userRole}</p>
+          </div>
+        </div>
+        <button
+          onClick={onLogout}
+          className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4" />
+          Keluar
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-3 pt-4">
         <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
           Navigasi
         </p>
@@ -84,34 +103,14 @@ export default function AdminSidebar({
               </button>
             );
           })}
-
         </nav>
-      </div>
-
-      <div className="mt-auto border-t border-slate-200 px-5 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
-            {userInitial}
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-900">{userDisplayName}</p>
-            <p className="text-xs text-slate-500">{userRole}</p>
-          </div>
-        </div>
-        <button
-          onClick={onLogout}
-          className="mt-4 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
-        >
-          <LogOut className="h-4 w-4" />
-          Keluar
-        </button>
       </div>
     </div>
   );
 
   return (
     <>
-      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 min-h-screen backdrop-blur">
+      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 h-screen sticky top-0 backdrop-blur">
         {renderSidebarContent()}
       </aside>
 
