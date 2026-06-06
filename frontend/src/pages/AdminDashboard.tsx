@@ -831,18 +831,6 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => {
-                      setUserForm({ name: '', email: '', password: '' });
-                      setUserModalRole('USER');
-                      setCategoryError('');
-                      setCategorySuccess('');
-                      setUserModalOpen(true);
-                    }}
-                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
-                  >
-                    Tambah Pengguna
-                  </button>
                   {isSuperAdmin && (
                     <button
                       onClick={() => {

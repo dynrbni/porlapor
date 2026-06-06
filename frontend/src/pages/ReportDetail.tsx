@@ -5,7 +5,7 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
-import { ArrowLeft, Calendar, CheckCircle, Clock, FileText, Image as ImageIcon, MapPin, MessageCircle, Send, ShieldAlert, Sparkles, User } from 'lucide-react';
+import { ArrowLeft, Calendar, CheckCircle, Clock, FileText, Image as ImageIcon, MapPin, MessageCircle, Send, ShieldAlert, Sparkles, ThumbsUp, User } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -36,6 +36,7 @@ export default function ReportDetail() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
+  const [liking, setLiking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,6 +80,32 @@ export default function ReportDetail() {
       setSendingComment(false);
     }
   };
+
+  const handleLike = async () => {
+    if (!user || !id) return;
+    setLiking(true);
+    try {
+      const res = await reportService.toggleLike(id);
+      if (report) {
+        const isLiked = res.liked;
+        setReport({
+          ...report,
+          _count: {
+            likes: (report._count?.likes || 0) + (isLiked ? 1 : -1),
+          },
+          likes: isLiked
+            ? [...(report.likes || []), { userId: user.id }]
+            : (report.likes || []).filter((l) => l.userId !== user.id),
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle like', err);
+    } finally {
+      setLiking(false);
+    }
+  };
+
+  const isLikedByMe = report?.likes?.some((l) => l.userId === user?.id);
 
   const getStatusBadge = (status: string): StatusBadge => {
     switch (status) {
@@ -351,15 +378,32 @@ export default function ReportDetail() {
                     <p className="mt-2 text-sm text-slate-700">{formatDate(report.createdAt)}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="grid grid-cols-3 gap-3 pt-1">
                     <div className="rounded-2xl bg-slate-900 px-4 py-4 text-white">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Komentar</p>
-                      <p className="mt-2 text-2xl font-semibold">{commentCount}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Komentar</p>
+                      <p className="mt-2 text-2xl font-bold">{commentCount}</p>
                     </div>
                     <div className="rounded-2xl bg-blue-50 px-4 py-4 text-blue-700">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-400">Tindak lanjut</p>
-                      <p className="mt-2 text-2xl font-semibold">{noteCount}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-400">Tindak lanjut</p>
+                      <p className="mt-2 text-2xl font-bold">{noteCount}</p>
                     </div>
+                    <button
+                      onClick={user ? handleLike : () => navigate('/login', { state: { from: `/laporan/${id}` } })}
+                      disabled={liking}
+                      className={`rounded-2xl px-4 py-4 text-center transition-all ${
+                        isLikedByMe
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                      }`}
+                    >
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] opacity-70">
+                        {user ? 'Dukung' : 'Login'}
+                      </p>
+                      <div className="mt-1 flex items-center justify-center gap-1">
+                        <ThumbsUp className={`h-4 w-4 ${isLikedByMe ? 'fill-white' : ''}`} />
+                        <span className="text-2xl font-bold">{report._count?.likes || 0}</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </article>

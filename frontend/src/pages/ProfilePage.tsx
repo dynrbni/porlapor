@@ -132,12 +132,6 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header />
       <main className="max-w-3xl mx-auto px-4 pt-28 pb-16">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Kembali
-        </button>
 
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold tracking-tight">Pengaturan Profil</h1>
