@@ -44,6 +44,9 @@ const AdminDashboard = () => {
     address: '',
     photoUrl: '',
   });
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [userModalRole, setUserModalRole] = useState<'USER' | 'ADMIN'>('USER');
+  const [userForm, setUserForm] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -107,6 +110,7 @@ const AdminDashboard = () => {
   const showAgencies = activeSection === 'agencies';
   const showUsers = activeSection === 'users';
   const showCategories = activeSection === 'categories';
+  const isSuperAdmin = user?.role === 'SUPERADMIN';
   const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : activeSection === 'explore' ? 'Jelajahi Laporan' : 'Ringkasan';
   const sectionSubtitle = activeSection === 'explore'
     ? 'Lihat semua laporan di peta interaktif.'
@@ -115,7 +119,7 @@ const AdminDashboard = () => {
     : activeSection === 'agencies'
     ? 'Kelola instansi yang menangani laporan.'
     : activeSection === 'users'
-    ? 'Lihat semua pengguna, promosi, atau hapus akun.'
+    ? isSuperAdmin ? 'Kelola semua pengguna dan admin.' : 'Kelola pengguna biasa.'
     : activeSection === 'categories'
     ? 'Kelola kategori laporan yang tersedia di sistem.'
     : 'Pantau performa laporan, instansi, dan aktivitas terbaru secara real-time.';
@@ -373,6 +377,32 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteReport = async (id: string) => {
+    if (!window.confirm('Yakin ingin menghapus laporan ini?')) return;
+    try {
+      await reportService.deleteReport(id);
+      setReports((prev) => prev.filter((r) => r.id !== id));
+      setCategorySuccess('Laporan berhasil dihapus.');
+    } catch (err: any) {
+      console.error('Failed to delete report', err);
+      setCategoryError(err.response?.data?.message || 'Gagal menghapus laporan.');
+    }
+  };
+
+  const handleCreateUser = async (payload: { name: string; email: string; password: string; role: string }): Promise<boolean> => {
+    try {
+      await userService.createUser(payload);
+      const updated = await userService.getAll();
+      setUsers(updated);
+      setCategorySuccess(payload.role === 'ADMIN' ? 'Admin berhasil ditambahkan.' : 'Pengguna berhasil ditambahkan.');
+      return true;
+    } catch (err: any) {
+      console.error('Failed to create user', err);
+      setCategoryError(err.response?.data?.message || 'Gagal menambahkan pengguna.');
+      return false;
+    }
+  };
+
   return (
     <div className="h-screen bg-[#f7f8fb] text-slate-900 selection:bg-indigo-200/40 flex flex-row relative w-full overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_55%),radial-gradient(circle_at_80%_20%,_rgba(16,185,129,0.08),_transparent_55%)]" />
@@ -403,7 +433,7 @@ const AdminDashboard = () => {
         <div className="px-6 pt-8 pb-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">PorLapor Admin</p>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">{isSuperAdmin ? 'PorLapor Super Admin' : 'PorLapor Admin'}</p>
               <h1 className="text-3xl font-semibold text-slate-900">
                 {showOverview ? 'Dashboard Ringkasan' : sectionTitle}
               </h1>
@@ -651,13 +681,24 @@ const AdminDashboard = () => {
                                 {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                               </td>
                               <td className="p-4 text-center">
-                                <button
-                                  onClick={() => setSelectedReportId(report.id)}
-                                  className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
-                                  title="Lihat Detail"
-                                >
-                                  <ArrowRight className="w-5 h-5" />
-                                </button>
+                                <div className="flex items-center justify-center gap-1">
+                                  <button
+                                    onClick={() => setSelectedReportId(report.id)}
+                                    className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
+                                    title="Lihat Detail"
+                                  >
+                                    <ArrowRight className="w-5 h-5" />
+                                  </button>
+                                  {isSuperAdmin && (
+                                    <button
+                                      onClick={() => handleDeleteReport(report.id)}
+                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                                      title="Hapus laporan"
+                                    >
+                                      <Trash2 className="w-5 h-5" />
+                                    </button>
+                                  )}
+                                </div>
                               </td>
                             </tr>
                           ))
@@ -783,6 +824,116 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => {
+                      setUserForm({ name: '', email: '', password: '' });
+                      setUserModalRole('USER');
+                      setCategoryError('');
+                      setCategorySuccess('');
+                      setUserModalOpen(true);
+                    }}
+                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-sm font-semibold transition-colors"
+                  >
+                    Tambah Pengguna
+                  </button>
+                  {isSuperAdmin && (
+                    <button
+                      onClick={() => {
+                        setUserForm({ name: '', email: '', password: '' });
+                        setUserModalRole('ADMIN');
+                        setCategoryError('');
+                        setCategorySuccess('');
+                        setUserModalOpen(true);
+                      }}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-semibold transition-colors"
+                    >
+                      Tambah Admin
+                    </button>
+                  )}
+                </div>
+
+                {/* User Create Modal */}
+                {userModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 mx-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-slate-900">
+                          {userModalRole === 'ADMIN' ? 'Tambah Admin Baru' : 'Tambah Pengguna Baru'}
+                        </h3>
+                        <button onClick={() => setUserModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-600">
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                      {categoryError && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-4">
+                          {categoryError}
+                        </div>
+                      )}
+                      {categorySuccess && (
+                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg p-3 mb-4">
+                          {categorySuccess}
+                        </div>
+                      )}
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const ok = await handleCreateUser({ ...userForm, role: userModalRole });
+                          if (ok) setUserModalOpen(false);
+                        }}
+                        className="space-y-4"
+                      >
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Nama *</label>
+                          <input
+                            type="text"
+                            required
+                            value={userForm.name}
+                            onChange={(e) => setUserForm((p) => ({ ...p, name: e.target.value }))}
+                            className="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Email *</label>
+                          <input
+                            type="email"
+                            required
+                            value={userForm.email}
+                            onChange={(e) => setUserForm((p) => ({ ...p, email: e.target.value }))}
+                            className="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Password *</label>
+                          <input
+                            type="password"
+                            required
+                            minLength={6}
+                            value={userForm.password}
+                            onChange={(e) => setUserForm((p) => ({ ...p, password: e.target.value }))}
+                            className="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors text-sm"
+                          />
+                        </div>
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setUserModalOpen(false)}
+                            className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800"
+                          >
+                            Batal
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                          >
+                            {userModalRole === 'ADMIN' ? 'Tambah Admin' : 'Tambah Pengguna'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -817,7 +968,7 @@ const AdminDashboard = () => {
                             <td className="p-4 text-sm text-slate-600">{u.phone || '-'}</td>
                             <td className="p-4">
                               <div className="flex items-center gap-2">
-                                {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
+                                {isSuperAdmin && u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
                                   <button
                                     onClick={() => handlePromoteUser(u.id)}
                                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
@@ -826,13 +977,15 @@ const AdminDashboard = () => {
                                     <UserPlus className="w-4 h-4" />
                                   </button>
                                 )}
-                                <button
-                                  onClick={() => handleDeleteUser(u.id)}
-                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                  title="Hapus pengguna"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                {(isSuperAdmin || u.role === 'USER' || (!u.role)) && (
+                                  <button
+                                    onClick={() => handleDeleteUser(u.id)}
+                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    title="Hapus pengguna"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>

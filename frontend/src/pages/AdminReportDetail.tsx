@@ -7,7 +7,7 @@ import type { Agency } from '../services/agencyService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
-import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Menu } from 'lucide-react';
+import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Trash2, Menu } from 'lucide-react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -160,6 +160,19 @@ export default function AdminReportDetail() {
       setError(err.response?.data?.message || 'Gagal menambahkan tanggapan resmi.');
     } finally {
       setSavingNote(false);
+    }
+  };
+
+  const isSuperAdmin = user?.role === 'SUPERADMIN';
+
+  const handleDeleteReport = async () => {
+    if (!id || !window.confirm('Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.')) return;
+    try {
+      await reportService.deleteReport(id);
+      navigate('/admin');
+    } catch (err: any) {
+      console.error('Failed to delete report', err);
+      setError(err.response?.data?.message || 'Gagal menghapus laporan.');
     }
   };
 
@@ -365,6 +378,16 @@ export default function AdminReportDetail() {
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     Simpan Perubahan
                   </button>
+
+                  {isSuperAdmin && (
+                    <button
+                      onClick={handleDeleteReport}
+                      className="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Hapus Laporan
+                    </button>
+                  )}
                 </div>
               </div>
 

@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     if (!allowedRoles.includes(user.role || '')) {
       // Redirect based on role if they try to access restricted page
       if (user.role === 'SUPERADMIN') {
-        return <Navigate to="/superadmin" replace />;
+        return <Navigate to="/admin" replace />;
       } else if (user.role === 'ADMIN') {
         return <Navigate to="/admin" replace />;
       } else if (user.role === 'AGENCY') {

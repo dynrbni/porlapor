@@ -18,12 +18,15 @@ export const userService = {
     const response = await publicApiClient.get('/users');
     return response.data.data || [];
   },
+  createUser: async (payload: { name: string; email: string; password: string; role?: string }) => {
+    const response = await apiClient.post<{ message: string; data: User }>('/users', payload);
+    return response.data;
+  },
   deleteUser: async (id: string) => {
     const response = await apiClient.delete<{ message: string }>(`/users/${id}`);
     return response.data;
   },
   promote: async (id: string, role: string) => {
-    // backend currently may not accept role via update; attempt PUT anyway
     const response = await apiClient.put<{ message: string; data?: any }>(`/users/${id}`, { role });
     return response.data;
   }

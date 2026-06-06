@@ -31,7 +31,7 @@ export default function Login() {
       if (response.token || response.message) {
         const user = authService.getUser();
         if (user?.role === 'SUPERADMIN') {
-          navigate('/superadmin');
+          navigate('/admin');
         } else if (user?.role === 'ADMIN') {
           navigate('/admin');
         } else if (user?.role === 'AGENCY') {
