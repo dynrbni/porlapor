@@ -45,7 +45,7 @@ export default function AdminSidebar({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-6">
         <div className="flex items-center gap-3">
-          <img src={porlaporLogo} alt="PorLapor" className="h-12 w-auto" />
+          <img src={porlaporLogo} alt="PorLapor" className="h-16 w-auto ml-[-11px]" />
         </div>
         {compact && (
           <button
@@ -58,7 +58,7 @@ export default function AdminSidebar({
         )}
       </div>
 
-      <div className="px-3">
+      <div className="flex-1 overflow-y-auto px-3">
         <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
           Navigasi
         </p>
@@ -88,7 +88,7 @@ export default function AdminSidebar({
         </nav>
       </div>
 
-      <div className="mt-auto border-t border-slate-200 px-5 py-5">
+      <div className="border-t border-slate-200 px-5 py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
             {userInitial}
@@ -111,7 +111,7 @@ export default function AdminSidebar({
 
   return (
     <>
-      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 min-h-screen backdrop-blur">
+      <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-white/90 text-slate-700 border-r border-slate-200 h-screen sticky top-0 backdrop-blur">
         {renderSidebarContent()}
       </aside>
 
