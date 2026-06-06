@@ -378,7 +378,7 @@ export default function ReportDetail() {
                     <p className="mt-2 text-sm text-slate-700">{formatDate(report.createdAt)}</p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 pt-1">
+                  <div className="grid grid-cols-2 gap-3 pt-1">
                     <div className="rounded-2xl bg-slate-900 px-4 py-4 text-white">
                       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Komentar</p>
                       <p className="mt-2 text-2xl font-bold">{commentCount}</p>
@@ -387,24 +387,24 @@ export default function ReportDetail() {
                       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-400">Tindak lanjut</p>
                       <p className="mt-2 text-2xl font-bold">{noteCount}</p>
                     </div>
-                    <button
-                      onClick={user ? handleLike : () => navigate('/login', { state: { from: `/laporan/${id}` } })}
-                      disabled={liking}
-                      className={`rounded-2xl px-4 py-4 text-center transition-all ${
-                        isLikedByMe
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
-                      }`}
-                    >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] opacity-70">
-                        {user ? 'Dukung' : 'Login'}
-                      </p>
-                      <div className="mt-1 flex items-center justify-center gap-1">
-                        <ThumbsUp className={`h-4 w-4 ${isLikedByMe ? 'fill-white' : ''}`} />
-                        <span className="text-2xl font-bold">{report._count?.likes || 0}</span>
-                      </div>
-                    </button>
                   </div>
+                  <button
+                    onClick={user ? handleLike : () => navigate('/login', { state: { from: `/laporan/${id}` } })}
+                    disabled={liking}
+                    className={`mt-3 w-full rounded-2xl px-4 py-3 text-center transition-all ${
+                      isLikedByMe
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <ThumbsUp className={`h-5 w-5 ${isLikedByMe ? 'fill-white' : ''}`} />
+                      <span className="text-sm font-bold">{user ? 'Dukung laporan ini' : 'Login untuk mendukung'}</span>
+                      <span className={`ml-auto text-lg font-bold ${isLikedByMe ? 'text-white' : 'text-slate-900'}`}>
+                        {report._count?.likes || 0}
+                      </span>
+                    </div>
+                  </button>
                 </div>
               </article>
 

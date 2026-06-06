@@ -160,20 +160,6 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5">
-                      <LayoutDashboard className="h-3.5 w-3.5" />
-                      {totalMyReports} laporan tercatat
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-amber-700">
-                      <Clock3 className="h-3.5 w-3.5" />
-                      {inProgressMyReports} sedang diproses
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-700">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      {doneMyReports} selesai
-                    </span>
-                  </div>
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-stretch">
