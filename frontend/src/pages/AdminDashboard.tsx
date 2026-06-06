@@ -10,11 +10,12 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 import AdminReportTrendChart from '../components/AdminReportTrendChart';
+import AdminExploreMap from '../components/AdminExploreMap';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -101,12 +102,15 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   const showOverview = activeSection === 'overview';
+  const showExplore = activeSection === 'explore';
   const showReports = activeSection === 'reports';
   const showAgencies = activeSection === 'agencies';
   const showUsers = activeSection === 'users';
   const showCategories = activeSection === 'categories';
-  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : 'Ringkasan';
-  const sectionSubtitle = activeSection === 'reports'
+  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'agencies' ? 'Panel Instansi' : activeSection === 'users' ? 'Manajemen Pengguna' : activeSection === 'categories' ? 'Manajemen Kategori' : activeSection === 'explore' ? 'Jelajahi Laporan' : 'Ringkasan';
+  const sectionSubtitle = activeSection === 'explore'
+    ? 'Lihat semua laporan di peta interaktif.'
+    : activeSection === 'reports'
     ? 'Pantau dan tindak lanjuti laporan masyarakat.'
     : activeSection === 'agencies'
     ? 'Kelola instansi yang menangani laporan.'
@@ -410,22 +414,7 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => setActiveSection('reports')}
-                className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
-              >
-                Lihat Laporan
-              </button>
-              <button
-                onClick={() => {
-                  setAgencyModalOpen(true);
-                  setAgencyError('');
-                  setAgencySuccess('');
-                }}
-                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
-              >
-                Tambah Instansi
-              </button>
+
             </div>
           </div>
 
@@ -582,7 +571,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Main Content */}
-        {(showOverview || showReports || showAgencies || showUsers || showCategories) && (
+        {(showOverview || showExplore || showReports || showAgencies || showUsers || showCategories) && (
         <main className="flex-1 px-6 pb-16">
           {loading ? (
             <div className="flex justify-center items-center py-20">
@@ -590,6 +579,17 @@ const AdminDashboard = () => {
             </div>
           ) : (
             <div className="space-y-10">
+              {/* Explore Section */}
+              {showExplore && (
+              <section id="explore" className="space-y-4">
+                <AdminExploreMap
+                  reports={reports}
+                  onSelectReport={setSelectedReportId}
+                  getStatusBadge={getStatusBadge}
+                />
+              </section>
+              )}
+
               {/* Reports Section */}
               {showReports && (
               <section id="reports" className="space-y-4">

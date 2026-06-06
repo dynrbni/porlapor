@@ -10,11 +10,12 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin } from 'lucide-react';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 import AdminReportTrendChart from '../components/AdminReportTrendChart';
+import AdminExploreMap from '../components/AdminExploreMap';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -106,12 +107,17 @@ const AgencyDashboard = () => {
   }, [navigate]);
 
   const showOverview = activeSection === 'overview';
+  const showExplore = activeSection === 'explore';
   const showReports = activeSection === 'reports';
   const showAgencies = false;
   const showUsers = false;
   const showCategories = false;
-  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : 'Ringkasan';
-  const sectionSubtitle = activeSection === 'reports' ? 'Pantau dan tindak lanjuti laporan masyarakat.' : 'Pantau performa laporan dan aktivitas terbaru secara real-time.';
+  const sectionTitle = activeSection === 'reports' ? 'Panel Laporan' : activeSection === 'explore' ? 'Jelajahi Laporan' : 'Ringkasan';
+  const sectionSubtitle = activeSection === 'explore'
+    ? 'Lihat semua laporan instansi di peta interaktif.'
+    : activeSection === 'reports'
+    ? 'Pantau dan tindak lanjuti laporan masyarakat.'
+    : 'Pantau performa laporan dan aktivitas terbaru secara real-time.';
 
   const filteredReports = reports.filter(r => {
     switch(activeTab) {
@@ -570,7 +576,7 @@ const AgencyDashboard = () => {
         </div>
 
         {/* Main Content */}
-        {(showOverview || showReports || showAgencies || showUsers || showCategories) && (
+        {(showOverview || showExplore || showReports || showAgencies || showUsers || showCategories) && (
         <main className="flex-1 px-6 pb-16">
           {loading ? (
             <div className="flex justify-center items-center py-20">
@@ -578,6 +584,17 @@ const AgencyDashboard = () => {
             </div>
           ) : (
             <div className="space-y-10">
+              {/* Explore Section */}
+              {showExplore && (
+              <section id="explore" className="space-y-4">
+                <AdminExploreMap
+                  reports={reports}
+                  onSelectReport={setSelectedReportId}
+                  getStatusBadge={getStatusBadge}
+                />
+              </section>
+              )}
+
               {/* Reports Section */}
               {showReports && (
               <section id="reports" className="space-y-4">

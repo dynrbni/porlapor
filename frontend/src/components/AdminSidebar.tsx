@@ -1,8 +1,8 @@
 import type { MouseEvent } from 'react';
-import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag } from 'lucide-react';
+import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag, MapPin } from 'lucide-react';
 import type { AuthUser } from '../services/authService';
 
-export type AdminSection = 'overview' | 'reports' | 'agencies' | 'users' | 'categories' | 'superadmin';
+export type AdminSection = 'overview' | 'reports' | 'agencies' | 'users' | 'categories' | 'superadmin' | 'explore';
 
 interface AdminSidebarProps {
   user: AuthUser | null;
@@ -15,6 +15,7 @@ interface AdminSidebarProps {
 
 const navItems = [
   { id: 'overview' as const, label: 'Ringkasan', icon: LayoutGrid },
+  { id: 'explore' as const, label: 'Jelajahi', icon: MapPin },
   { id: 'reports' as const, label: 'Laporan', icon: FileText },
   { id: 'agencies' as const, label: 'Instansi', icon: Building2 },
   { id: 'users' as const, label: 'Pengguna', icon: Users },
