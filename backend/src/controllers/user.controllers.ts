@@ -190,6 +190,8 @@ export const getProfile = async (req: Request, res: Response) => {
                 birthDate: true,
                 gender: true,
                 role: true,
+                photoUrl: true,
+                photoSource: true,
                 createdAt: true,
                 lastLoginAt: true,
             },
@@ -208,4 +210,84 @@ export const getProfile = async (req: Request, res: Response) => {
             message: 'Internal server error',
         });
     }
+}
+
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const { user: authUser } = req as AuthenticatedRequest;
+    if (!authUser?.id) {
+      return res.status(401).json({ message: 'Token tidak valid' });
+    }
+
+    const userId = authUser.id;
+    const { name, email, phone, nik, address, birthDate, gender, password } = req.body;
+
+    const existing = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existing) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    const data: any = {};
+
+    if (name !== undefined) data.name = name;
+    if (email !== undefined) data.email = email;
+    if (phone !== undefined) data.phone = phone;
+    if (nik !== undefined) {
+      const nikExisting = await prisma.user.findFirst({
+        where: { nik, id: { not: userId } },
+        select: { id: true },
+      });
+      if (nikExisting) {
+        return res.status(400).json({ message: 'NIK sudah terdaftar' });
+      }
+      data.nik = nik;
+    }
+    if (address !== undefined) data.address = address;
+    if (birthDate !== undefined) {
+      const normalized = normalizeBirthDate(birthDate);
+      if (!normalized) {
+        return res.status(400).json({ message: 'Format tanggal lahir tidak valid' });
+      }
+      data.birthDate = normalized;
+    }
+    if (gender !== undefined) {
+      const normalized = normalizeGender(gender);
+      if (normalized === null) {
+        return res.status(400).json({ message: 'Gender tidak valid' });
+      }
+      if (normalized !== undefined) data.gender = normalized;
+    }
+    if (password) {
+      data.password = await bcrypt.hash(password, 10);
+    }
+
+    if (req.file) {
+      data.photoUrl = `/uploads/profiles/${req.file.filename}`;
+      data.photoSource = 'LOCAL';
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    res.status(200).json({
+      message: 'Profil berhasil diperbarui',
+      data: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        phone: updated.phone,
+        nik: updated.nik,
+        address: updated.address,
+        birthDate: updated.birthDate,
+        gender: updated.gender,
+        role: updated.role,
+        photoUrl: updated.photoUrl,
+        photoSource: updated.photoSource,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }

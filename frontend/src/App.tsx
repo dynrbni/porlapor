@@ -13,6 +13,7 @@ import AdminReportDetail from './pages/AdminReportDetail';
 import ReportDetail from './pages/ReportDetail';
 import CreateReport from './pages/CreateReport';
 import AgencyDashboard from './pages/AgencyDashboard';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -89,6 +90,16 @@ function App() {
         <Route
           path="/superadmin"
           element={<Navigate to="/admin" replace />}
+        />
+
+        {/* Profile page for all authenticated users */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
         />
 
         {/* Public report viewing route */}

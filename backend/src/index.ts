@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
@@ -26,6 +27,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // all routes
 app.use('/api', userRoutes)

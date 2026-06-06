@@ -13,6 +13,22 @@ export interface User {
   createdAt?: string;
 }
 
+export interface ProfileData {
+  id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  nik?: string;
+  address?: string;
+  birthDate?: string;
+  gender?: string;
+  role?: string;
+  photoUrl?: string;
+  photoSource?: string;
+  createdAt?: string;
+  lastLoginAt?: string;
+}
+
 export const userService = {
   getAll: async (): Promise<User[]> => {
     const response = await publicApiClient.get('/users');
@@ -29,5 +45,15 @@ export const userService = {
   promote: async (id: string, role: string) => {
     const response = await apiClient.put<{ message: string; data?: any }>(`/users/${id}`, { role });
     return response.data;
-  }
+  },
+  getProfile: async (): Promise<{ message: string; data: ProfileData }> => {
+    const response = await apiClient.get('/users/me');
+    return response.data;
+  },
+  updateProfile: async (payload: FormData) => {
+    const response = await apiClient.put('/users/me', payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };
