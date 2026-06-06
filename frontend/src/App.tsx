@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -12,7 +12,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminReportDetail from './pages/AdminReportDetail';
 import ReportDetail from './pages/ReportDetail';
 import CreateReport from './pages/CreateReport';
-import SuperadminPanel from './pages/SuperadminPanel';
 import AgencyDashboard from './pages/AgencyDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -89,11 +88,7 @@ function App() {
 
         <Route
           path="/superadmin"
-          element={
-            <ProtectedRoute allowedRoles={["SUPERADMIN"]}>
-              <SuperadminPanel />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/admin" replace />}
         />
 
         {/* Public report viewing route */}
