@@ -48,15 +48,24 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [reportRes, agenciesRes] = await Promise.all([
+
+        const [reportRes, agenciesRes] = await Promise.allSettled([
           reportService.getReportById(reportId),
           getAgencies(),
         ]);
 
-        if (reportRes?.data) {
-          setReport(reportRes.data);
+        if (reportRes.status === 'fulfilled' && reportRes.value?.data) {
+          setReport(reportRes.value.data);
+        } else {
+          console.error('Failed to load report:', reportRes.status === 'rejected' && reportRes.reason);
+          setError('Gagal memuat detail laporan.');
         }
-        setAgencies(agenciesRes);
+
+        if (agenciesRes.status === 'fulfilled') {
+          setAgencies(agenciesRes.value);
+        } else {
+          console.error('Failed to load agencies:', agenciesRes.reason);
+        }
       } catch (err) {
         console.error('Failed to load report detail', err);
         setError('Gagal memuat detail laporan.');
