@@ -261,47 +261,6 @@ const Dashboard = () => {
               <aside className="space-y-6 lg:sticky lg:top-6">
                 <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
                   <div className="border-b border-slate-100 px-6 py-5">
-                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Profil Singkat</p>
-                    <h2 className="mt-1 text-lg font-bold text-slate-900">Akun kamu</h2>
-                  </div>
-
-                  <div className="space-y-5 px-6 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-                        {(() => {
-                          const url = getPhotoUrl(user?.photoUrl);
-                          return url ? (
-                            <img src={url} alt="Avatar" className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center text-xl font-bold text-slate-400">
-                              {user?.nama?.charAt(0)?.toUpperCase() || <User className="w-6 h-6" />}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-slate-900">{user?.nama || 'Pengguna'}</p>
-                        <p className="text-xs text-slate-500">{user?.email || 'Akun aktif'}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { label: 'Total', value: totalMyReports },
-                        { label: 'Proses', value: inProgressMyReports },
-                        { label: 'Selesai', value: doneMyReports },
-                      ].map((item) => (
-                        <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-4 text-center">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
-                          <p className="mt-1 text-xl font-bold text-slate-900">{item.value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-                  <div className="border-b border-slate-100 px-6 py-5">
                     <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Status Cepat</p>
                     <h2 className="mt-1 text-lg font-bold text-slate-900">Sebaran laporan</h2>
                   </div>
