@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
 import { Building2, FileText, LayoutGrid, LogOut, X, Users, Tag, MapPin } from 'lucide-react';
 import type { AuthUser } from '../services/authService';
+import porlaporLogo from '../assets/porlapor_logo.png';
 
 export type AdminSection = 'overview' | 'reports' | 'agencies' | 'users' | 'categories' | 'superadmin' | 'explore';
 
@@ -44,13 +45,7 @@ export default function AdminSidebar({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-sm font-semibold text-white">
-            P
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900">PorLapor</p>
-            <p className="text-xs text-slate-500">Admin Workspace</p>
-          </div>
+          <img src={porlaporLogo} alt="PorLapor" className="h-8 w-auto" />
         </div>
         {compact && (
           <button
