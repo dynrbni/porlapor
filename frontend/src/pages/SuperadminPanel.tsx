@@ -11,6 +11,7 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2 } from 'lucide-react';
 
 type SuperadminSection = 'categories' | 'users' | 'reports' | 'agencies';
@@ -134,7 +135,6 @@ const SuperadminPanel = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Hapus kategori ini?')) return;
     try {
       await categoryService.delete(id);
       showToast('Kategori berhasil dihapus.');
@@ -146,7 +146,6 @@ const SuperadminPanel = () => {
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!confirm('Hapus user ini?')) return;
     try {
       await userService.deleteUser(id);
       showToast('Pengguna berhasil dihapus.');
@@ -158,7 +157,6 @@ const SuperadminPanel = () => {
   };
 
   const handlePromote = async (id: string) => {
-    if (!confirm('Promosikan user ini menjadi ADMIN?')) return;
     try {
       await userService.promote(id, 'ADMIN');
       showToast('Pengguna berhasil dipromosi.');
@@ -170,7 +168,6 @@ const SuperadminPanel = () => {
   };
 
   const handleDeleteReport = async (id: string) => {
-    if (!confirm('Hapus laporan ini?')) return;
     try {
       await reportService.deleteReport(id);
       showToast('Laporan berhasil dihapus.');
@@ -468,13 +465,19 @@ const SuperadminPanel = () => {
                             <p className="font-semibold text-slate-900">{c.name}</p>
                             {c.description && <p className="text-sm text-slate-600 mt-1">{c.description}</p>}
                           </div>
-                          <button
-                            onClick={() => handleDeleteCategory(c.id)}
-                            className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
+                          <ConfirmDialog
+                            action="delete"
+                            title="Hapus Kategori"
+                            description="Hapus kategori ini?"
+                            onConfirm={() => handleDeleteCategory(c.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Hapus
-                          </button>
+                            <button
+                              className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Hapus
+                            </button>
+                          </ConfirmDialog>
                         </div>
                       ))
                     ) : (
@@ -504,21 +507,33 @@ const SuperadminPanel = () => {
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
-                            <button
-                              onClick={() => handlePromote(u.id)}
-                              className="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                            <ConfirmDialog
+                              action="promote"
+                              title="Promosi Pengguna"
+                              description="Promosikan user ini menjadi ADMIN?"
+                              onConfirm={() => handlePromote(u.id)}
                             >
-                              <UserPlus className="w-4 h-4" />
-                              <span className="hidden sm:inline">Promosi</span>
-                            </button>
+                              <button
+                                className="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                              >
+                                <UserPlus className="w-4 h-4" />
+                                <span className="hidden sm:inline">Promosi</span>
+                              </button>
+                            </ConfirmDialog>
                           )}
-                          <button
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
+                          <ConfirmDialog
+                            action="delete"
+                            title="Hapus Pengguna"
+                            description="Hapus user ini?"
+                            onConfirm={() => handleDeleteUser(u.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Hapus</span>
-                          </button>
+                            <button
+                              className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span className="hidden sm:inline">Hapus</span>
+                            </button>
+                          </ConfirmDialog>
                         </div>
                       </div>
                     ))
@@ -548,13 +563,19 @@ const SuperadminPanel = () => {
                             {r.user?.name || r.user?.nama || r.user?.email || 'Unknown'} • {new Date(r.createdAt).toLocaleString('id-ID')}
                           </p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteReport(r.id)}
-                          className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 flex-shrink-0"
+                        <ConfirmDialog
+                          action="delete"
+                          title="Hapus Laporan"
+                          description="Hapus laporan ini?"
+                          onConfirm={() => handleDeleteReport(r.id)}
                         >
-                          <Trash2 className="w-4 h-4" />
-                          <span className="hidden sm:inline">Hapus</span>
-                        </button>
+                          <button
+                            className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 flex-shrink-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Hapus</span>
+                          </button>
+                        </ConfirmDialog>
                       </div>
                     ))
                   ) : (

@@ -208,7 +208,7 @@ model ReportStatusLog {
   note   String?      // catatan dari admin (opsional)
 
   reportId String
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   updatedById String
   updatedBy   User   @relation(fields: [updatedById], references: [id])
@@ -232,7 +232,7 @@ model OfficialNote {
   content String @db.Text
 
   reportId String
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   // Harus ADMIN atau SUPERADMIN — dicek di controller
   authorId String
@@ -255,7 +255,7 @@ model Comment {
   content String @db.Text
 
   reportId String
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   // Semua role boleh komentar
   authorId String

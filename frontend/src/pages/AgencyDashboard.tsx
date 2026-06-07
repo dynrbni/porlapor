@@ -18,6 +18,7 @@ import { useToast } from '../components/Toast';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 import AdminReportTrendChart from '../components/AdminReportTrendChart';
 import AdminExploreMap from '../components/AdminExploreMap';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
 
@@ -336,8 +337,6 @@ const AgencyDashboard = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!window.confirm('Yakin ingin menghapus kategori ini?')) return;
-
     try {
       await categoryService.delete(id);
       setCategories((prev) => prev.filter((c) => c.id !== id));
@@ -349,8 +348,6 @@ const AgencyDashboard = () => {
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!window.confirm('Yakin ingin menghapus pengguna ini?')) return;
-
     try {
       await userService.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
@@ -362,8 +359,6 @@ const AgencyDashboard = () => {
   };
 
   const handlePromoteUser = async (id: string) => {
-    if (!window.confirm('Promosi pengguna ini menjadi ADMIN?')) return;
-
     try {
       await userService.promote(id, 'ADMIN');
       setUsers((prev) =>
@@ -823,21 +818,33 @@ const AgencyDashboard = () => {
                             <td className="p-4">
                               <div className="flex items-center gap-2">
                                 {u.role !== 'ADMIN' && u.role !== 'SUPERADMIN' && u.role !== 'AGENCY' && (
-                                  <button
-                                    onClick={() => handlePromoteUser(u.id)}
-                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                                    title="Promosi ke ADMIN"
+                                  <ConfirmDialog
+                                    action="promote"
+                                    title="Promosi Pengguna"
+                                    description="Promosikan pengguna ini menjadi ADMIN?"
+                                    onConfirm={() => handlePromoteUser(u.id)}
                                   >
-                                    <UserPlus className="w-4 h-4" />
-                                  </button>
+                                    <button
+                                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                      title="Promosi ke ADMIN"
+                                    >
+                                      <UserPlus className="w-4 h-4" />
+                                    </button>
+                                  </ConfirmDialog>
                                 )}
-                                <button
-                                  onClick={() => handleDeleteUser(u.id)}
-                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                  title="Hapus pengguna"
+                                <ConfirmDialog
+                                  action="delete"
+                                  title="Hapus Pengguna"
+                                  description="Yakin ingin menghapus pengguna ini?"
+                                  onConfirm={() => handleDeleteUser(u.id)}
                                 >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                  <button
+                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    title="Hapus pengguna"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </ConfirmDialog>
                               </div>
                             </td>
                           </tr>
@@ -954,13 +961,19 @@ const AgencyDashboard = () => {
                               }`}>{cat.isActive ? 'Aktif' : 'Nonaktif'}</span>
                             </td>
                             <td className="p-4">
-                              <button
-                                onClick={() => handleDeleteCategory(cat.id)}
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                title="Hapus kategori"
+                              <ConfirmDialog
+                                action="delete"
+                                title="Hapus Kategori"
+                                description="Yakin ingin menghapus kategori ini?"
+                                onConfirm={() => handleDeleteCategory(cat.id)}
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                                <button
+                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                  title="Hapus kategori"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </ConfirmDialog>
                             </td>
                           </tr>
                         ))}

@@ -304,6 +304,7 @@ export const deleteReport = async (req: Request, res: Response) => {
       message: 'Laporan berhasil dihapus',
     });
   } catch (error) {
+    console.error('deleteReport error:', error);
     res.status(500).json({
       message: 'Internal server error',
     });

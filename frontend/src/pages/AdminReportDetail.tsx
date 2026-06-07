@@ -8,6 +8,7 @@ import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import { useToast } from '../components/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Trash2, Menu, User } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
@@ -171,7 +172,7 @@ export default function AdminReportDetail() {
   const isSuperAdmin = user?.role === 'SUPERADMIN';
 
   const handleDeleteReport = async () => {
-    if (!id || !window.confirm('Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.')) return;
+    if (!id) return;
     try {
       await reportService.deleteReport(id);
       showToast('Laporan berhasil dihapus.');
@@ -394,13 +395,19 @@ export default function AdminReportDetail() {
                   </button>
 
                   {isSuperAdmin && (
-                    <button
-                      onClick={handleDeleteReport}
-                      className="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    <ConfirmDialog
+                      action="delete"
+                      title="Hapus Laporan"
+                      description="Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan."
+                      onConfirm={handleDeleteReport}
                     >
-                      <Trash2 className="w-4 h-4" />
-                      Hapus Laporan
-                    </button>
+                      <button
+                        className="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Hapus Laporan
+                      </button>
+                    </ConfirmDialog>
                   )}
                 </div>
               </div>

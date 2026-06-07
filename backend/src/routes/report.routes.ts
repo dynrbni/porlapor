@@ -9,7 +9,7 @@ import {
   addComment,
   toggleLike
 } from '../controllers/report.controllers';
-import { authenticate } from '../middlewares/auth.middleware';
+import { authenticate, authorizeRoles } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
@@ -25,6 +25,6 @@ router.post('/reports', createReport);
 router.put('/reports/:id', updateReport);
 router.post('/reports/:id/comments', addComment);
 router.post('/reports/:id/like', toggleLike);
-router.delete('/reports/:id', deleteReport);
+router.delete('/reports/:id', authorizeRoles('ADMIN', 'SUPERADMIN'), deleteReport);
 
 export default router;
