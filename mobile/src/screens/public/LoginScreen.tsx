@@ -43,7 +43,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -53,51 +53,51 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => navigation.goBack()} className="mb-8">
-            <ArrowLeft size={24} color="#475569" />
+            <ArrowLeft size={24} color="#444651" />
           </TouchableOpacity>
 
-          <Text className="text-3xl font-extrabold text-slate-900 mb-2">
+          <Text className="font-sans text-2xl font-bold text-on-surface mb-2">
             Selamat Datang
           </Text>
-          <Text className="text-slate-500 mb-10">
+          <Text className="font-body text-base text-on-surface-variant mb-10">
             Masuk ke akun Anda untuk melanjutkan
           </Text>
 
           <View className="mb-4">
-            <Text className="text-sm font-bold text-slate-700 mb-2">Email</Text>
-            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-2xl px-4">
-              <Mail size={18} color="#94a3b8" />
+            <Text className="font-body text-xs font-semibold text-on-surface mb-2">Email</Text>
+            <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+              <Mail size={18} color="#757682" />
               <TextInput
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Masukkan email"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#757682"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                className="flex-1 ml-3 py-4 text-slate-900"
+                className="flex-1 ml-3 py-4 font-body text-base text-on-surface"
               />
             </View>
           </View>
 
           <View className="mb-8">
-            <Text className="text-sm font-bold text-slate-700 mb-2">
+            <Text className="font-body text-xs font-semibold text-on-surface mb-2">
               Password
             </Text>
-            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-2xl px-4">
-              <Lock size={18} color="#94a3b8" />
+            <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+              <Lock size={18} color="#757682" />
               <TextInput
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Masukkan password"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#757682"
                 secureTextEntry={!showPass}
-                className="flex-1 ml-3 py-4 text-slate-900"
+                className="flex-1 ml-3 py-4 font-body text-base text-on-surface"
               />
               <TouchableOpacity onPress={() => setShowPass(!showPass)}>
                 {showPass ? (
-                  <EyeOff size={18} color="#94a3b8" />
+                  <EyeOff size={18} color="#757682" />
                 ) : (
-                  <Eye size={18} color="#94a3b8" />
+                  <Eye size={18} color="#757682" />
                 )}
               </TouchableOpacity>
             </View>
@@ -106,9 +106,9 @@ export default function LoginScreen() {
           <TouchableOpacity
             onPress={handleLogin}
             disabled={loading}
-            className="bg-teal-600 py-4 rounded-2xl items-center shadow-lg shadow-teal-500/25"
+            className="bg-primary py-4 rounded-full items-center shadow-md"
           >
-            <Text className="text-white font-bold text-lg">
+            <Text className="text-on-primary font-sans text-sm font-semibold">
               {loading ? "Memuat..." : "Masuk"}
             </Text>
           </TouchableOpacity>
@@ -117,9 +117,9 @@ export default function LoginScreen() {
             onPress={() => navigation.navigate("Register")}
             className="mt-8 items-center"
           >
-            <Text className="text-slate-500">
+            <Text className="font-body text-base text-on-surface-variant">
               Belum punya akun?{" "}
-              <Text className="text-teal-600 font-bold">Daftar</Text>
+              <Text className="text-primary font-bold">Daftar</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>

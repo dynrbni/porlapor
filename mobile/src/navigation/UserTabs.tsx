@@ -1,11 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { View } from "react-native";
 import DashboardScreen from "../screens/user/DashboardScreen";
 import CreateReportScreen from "../screens/user/CreateReportScreen";
 import ExploreScreen from "../screens/user/ExploreScreen";
 import ProfileScreen from "../screens/user/ProfileScreen";
 import ReportDetailScreen from "../screens/public/ReportDetailScreen";
-import { Home, Plus, Search, User } from "lucide-react-native";
+import { Home, Search, Plus, User } from "lucide-react-native";
 
 export type UserStackParamList = {
   Dashboard: undefined;
@@ -42,16 +43,17 @@ export default function UserTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopColor: "#e2e8f0",
+          backgroundColor: "#f8f9ff",
+          borderTopColor: "#c5c5d3",
           paddingBottom: 8,
           paddingTop: 8,
           height: 64,
         },
-        tabBarActiveTintColor: "#0f766e",
-        tabBarInactiveTintColor: "#94a3b8",
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
-        tabBarIcon: ({ color, size }) => {
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: "#00236f",
+        tabBarInactiveTintColor: "#757682",
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "600", fontFamily: "Inter" },
+        tabBarIcon: ({ color, size, focused }) => {
           const icons: Record<string, typeof Home> = {
             DashboardTab: Home,
             ExploreTab: Search,
@@ -59,14 +61,20 @@ export default function UserTabs() {
             ProfileTab: User,
           };
           const Icon = icons[route.name];
-          return <Icon size={size} stroke={color} />;
+          return (
+            <View
+              className={`rounded-full px-4 py-1 ${focused ? "bg-primary-container" : ""}`}
+            >
+              <Icon size={size} color={color} />
+            </View>
+          );
         },
       })}
     >
-      <Tab.Screen name="DashboardTab" component={DashboardStack} options={{ title: "Beranda" }} />
-      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Jelajahi" }} />
+      <Tab.Screen name="DashboardTab" component={DashboardStack} options={{ title: "Home" }} />
+      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Search" }} />
       <Tab.Screen name="CreateReportTab" component={CreateReportScreen} options={{ title: "Lapor" }} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profil" }} />
+      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profile" }} />
     </Tab.Navigator>
   );
 }

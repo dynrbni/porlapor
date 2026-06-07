@@ -19,53 +19,53 @@ export default function AgenciesScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="flex-row items-center px-6 py-4 bg-white border-b border-slate-100">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ArrowLeft size={24} color="#475569" />
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-row items-center px-5 py-3 bg-surface border-b border-outline-variant">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="p-1">
+          <ArrowLeft size={24} color="#444651" />
         </TouchableOpacity>
-        <Text className="flex-1 text-lg font-bold text-slate-900 ml-4">
+        <Text className="flex-1 font-sans text-lg font-bold text-on-surface ml-3">
           Instansi
         </Text>
       </View>
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0f766e" />
+          <ActivityIndicator size="large" color="#00236f" />
         </View>
       ) : (
         <FlatList
           data={data ?? []}
           keyExtractor={(item) => item.id}
-          contentContainerClassName="p-6"
+          contentContainerClassName="p-5"
           renderItem={({ item }) => (
-            <TouchableOpacity className="bg-white rounded-2xl p-5 mb-3 border border-slate-100">
+            <View className="bg-surface-container-lowest rounded-xl p-4 mb-3 border border-outline-variant shadow-sm">
               <View className="flex-row items-start gap-4">
-                <View className="w-12 h-12 bg-teal-50 rounded-2xl items-center justify-center">
-                  <Building2 size={24} color="#0f766e" />
+                <View className="w-12 h-12 bg-primary-fixed rounded-xl items-center justify-center">
+                  <Building2 size={24} color="#00236f" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-bold text-slate-900 text-base">
+                  <Text className="font-sans text-lg font-bold text-on-surface">
                     {item.name}
                   </Text>
                   {item.description && (
-                    <Text className="text-sm text-slate-500 mt-1 leading-relaxed">
+                    <Text className="font-body text-sm text-on-surface-variant mt-1 leading-relaxed">
                       {item.description}
                     </Text>
                   )}
                   <View className="flex-row flex-wrap gap-4 mt-3">
                     {item.email ? (
                       <View className="flex-row items-center gap-1">
-                        <Mail size={14} color="#94a3b8" />
-                        <Text className="text-xs text-slate-400">
+                        <Mail size={14} color="#757682" />
+                        <Text className="font-body text-xs font-semibold text-on-surface-variant">
                           {item.email}
                         </Text>
                       </View>
                     ) : null}
                     {item.phone ? (
                       <View className="flex-row items-center gap-1">
-                        <Phone size={14} color="#94a3b8" />
-                        <Text className="text-xs text-slate-400">
+                        <Phone size={14} color="#757682" />
+                        <Text className="font-body text-xs font-semibold text-on-surface-variant">
                           {item.phone}
                         </Text>
                       </View>
@@ -73,10 +73,10 @@ export default function AgenciesScreen() {
                   </View>
                 </View>
               </View>
-            </TouchableOpacity>
+            </View>
           )}
           ListEmptyComponent={
-            <Text className="text-center text-slate-400 mt-10">
+            <Text className="text-center text-on-surface-variant mt-10 font-body text-base">
               Belum ada instansi
             </Text>
           }

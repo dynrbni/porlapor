@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search, MapPin } from "lucide-react-native";
+import { Search, MapPin, MessageCircle, ThumbsUp, Clock, Activity, CheckCircle2, Inbox } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useState } from "react";
@@ -30,19 +30,17 @@ export default function ExploreScreen() {
   const reports = data?.data ?? [];
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="bg-white px-6 pt-6 pb-4">
-        <Text className="text-2xl font-extrabold text-slate-900 mb-4">
-          Jelajahi
-        </Text>
-        <View className="flex-row items-center bg-slate-100 rounded-2xl px-4">
-          <Search size={18} color="#94a3b8" />
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="bg-surface-container-lowest border-b border-outline-variant/30 px-5 pt-4 pb-4">
+        <Text className="font-sans text-2xl font-bold text-primary mb-4">Jelajahi</Text>
+        <View className="flex-row items-center bg-surface-container rounded-xl px-4 h-12 border border-outline-variant">
+          <Search size={18} color="#757682" />
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder="Cari laporan..."
-            placeholderTextColor="#94a3b8"
-            className="flex-1 ml-3 py-3.5 text-slate-900"
+            placeholderTextColor="#757682"
+            className="flex-1 ml-3 font-body text-base text-on-surface"
           />
         </View>
       </View>
@@ -50,50 +48,53 @@ export default function ExploreScreen() {
       <FlatList
         data={reports}
         keyExtractor={(item) => item.id}
-        contentContainerClassName="px-6 pb-6 mt-4"
+        contentContainerClassName="px-5 pb-6 mt-4"
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />
         }
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("ReportDetail", { reportId: item.id })
             }
-            className="bg-white rounded-2xl p-5 mb-3 border border-slate-100 shadow-sm"
+            className="bg-surface-container-lowest rounded-xl p-4 mb-3 border border-outline-variant shadow-sm"
           >
-            <View className="flex-row justify-between items-start mb-3">
+            <View className="flex-row justify-between items-start mb-2">
               <StatusBadge status={item.status} />
               {item.category && (
-                <Text className="text-xs font-bold text-slate-400 uppercase">
+                <Text className="font-body text-xs font-semibold text-on-surface-variant uppercase">
                   {item.category.name}
                 </Text>
               )}
             </View>
-            <Text className="text-lg font-extrabold text-slate-900 mb-2">
+            <Text className="font-sans text-lg font-bold text-on-surface mb-2">
               {item.title}
             </Text>
-            <Text className="text-sm text-slate-500 leading-relaxed mb-4" numberOfLines={3}>
+            <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-3" numberOfLines={3}>
               {item.description}
             </Text>
-            <View className="pt-3 border-t border-slate-100">
-              <View className="flex-row items-center gap-1">
-                <MapPin size={14} color="#94a3b8" />
-                <Text className="text-xs text-slate-400 flex-1" numberOfLines={1}>
+            <View className="pt-3 border-t border-outline-variant flex-row items-center justify-between">
+              <View className="flex-row items-center gap-1 flex-1">
+                <MapPin size={14} color="#757682" />
+                <Text className="font-body text-xs font-semibold text-on-surface-variant flex-1" numberOfLines={1}>
                   {item.address || `${item.latitude}, ${item.longitude}`}
                 </Text>
               </View>
-              <Text className="text-xs text-slate-400 mt-1">
-                {new Date(item.createdAt).toLocaleDateString("id-ID", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </Text>
+              <View className="flex-row items-center gap-3">
+                <View className="flex-row items-center gap-1">
+                  <MessageCircle size={14} color="#757682" />
+                  <Text className="font-body text-xs font-semibold text-on-surface-variant font-semibold">{item._count?.comments ?? 0}</Text>
+                </View>
+                <View className="flex-row items-center gap-1">
+                  <ThumbsUp size={14} color="#757682" />
+                  <Text className="font-body text-xs font-semibold text-on-surface-variant font-semibold">{item._count?.likes ?? 0}</Text>
+                </View>
+              </View>
             </View>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <Text className="text-center text-slate-400 mt-10">
+          <Text className="text-center text-on-surface-variant mt-10 font-body text-base">
             {search ? "Laporan tidak ditemukan" : "Belum ada laporan"}
           </Text>
         }
@@ -104,20 +105,16 @@ export default function ExploreScreen() {
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, any> = {
-    PENDING: { bg: "bg-amber-100", text: "text-amber-700", label: "Menunggu" },
-    IN_REVIEW: { bg: "bg-blue-100", text: "text-blue-700", label: "Ditinjau" },
-    IN_PROGRESS: { bg: "bg-blue-100", text: "text-blue-700", label: "Diproses" },
-    RESOLVED: {
-      bg: "bg-emerald-100",
-      text: "text-emerald-700",
-      label: "Selesai",
-    },
-    REJECTED: { bg: "bg-red-100", text: "text-red-700", label: "Ditolak" },
+    PENDING: { bg: "bg-surface-variant", text: "text-on-surface-variant", label: "Menunggu" },
+    IN_REVIEW: { bg: "bg-primary-fixed", text: "text-on-primary-fixed", label: "Ditinjau" },
+    IN_PROGRESS: { bg: "bg-secondary-container", text: "text-on-secondary-container", label: "Diproses" },
+    RESOLVED: { bg: "bg-tertiary-fixed", text: "text-on-tertiary-fixed", label: "Selesai" },
+    REJECTED: { bg: "bg-error-container", text: "text-on-error-container", label: "Ditolak" },
   };
   const c = config[status] || config.PENDING;
   return (
-    <View className={`${c.bg} px-2.5 py-1 rounded-lg`}>
-      <Text className={`${c.text} text-xs font-bold`}>{c.label}</Text>
+    <View className={`${c.bg} px-2.5 py-1 rounded`}>
+      <Text className={`${c.text} font-body text-xs font-semibold`}>{c.label}</Text>
     </View>
   );
 }

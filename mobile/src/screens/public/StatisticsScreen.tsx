@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, FileText, Building2, Users } from "lucide-react-native";
+import { ArrowLeft, FileText, Building2, Users, Activity, CheckCircle2, Clock } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { getStats } from "../../api/reports";
@@ -13,62 +13,62 @@ export default function StatisticsScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="flex-row items-center px-6 py-4 bg-white border-b border-slate-100">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ArrowLeft size={24} stroke="#475569" />
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-row items-center px-5 py-3 bg-surface border-b border-outline-variant">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="p-1">
+          <ArrowLeft size={24} color="#444651" />
         </TouchableOpacity>
-        <Text className="flex-1 text-lg font-bold text-slate-900 ml-4">
+        <Text className="flex-1 font-sans text-lg font-bold text-on-surface ml-3">
           Statistik
         </Text>
       </View>
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0f766e" />
+          <ActivityIndicator size="large" color="#00236f" />
         </View>
       ) : !data?.data ? (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-slate-400">Data tidak tersedia</Text>
+          <Text className="font-body text-base text-on-surface-variant">Data tidak tersedia</Text>
         </View>
       ) : (
-        <ScrollView contentContainerClassName="p-6">
+        <ScrollView contentContainerClassName="p-5">
           <View className="flex-row flex-wrap gap-4 mb-8">
             <StatCard
               icon={FileText}
               label="Total Laporan"
               value={data.data.totalReports}
-              color="bg-blue-50"
-              iconColor="#2563eb"
+              bg="bg-primary-fixed"
+              textColor="text-primary"
             />
             <StatCard
               icon={Building2}
               label="Instansi"
               value={data.data.totalAgencies}
-              color="bg-teal-50"
-              iconColor="#0f766e"
+              bg="bg-secondary-fixed"
+              textColor="text-on-secondary-fixed"
             />
             <StatCard
               icon={Users}
               label="Pengguna"
               value={data.data.totalUsers}
-              color="bg-purple-50"
-              iconColor="#9333ea"
+              bg="bg-surface-container"
+              textColor="text-on-surface-variant"
             />
           </View>
 
-          <Text className="text-base font-bold text-slate-900 mb-4">
+          <Text className="font-sans text-lg font-bold text-on-surface mb-4">
             Laporan per Status
           </Text>
           {data.data.reportsByStatus.map((s) => (
             <View
               key={s.status}
-              className="flex-row justify-between bg-white rounded-2xl px-5 py-4 mb-2 border border-slate-100"
+              className="flex-row justify-between bg-surface-container-lowest rounded-xl px-5 py-4 mb-2 border border-outline-variant"
             >
-              <Text className="text-slate-700 font-medium capitalize">
+              <Text className="font-body text-base text-on-surface-variant capitalize">
                 {s.status.replace("_", " ")}
               </Text>
-              <Text className="font-bold text-slate-900">{s.count}</Text>
+              <Text className="font-sans text-lg font-bold text-on-surface font-bold">{s.count}</Text>
             </View>
           ))}
         </ScrollView>
@@ -81,20 +81,20 @@ function StatCard({
   icon: Icon,
   label,
   value,
-  color,
-  iconColor,
+  bg,
+  textColor,
 }: {
   icon: any;
   label: string;
   value: number;
-  color: string;
-  iconColor: string;
+  bg: string;
+  textColor: string;
 }) {
   return (
-    <View className={`rounded-2xl p-5 w-[47%] ${color}`}>
-      <Icon size={24} stroke={iconColor} />
-      <Text className="text-3xl font-bold text-slate-900 mt-2">{value}</Text>
-      <Text className="text-sm text-slate-500 font-medium">{label}</Text>
+    <View className={`rounded-xl p-5 w-[47%] border border-outline-variant ${bg}`}>
+      <Icon size={24} color="#00236f" />
+      <Text className="font-sans text-3xl font-bold text-on-surface mt-2">{value}</Text>
+      <Text className={`font-body text-xs font-semibold ${textColor}`}>{label}</Text>
     </View>
   );
 }

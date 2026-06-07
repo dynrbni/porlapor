@@ -107,7 +107,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -117,35 +117,34 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => navigation.goBack()} className="mb-6">
-            <ArrowLeft size={24} color="#475569" />
+            <ArrowLeft size={24} color="#444651" />
           </TouchableOpacity>
 
-          <Text className="text-3xl font-extrabold text-slate-900 mb-2">
+          <Text className="font-sans text-2xl font-bold text-on-surface mb-2">
             {step === 1 ? "Buat Akun" : "Data Diri"}
           </Text>
-          <Text className="text-slate-500 mb-8">
+          <Text className="font-body text-base text-on-surface-variant mb-8">
             {step === 1
               ? "Masukkan informasi akun Anda"
               : "Lengkapi data identitas Anda"}
           </Text>
 
-          {/* Step Indicator */}
           <View className="flex-row gap-2 mb-8">
             <View
               className={`flex-1 h-1.5 rounded-full ${
-                step >= 1 ? "bg-teal-600" : "bg-slate-200"
+                step >= 1 ? "bg-primary" : "bg-surface-variant"
               }`}
             />
             <View
               className={`flex-1 h-1.5 rounded-full ${
-                step >= 2 ? "bg-teal-600" : "bg-slate-200"
+                step >= 2 ? "bg-primary" : "bg-surface-variant"
               }`}
             />
           </View>
 
           {error ? (
-            <View className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
-              <Text className="text-red-700 text-sm font-medium">{error}</Text>
+            <View className="bg-error-container border border-error-container rounded-xl p-4 mb-6">
+              <Text className="text-on-error-container text-sm font-medium">{error}</Text>
             </View>
           ) : null}
 
@@ -167,24 +166,24 @@ export default function RegisterScreen() {
                 keyboardType="email-address"
               />
               <View className="mb-6">
-                <Text className="text-sm font-bold text-slate-700 mb-2">
+                <Text className="font-body text-xs font-semibold text-on-surface mb-2">
                   Password
                 </Text>
-                <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-2xl px-4">
-                  <Lock size={18} color="#94a3b8" />
+                <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+                  <Lock size={18} color="#757682" />
                   <TextInput
                     value={form.password}
                     onChangeText={(v) => update("password", v)}
                     placeholder="Minimal 6 karakter"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor="#757682"
                     secureTextEntry={!showPass}
-                    className="flex-1 ml-3 py-4 text-slate-900"
+                    className="flex-1 ml-3 py-4 font-body text-base text-on-surface"
                   />
                   <TouchableOpacity onPress={() => setShowPass(!showPass)}>
                     {showPass ? (
-                      <EyeOff size={18} color="#94a3b8" />
+                      <EyeOff size={18} color="#757682" />
                     ) : (
-                      <Eye size={18} color="#94a3b8" />
+                      <Eye size={18} color="#757682" />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -194,9 +193,9 @@ export default function RegisterScreen() {
                 onPress={() => {
                   if (validateStep1()) setStep(2);
                 }}
-                className="bg-teal-600 py-4 rounded-2xl items-center"
+                className="bg-primary py-4 rounded-full items-center shadow-md"
               >
-                <Text className="text-white font-bold text-lg">Lanjut</Text>
+                <Text className="text-on-primary font-sans text-sm font-semibold">Lanjut</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -226,7 +225,7 @@ export default function RegisterScreen() {
               />
 
               <View className="mb-4">
-                <Text className="text-sm font-bold text-slate-700 mb-2">
+                <Text className="font-body text-xs font-semibold text-on-surface mb-2">
                   Jenis Kelamin
                 </Text>
                 <View className="flex-row gap-3">
@@ -237,17 +236,17 @@ export default function RegisterScreen() {
                     <TouchableOpacity
                       key={g.value}
                       onPress={() => update("gender", g.value)}
-                      className={`flex-1 py-4 rounded-2xl border items-center ${
+                      className={`flex-1 py-4 rounded-xl border items-center ${
                         form.gender === g.value
-                          ? "bg-teal-50 border-teal-500"
-                          : "bg-slate-50 border-slate-200"
+                          ? "bg-primary-fixed border-primary"
+                          : "bg-surface-container border-outline-variant"
                       }`}
                     >
                       <Text
-                        className={`font-bold ${
+                        className={`font-sans text-sm font-semibold ${
                           form.gender === g.value
-                            ? "text-teal-700"
-                            : "text-slate-600"
+                            ? "text-on-primary-fixed"
+                            : "text-on-surface-variant"
                         }`}
                       >
                         {g.label}
@@ -269,16 +268,16 @@ export default function RegisterScreen() {
               <View className="flex-row gap-3 mt-2">
                 <TouchableOpacity
                   onPress={() => setStep(1)}
-                  className="flex-1 py-4 rounded-2xl items-center border border-slate-200"
+                  className="flex-1 py-4 rounded-xl items-center border border-outline-variant"
                 >
-                  <Text className="font-bold text-slate-600">Kembali</Text>
+                  <Text className="font-sans text-sm font-semibold text-on-surface-variant">Kembali</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleRegister}
                   disabled={loading}
-                  className="flex-1 bg-teal-600 py-4 rounded-2xl items-center"
+                  className="flex-1 bg-primary py-4 rounded-xl items-center shadow-md"
                 >
-                  <Text className="text-white font-bold text-lg">
+                  <Text className="text-on-primary font-sans text-sm font-semibold">
                     {loading ? "Memuat..." : "Daftar"}
                   </Text>
                 </TouchableOpacity>
@@ -290,9 +289,9 @@ export default function RegisterScreen() {
             onPress={() => navigation.goBack()}
             className="mt-8 items-center mb-8"
           >
-            <Text className="text-slate-500">
+            <Text className="font-body text-base text-on-surface-variant">
               Sudah punya akun?{" "}
-              <Text className="text-teal-600 font-bold">Masuk</Text>
+              <Text className="text-primary font-bold">Masuk</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -320,18 +319,18 @@ function InputField({
 }) {
   return (
     <View className="mb-4">
-      <Text className="text-sm font-bold text-slate-700 mb-2">{label}</Text>
-      <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-2xl px-4">
-        <Icon size={18} color="#94a3b8" />
+      <Text className="font-body text-xs font-semibold text-on-surface mb-2">{label}</Text>
+      <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+        <Icon size={18} color="#757682" />
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor="#757682"
           keyboardType={keyboardType}
           autoCapitalize="none"
           multiline={multiline}
-          className={`flex-1 ml-3 py-4 text-slate-900 ${multiline ? "min-h-[80px]" : ""}`}
+          className={`flex-1 ml-3 py-4 font-body text-base text-on-surface ${multiline ? "min-h-[80px]" : ""}`}
         />
       </View>
     </View>

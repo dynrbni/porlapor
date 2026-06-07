@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, Image, ActivityInd
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ArrowLeft, Calendar, MapPin, MessageCircle, ThumbsUp, Send, Clock, CheckCircle2, ShieldAlert,
-  Image as ImageIcon, User, Share2, Sparkles, FileText
+  Image as ImageIcon, User, Share2, FileText
 } from "lucide-react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -75,9 +75,9 @@ export default function ReportDetailScreen() {
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center px-5">
           <ShieldAlert size={40} color="#ba1a1a" />
-          <Text className="text-lg font-bold text-on-surface mt-3 font-sans">Laporan tidak ditemukan</Text>
+          <Text className="font-sans text-lg font-bold text-on-surface mt-3">Laporan tidak ditemukan</Text>
           <TouchableOpacity onPress={() => navigation.goBack()} className="mt-4 bg-primary px-5 py-2 rounded-full">
-            <Text className="text-on-primary font-bold">Kembali</Text>
+            <Text className="text-on-primary font-sans text-sm font-semibold">Kembali</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -86,11 +86,11 @@ export default function ReportDetailScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-row items-center px-5 py-3 bg-surface-container-lowest border-b border-outline-variant/30">
+      <View className="flex-row items-center px-5 py-3 bg-surface border-b border-outline-variant">
         <TouchableOpacity onPress={() => navigation.goBack()} className="p-1">
-          <ArrowLeft size={24} color="#0b1c30" />
+          <ArrowLeft size={24} color="#00236f" />
         </TouchableOpacity>
-        <Text className="flex-1 text-lg font-bold text-on-surface ml-3 font-sans">Detail Laporan</Text>
+        <Text className="flex-1 text-center font-sans text-lg font-bold text-primary px-4">Detail Laporan #{report.id.slice(0, 8)}</Text>
         <TouchableOpacity onPress={handleShare} className="p-2">
           <Share2 size={20} color="#444651" />
         </TouchableOpacity>
@@ -99,7 +99,14 @@ export default function ReportDetailScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="bg-surface-container-lowest mx-5 mt-4 rounded-xl border border-outline-variant shadow-sm overflow-hidden">
           {report.imageUrl ? (
-            <Image source={{ uri: report.imageUrl }} className="w-full h-56" resizeMode="cover" />
+            <View className="relative">
+              <Image source={{ uri: report.imageUrl }} className="w-full h-56" resizeMode="cover" />
+              {status && (
+                <View className={`absolute top-4 left-4 ${status.bg} px-3 py-1 rounded-full flex-row items-center gap-2 shadow-sm`}>
+                  <Text className={`${status.text} font-body text-sm font-semibold`}>{status.label}</Text>
+                </View>
+              )}
+            </View>
           ) : (
             <View className="h-40 bg-surface-container items-center justify-center">
               <ImageIcon size={48} color="#757682" opacity={0.5} />
@@ -108,24 +115,23 @@ export default function ReportDetailScreen() {
 
           <View className="p-4">
             <View className="flex-row justify-between items-start mb-3">
-              <Text className="text-lg font-bold text-on-surface flex-1 mr-3 font-sans">{report.title}</Text>
+              <Text className="font-sans text-lg font-bold text-on-surface flex-1 mr-3">{report.title}</Text>
               {status && StatusIcon && (
                 <View className={`${status.bg} px-2.5 py-1 rounded-full flex-row items-center gap-1`}>
-                  <StatusIcon size={14} color={status.text.includes("primary") ? "#00236f" : status.text.includes("secondary") ? "#855300" : "#444651"} />
-                  <Text className={`${status.text} text-xs font-bold`}>{status.label}</Text>
+                  <Text className={`${status.text} font-body text-xs font-semibold`}>{status.label}</Text>
                 </View>
               )}
             </View>
-            <Text className="text-sm text-on-surface-variant leading-6 mb-4">{report.description}</Text>
+            <Text className="font-body text-base text-on-surface-variant leading-6 mb-4">{report.description}</Text>
 
-            <View className="flex-row flex-wrap gap-2 mb-2">
+            <View className="flex-row flex-wrap gap-2">
               <View className="bg-surface-container px-3 py-1.5 rounded-full flex-row items-center gap-1">
                 <FileText size={14} color="#00236f" />
-                <Text className="text-xs font-semibold text-primary">{report.category?.name || "Umum"}</Text>
+                <Text className="font-body text-xs font-semibold text-primary">{report.category?.name || "Umum"}</Text>
               </View>
               <View className="bg-surface-container px-3 py-1.5 rounded-full flex-row items-center gap-1">
                 <MapPin size={14} color="#00236f" />
-                <Text className="text-xs font-semibold text-primary">{report.address?.split(",")[0] || "Lokasi"}</Text>
+                <Text className="font-body text-xs font-semibold text-primary">{report.address?.split(",")[0] || "Lokasi"}</Text>
               </View>
             </View>
           </View>
@@ -134,46 +140,53 @@ export default function ReportDetailScreen() {
         <View className="bg-surface-container-lowest mx-5 mt-3 rounded-xl border border-outline-variant shadow-sm p-4">
           <View className="flex-row items-center gap-2 mb-3">
             <MapPin size={16} color="#00236f" />
-            <Text className="font-bold text-sm text-on-surface">Lokasi Kejadian</Text>
+            <Text className="font-sans text-sm font-bold text-on-surface">Lokasi Kejadian</Text>
           </View>
-          <View className="h-40 bg-surface-variant rounded-lg items-center justify-center mb-2 border border-outline-variant">
+          <View className="h-40 bg-surface-variant rounded-lg items-center justify-center mb-2 border border-outline-variant relative">
             <MapPin size={32} color="#757682" />
-            <Text className="text-xs text-on-surface-variant mt-1">{report.latitude}, {report.longitude}</Text>
+            <Text className="font-body text-xs text-on-surface-variant mt-1">{report.latitude}, {report.longitude}</Text>
           </View>
-          <Text className="text-xs text-on-surface-variant">{report.address || `${report.latitude}, ${report.longitude}`}</Text>
+            <Text className="font-body text-sm text-on-surface-variant">{report.address || `${report.latitude}, ${report.longitude}`}</Text>
         </View>
 
         {report.officialNotes && report.officialNotes.length > 0 && (
-          <View className="bg-surface-container-high mx-5 mt-3 rounded-xl border-l-4 border-primary p-4">
-            <Text className="font-bold text-sm text-primary mb-2">Tanggapan Resmi</Text>
+          <View className="bg-surface-container-high mx-5 mt-3 rounded-xl border-l-4 border-primary p-4 relative overflow-hidden">
+            <View className="absolute -right-4 -bottom-4 opacity-10">
+              <ShieldAlert size={100} color="#00236f" />
+            </View>
+            <View className="flex-row items-center gap-2 mb-3">
+              <ShieldAlert size={16} color="#00236f" />
+              <Text className="font-sans text-sm font-bold text-primary">Tanggapan Resmi (Dinas Terkait)</Text>
+            </View>
             {report.officialNotes.map((note) => (
               <View key={note.id} className="mb-2 last:mb-0">
-                <Text className="text-sm text-on-surface">{note.content}</Text>
-                <Text className="text-xs text-outline mt-1">{note.author?.name} • {new Date(note.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</Text>
+                <Text className="font-body text-sm text-on-surface">{note.content}</Text>
+                <Text className="font-body text-xs text-outline mt-1">{note.author?.name} • {new Date(note.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</Text>
               </View>
             ))}
           </View>
         )}
 
         <View className="bg-surface-container-lowest mx-5 mt-3 rounded-xl border border-outline-variant shadow-sm p-4">
-          <Text className="font-bold text-sm text-on-surface mb-3 flex-row items-center gap-1">
+          <Text className="font-sans text-sm font-bold text-on-surface mb-3">
             Status Laporan
           </Text>
-          <View className="pl-5 border-l-2 border-dashed border-outline-variant">
+          <View className="pl-6 border-l-2 border-dashed border-outline-variant pb-4">
             {timelineSteps.map((step, idx) => {
               const isCompleted = idx < currentStepIdx;
               const isCurrent = idx === currentStepIdx;
               return (
-                <View key={step.key} className={`flex-row items-start mb-4 last:mb-0 ${!isCompleted && !isCurrent ? "opacity-50" : ""}`}>
-                  <View className={`w-4 h-4 rounded-full items-center justify-center -ml-[23px] mt-0.5 ${isCompleted ? "bg-tertiary-fixed" : isCurrent ? "bg-surface-container-lowest border-2 border-primary" : "bg-surface-variant border-2 border-outline-variant"}`}>
+                <View key={step.key} className={`relative mb-6 last:mb-0 ${!isCompleted && !isCurrent ? "opacity-50" : ""}`}>
+                  <View className={`absolute -left-[31px] w-4 h-4 rounded-full items-center justify-center z-10 ${isCompleted ? "bg-tertiary-fixed border-2 border-tertiary-fixed" : isCurrent ? "bg-surface-container-lowest border-2 border-primary" : "bg-surface-variant border-2 border-outline-variant"}`}>
                     {isCompleted && <CheckCircle2 size={12} color="#00311f" />}
                     {isCurrent && <View className="w-2 h-2 rounded-full bg-primary" />}
                   </View>
-                  <View className="ml-3">
-                    <Text className={`text-xs font-bold ${isCurrent ? "text-primary" : "text-on-surface"}`}>{step.label}</Text>
-                    {isCurrent && (
-                      <View className={`${status?.bg} px-2 py-0.5 rounded mt-0.5`}>
-                        <Text className={`${status?.text} text-[10px] font-bold`}>{status?.label}</Text>
+                  <View className="flex-col">
+                    <Text className={`font-sans text-sm font-semibold ${isCurrent ? "text-primary" : "text-on-surface"}`}>{step.label}</Text>
+                    <Text className="font-body text-xs text-outline">{isCurrent ? "Saat ini" : ""}</Text>
+                    {isCurrent && status && (
+                      <View className={`${status.bg} px-2 py-0.5 rounded mt-1 self-start`}>
+                        <Text className={`${status.text} text-[10px] font-bold`}>{status.label}</Text>
                       </View>
                     )}
                   </View>
@@ -184,10 +197,13 @@ export default function ReportDetailScreen() {
         </View>
 
         <View className="bg-surface-container-lowest mx-5 mt-3 rounded-xl border border-outline-variant shadow-sm overflow-hidden mb-6">
-          <View className="p-4 border-b border-outline-variant/30">
+          <View className="p-4 border-b border-outline-variant">
             <View className="flex-row items-center justify-between">
-              <Text className="font-bold text-sm text-on-surface">Diskusi Publik</Text>
-              <Text className="text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+              <View className="flex-row items-center gap-2">
+                <MessageCircle size={16} color="#00236f" />
+                <Text className="font-sans text-sm font-bold text-on-surface">Diskusi Publik</Text>
+              </View>
+              <Text className="font-body text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
                 {report.comments?.length || 0} Komentar
               </Text>
             </View>
@@ -197,34 +213,34 @@ export default function ReportDetailScreen() {
             <TouchableOpacity
               onPress={() => likeMut.mutate()}
               disabled={!user || likeMut.isPending}
-              className={`flex-row items-center gap-1.5 px-3 py-2 rounded-full mb-3 ${isLiked ? "bg-primary-fixed" : "bg-surface-container"}`}
+              className={`flex-row items-center gap-1.5 px-4 py-2 rounded-full mb-4 self-start ${isLiked ? "bg-primary-fixed" : "bg-surface-container border border-outline-variant"}`}
             >
-              <ThumbsUp size={16} color={isLiked ? "#00236f" : "#444651"} fill={isLiked ? "#00236f" : "transparent"} />
-              <Text className={`text-xs font-semibold ${isLiked ? "text-primary" : "text-on-surface-variant"}`}>
-                Dukung ({report._count?.likes ?? 0})
+              <ThumbsUp size={16} color={isLiked ? "#00236f" : "#444651"} />
+              <Text className={`font-body text-xs font-semibold ${isLiked ? "text-primary" : "text-on-surface-variant"}`}>
+                Dukung Laporan ({report._count?.likes ?? 0})
               </Text>
             </TouchableOpacity>
 
             {(!report.comments || report.comments.length === 0) ? (
-              <View className="bg-surface-container-low rounded-lg border border-dashed border-outline-variant p-5 items-center mb-3">
+              <View className="bg-surface-container-low rounded-lg border border-dashed border-outline-variant p-5 items-center mb-4">
                 <MessageCircle size={20} color="#757682" />
-                <Text className="text-xs text-on-surface-variant mt-2">Belum ada diskusi.</Text>
+                <Text className="font-body text-xs text-on-surface-variant mt-2">Belum ada diskusi.</Text>
               </View>
             ) : (
-              <View className="mb-3 space-y-3">
+              <View className="mb-4">
                 {report.comments.map((c) => (
-                  <View key={c.id} className="flex-row gap-2">
-                    <View className={`w-7 h-7 rounded-full items-center justify-center ${c.author.role === "USER" ? "bg-surface-container" : "bg-primary"}`}>
-                      <Text className={`text-xs font-bold ${c.author.role === "USER" ? "text-primary" : "text-on-primary"}`}>
+                  <View key={c.id} className="flex-row gap-2 mb-3">
+                    <View className={`w-8 h-8 rounded-full items-center justify-center ${c.author.role === "USER" ? "bg-surface-container" : "bg-primary"}`}>
+                      <Text className={`font-body text-xs font-bold ${c.author.role === "USER" ? "text-primary" : "text-on-primary"}`}>
                         {(c.author.name || "U").charAt(0).toUpperCase()}
                       </Text>
                     </View>
                     <View className="flex-1">
-                      <View className="bg-surface-container-low rounded-lg p-3 border border-surface-container-highest">
-                        <Text className="text-xs font-bold text-on-surface mb-0.5">{c.author.name}</Text>
-                        <Text className="text-xs text-on-surface-variant">{c.content}</Text>
+                      <View className="bg-surface-container-low rounded-lg p-3 rounded-tl-none border border-surface-container-highest">
+                        <Text className="font-body text-xs font-bold text-on-surface mb-0.5">{c.author.name}</Text>
+                        <Text className="font-body text-sm text-on-surface-variant">{c.content}</Text>
                       </View>
-                      <Text className="text-[10px] text-outline mt-1 ml-1">
+                      <Text className="font-body text-xs text-outline mt-1 ml-1">
                         {new Date(c.createdAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
                       </Text>
                     </View>
@@ -234,25 +250,25 @@ export default function ReportDetailScreen() {
             )}
 
             {user ? (
-              <View className="flex-row gap-2 pt-3 border-t border-outline-variant/30">
+              <View className="flex-row gap-2 pt-4 border-t border-outline-variant">
                 <TextInput
                   value={commentText}
                   onChangeText={setCommentText}
                   placeholder="Tulis komentar..."
                   placeholderTextColor="#757682"
-                  className="flex-1 bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 text-xs text-on-surface"
+                  className="flex-1 bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 font-body text-sm text-on-surface"
                 />
                 <TouchableOpacity
                   onPress={() => commentMut.mutate()}
                   disabled={!commentText.trim() || commentMut.isPending}
-                  className="w-9 h-9 rounded-full bg-primary items-center justify-center disabled:opacity-50"
+                  className="w-10 h-10 rounded-full bg-primary items-center justify-center disabled:opacity-50 shadow-sm"
                 >
                   <Send size={16} color="#fff" />
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity onPress={() => navigation.navigate("Login" as never)} className="bg-surface-container rounded-lg p-4 items-center">
-                <Text className="text-sm font-semibold text-primary">Login untuk berkomentar</Text>
+                <Text className="font-sans text-sm font-semibold text-primary">Login untuk berkomentar</Text>
               </TouchableOpacity>
             )}
           </View>
