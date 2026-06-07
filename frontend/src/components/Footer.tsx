@@ -48,7 +48,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3 border-t border-white/10 pt-4">
                 <MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-                <span className="leading-relaxed">Jl. Jenderal Sudirman No.1, RT.1/RW.3, Gelora, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10270</span>
+                <span className="leading-relaxed">JKT48 THEATER <br /> Jl. Jenderal Sudirman No.1, RT.1/RW.3, Gelora, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10270</span>
               </li>
             </ul>
           </div>
