@@ -11,11 +11,12 @@ export async function createNotification(
   reportId?: string,
 ) {
   try {
-    await prisma.notification.create({
+    const notif = await prisma.notification.create({
       data: { userId, type, message, reportId },
     });
+    console.log(`[NOTIF] Created ${type} for user ${userId}: ${notif.id}`);
   } catch (error) {
-    console.error('Failed to create notification:', error);
+    console.error(`[NOTIF] Failed to create ${type} for user ${userId}:`, error);
   }
 }
 

@@ -488,9 +488,9 @@ export const addComment = async (req: Request, res: Response) => {
     if (report.userId !== user.id) {
       const commenter = await prisma.user.findUnique({
         where: { id: user.id },
-        select: { name: true, nama: true },
+        select: { name: true },
       });
-      const commenterName = (commenter as any)?.nama || commenter?.name || 'Seseorang';
+      const commenterName = commenter?.name || 'Seseorang';
       await createNotification(
         report.userId,
         'comment',
@@ -504,6 +504,7 @@ export const addComment = async (req: Request, res: Response) => {
       data: comment
     });
   } catch (error) {
+    console.error('[addComment] Error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -547,9 +548,9 @@ export const toggleLike = async (req: Request, res: Response) => {
       if (report.userId !== user.id) {
         const liker = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { name: true, nama: true },
+          select: { name: true },
         });
-        const likerName = (liker as any)?.nama || liker?.name || 'Seseorang';
+        const likerName = liker?.name || 'Seseorang';
         await createNotification(
           report.userId,
           'like',
@@ -561,6 +562,7 @@ export const toggleLike = async (req: Request, res: Response) => {
       res.status(200).json({ message: 'Laporan didukung', liked: true });
     }
   } catch (error) {
+    console.error('[toggleLike] Error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
