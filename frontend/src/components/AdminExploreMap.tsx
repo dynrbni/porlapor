@@ -38,7 +38,7 @@ export default function AdminExploreMap({ reports, onSelectReport, getStatusBadg
   const positions = useMemo(() => validReports.map(r => [r.latitude, r.longitude] as [number, number]), [validReports]);
 
   return (
-    <div className="h-[calc(100vh-12rem)] w-full rounded-lg border border-slate-200 overflow-hidden z-0">
+    <div className="h-[60vh] sm:h-[calc(100vh-12rem)] w-full rounded-lg border border-slate-200 overflow-hidden z-0">
       <MapContainer
         center={[-6.200000, 106.816666]}
         zoom={11}

@@ -621,6 +621,7 @@ const AdminDashboard = () => {
               {/* Reports Section */}
               {showReports && (
               <section id="reports" className="space-y-4">
+                <div className="overflow-x-auto">
                 <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
                   {(['semua', 'pending', 'proses', 'selesai', 'ditolak'] as Tab[]).map((tab) => (
                     <button
@@ -631,6 +632,7 @@ const AdminDashboard = () => {
                       {tab}
                     </button>
                   ))}
+                </div>
                 </div>
 
                 <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden">
