@@ -19,7 +19,6 @@ export default function CreateReportScreen() {
   const [longitude, setLongitude] = useState("");
   const [address, setAddress] = useState("");
   const [image, setImage] = useState<string | null>(null);
-  const [step, setStep] = useState(1);
 
   useEffect(() => {
     try {
@@ -76,125 +75,131 @@ export default function CreateReportScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-row items-center px-5 py-3 bg-surface border-b border-outline-variant">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 items-center justify-center rounded-full">
-          <ArrowLeft size={24} color="#444651" />
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <View className="flex-row items-center px-5 py-3 bg-white border-b border-outline-variant">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="w-9 h-9 items-center justify-center rounded-full bg-surface-container">
+          <ArrowLeft size={18} color="#0f172a" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-sans text-lg font-bold text-on-surface">Buat Laporan Baru</Text>
-        <View className="w-10" />
+        <Text className="flex-1 text-center font-sans text-lg font-extrabold text-on-surface">Buat Laporan Baru</Text>
+        <View className="w-9" />
       </View>
 
-      <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View className="flex-row items-center justify-between mb-2">
-          <Text className="font-body text-xs font-semibold text-primary">
+          <Text className="font-body text-xs font-bold text-primary uppercase tracking-wider">
             Langkah 1 dari 3
           </Text>
-          <Text className="font-body text-xs text-on-surface-variant">
-            {step === 1 ? "Verifikasi" : step === 2 ? "Foto & Lokasi" : "Konfirmasi"}
-          </Text>
+          <Text className="font-body text-xs text-on-surface-variant">Verifikasi</Text>
         </View>
-        <View className="flex-row gap-2 mb-4">
-          <View className="h-2 flex-1 rounded-full bg-primary transition-all duration-300" />
-          <View className="h-2 flex-1 rounded-full bg-surface-variant transition-all duration-300" />
-          <View className="h-2 flex-1 rounded-full bg-surface-variant transition-all duration-300" />
+        <View className="flex-row gap-2 mb-5">
+          <View className="h-1.5 flex-1 rounded-full bg-primary" />
+          <View className="h-1.5 flex-1 rounded-full bg-outline-variant" />
+          <View className="h-1.5 flex-1 rounded-full bg-outline-variant" />
         </View>
 
-        <View className="bg-surface rounded-xl border border-outline-variant p-5 flex-col gap-5">
-          <View className="flex-row gap-3 p-4 bg-surface-container-low rounded-lg border border-primary-fixed">
-            <Info size={18} color="#00236f" style={{ marginTop: 2 }} />
-            <Text className="font-body text-sm text-on-surface-variant flex-1 leading-relaxed">
+        <View className="bg-white rounded-2xl border border-outline-variant p-5 flex-col gap-5 shadow-sm">
+          <View className="flex-row gap-3 p-4 bg-primary-soft rounded-xl border border-primary/30">
+            <Info size={18} color="#0f766e" style={{ marginTop: 2 }} />
+            <Text className="font-body text-sm text-on-surface flex-1 leading-relaxed">
               Pastikan data diri dan kategori laporan sesuai untuk mempercepat proses verifikasi oleh instansi terkait.
             </Text>
           </View>
 
-          <View className="flex-col gap-1.5">
-            <View className="flex-row items-center justify-between">
-              <Text className="font-body text-xs font-semibold text-on-surface">
-                Nomor Induk Kependudukan (NIK)
+          <View>
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="font-body text-xs font-bold text-on-surface uppercase tracking-wide">
+                NIK
               </Text>
-              <View className="flex-row items-center gap-1 bg-tertiary-fixed/30 px-2 py-0.5 rounded">
-                <CheckCircle2 size={12} color="#004a31" />
-                <Text className="text-tertiary-container text-[10px] uppercase tracking-wider font-semibold">Terverifikasi</Text>
+              <View className="flex-row items-center gap-1 bg-success-soft px-2 py-0.5 rounded">
+                <CheckCircle2 size={12} color="#059669" />
+                <Text className="text-success text-[10px] uppercase font-bold tracking-wider">Terverifikasi</Text>
               </View>
             </View>
-            <View className="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3">
+            <View className="bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3.5">
               <Text className="font-body text-base text-on-surface-variant tracking-widest">3171234567890123</Text>
             </View>
-            <Text className="font-body text-[11px] text-outline">Format: 16-digits (Sesuai KTP terdaftar)</Text>
+            <Text className="font-body text-[11px] text-on-surface-variant mt-1.5">Format: 16-digits (Sesuai KTP terdaftar)</Text>
           </View>
 
-          <View className="flex-col gap-1.5">
-            <Text className="font-body text-xs font-semibold text-on-surface">Nama Pelapor</Text>
-            <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3">
-              <User size={16} color="#757682" style={{ marginRight: 8 }} />
-              <Text className="text-on-surface-variant font-body text-base flex-1">Budi Santoso</Text>
+          <View>
+            <Text className="font-body text-xs font-bold text-on-surface mb-2 uppercase tracking-wide">Nama Pelapor</Text>
+            <View className="flex-row items-center bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3.5">
+              <User size={16} color="#64748b" style={{ marginRight: 8 }} />
+              <Text className="text-on-surface font-body text-base flex-1">Budi Santoso</Text>
             </View>
           </View>
 
-          <View className="h-px bg-outline-variant/40 my-1" />
+          <View className="h-px bg-outline-variant" />
 
-          <View className="flex-col gap-1.5">
-            <Text className="font-body text-xs font-semibold text-on-surface">
+          <View>
+            <Text className="font-body text-xs font-bold text-on-surface mb-2 uppercase tracking-wide">
               Pilih Kategori <Text className="text-error">*</Text>
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {(categories ?? []).map((cat: any) => (
-                <TouchableOpacity
-                  key={cat.id}
-                  onPress={() => setCategoryId(cat.id)}
-                  className={`px-4 py-2.5 rounded-full mr-2 ${categoryId === cat.id ? "bg-primary" : "bg-surface-container border border-outline-variant"}`}
-                >
-                  <Text className={`font-body text-xs font-semibold ${categoryId === cat.id ? "text-on-primary" : "text-on-surface-variant"}`}>
-                    {cat.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              <View className="flex-row gap-2">
+                {(categories ?? []).map((cat: any) => (
+                  <TouchableOpacity
+                    key={cat.id}
+                    onPress={() => setCategoryId(cat.id)}
+                    activeOpacity={0.7}
+                    className={`px-4 py-2.5 rounded-full ${categoryId === cat.id ? "bg-primary" : "bg-white border border-outline"}`}
+                  >
+                    <Text className={`font-body text-xs font-bold ${categoryId === cat.id ? "text-on-primary" : "text-on-surface-variant"}`}>
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </ScrollView>
           </View>
 
-          <View className="flex-col gap-1.5">
-            <Text className="font-body text-xs font-semibold text-on-surface">Judul Laporan <Text className="text-error">*</Text></Text>
+          <View>
+            <Text className="font-body text-xs font-bold text-on-surface mb-2 uppercase tracking-wide">
+              Judul Laporan <Text className="text-error">*</Text>
+            </Text>
             <TextInput
               value={title}
               onChangeText={setTitle}
               placeholder="Contoh: Jalan berlubang di Jl. Sudirman"
-              placeholderTextColor="#757682"
-              className="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body text-base text-on-surface"
+              placeholderTextColor="#94a3b8"
+              className="bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3.5 font-body text-base text-on-surface"
             />
           </View>
 
-          <View className="flex-col gap-1.5">
-            <Text className="font-body text-xs font-semibold text-on-surface">Deskripsi Laporan <Text className="text-error">*</Text></Text>
+          <View>
+            <Text className="font-body text-xs font-bold text-on-surface mb-2 uppercase tracking-wide">
+              Deskripsi Laporan <Text className="text-error">*</Text>
+            </Text>
             <TextInput
               value={description}
               onChangeText={setDescription}
               placeholder="Ceritakan detail kronologi, lokasi spesifik, atau kondisi yang terjadi secara jelas..."
-              placeholderTextColor="#757682"
+              placeholderTextColor="#94a3b8"
               multiline
               numberOfLines={4}
               textAlignVertical="top"
-              className="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body text-base text-on-surface min-h-[100px]"
+              className="bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3.5 font-body text-base text-on-surface min-h-[100px]"
             />
-            <View className="flex-row justify-between items-center mt-1">
-              <Text className="font-body text-[11px] text-outline">Minimal 20 karakter.</Text>
-              <Text className="font-body text-[11px] text-outline">{description.length}/500</Text>
+            <View className="flex-row justify-between items-center mt-1.5">
+              <Text className="font-body text-[11px] text-on-surface-variant">Minimal 20 karakter.</Text>
+              <Text className="font-body text-[11px] text-on-surface-variant">{description.length}/500</Text>
             </View>
           </View>
         </View>
       </ScrollView>
 
-      <View className="bg-surface border-t border-outline-variant/30 p-5">
+      <View className="bg-white border-t border-outline-variant p-4">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={mutation.isPending}
-          className="bg-primary py-3.5 rounded-full items-center active:opacity-80 flex-row justify-center gap-2 shadow-md"
+          activeOpacity={0.85}
+          className="bg-primary py-4 rounded-2xl items-center flex-row justify-center gap-2 shadow-soft"
         >
           {mutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <Text className="text-on-primary font-sans text-sm font-semibold">Lanjut ke Foto & Lokasi</Text>
+              <Text className="text-on-primary font-sans text-base font-bold">Lanjut ke Foto & Lokasi</Text>
               <ChevronRight size={20} color="#fff" />
             </>
           )}

@@ -1,6 +1,6 @@
-import { View, Text, FlatList, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, RefreshControl, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Inbox, Activity, CheckCircle2, Plus, MapPin, MessageCircle, ThumbsUp, Home, Bell, Clock } from "lucide-react-native";
+import { Inbox, Activity, CheckCircle2, Plus, MapPin, MessageCircle, ThumbsUp, Home, Bell, Clock, AlertCircle } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useState } from "react";
@@ -12,6 +12,14 @@ import type { Report } from "../../types";
 
 type Nav = NativeStackNavigationProp<UserStackParamList, "Dashboard">;
 type Tab = "semua" | "menunggu" | "proses" | "selesai";
+
+const statusConfig: Record<string, { bg: string; text: string; icon: any; label: string }> = {
+  PENDING: { bg: "bg-warning-soft", text: "text-warning", icon: Clock, label: "Menunggu" },
+  IN_REVIEW: { bg: "bg-secondary-soft", text: "text-secondary", icon: AlertCircle, label: "Ditinjau" },
+  IN_PROGRESS: { bg: "bg-secondary-soft", text: "text-secondary", icon: Activity, label: "Diproses" },
+  RESOLVED: { bg: "bg-success-soft", text: "text-success", icon: CheckCircle2, label: "Selesai" },
+  REJECTED: { bg: "bg-error-container", text: "text-error", icon: AlertCircle, label: "Ditolak" },
+};
 
 export default function DashboardScreen() {
   const navigation = useNavigation<Nav>();
@@ -45,71 +53,69 @@ export default function DashboardScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerClassName="pb-28"
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#0f766e" />}
         ListHeaderComponent={
           <View>
-            <View className="flex-row items-center justify-between px-5 pt-4 pb-3">
-              <View className="flex-row items-center gap-2">
-                <View className="w-8 h-8 rounded-full bg-primary-container items-center justify-center">
-                  <Home size={18} color="#90a8ff" />
+            <View className="flex-row items-center justify-between px-5 pt-3 pb-2 bg-white">
+              <View className="flex-row items-center gap-3">
+                <View className="w-11 h-11 bg-primary-soft rounded-full items-center justify-center">
+                  <Text className="text-primary font-sans text-base font-extrabold">
+                    {user?.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "U"}
+                  </Text>
                 </View>
-                        <Text className="font-sans text-lg font-bold text-primary">PorLapor</Text>
+                <View>
+                  <Text className="font-body text-xs text-on-surface-variant">Halo,</Text>
+                  <Text className="font-sans text-base font-bold text-on-surface" numberOfLines={1}>
+                    {user?.name || "Pengguna"}
+                  </Text>
+                </View>
               </View>
-              <TouchableOpacity className="p-2 rounded-full hover:bg-surface-container">
-                <Bell size={20} color="#444651" />
+              <TouchableOpacity className="w-11 h-11 bg-white border border-outline-variant rounded-full items-center justify-center">
+                <Bell size={18} color="#475569" />
               </TouchableOpacity>
             </View>
 
-            <View className="mx-5 mb-5 relative overflow-hidden rounded-xl bg-surface-container-high p-4 border border-outline-variant">
+            <View className="mx-5 mb-4 mt-2 relative overflow-hidden rounded-3xl bg-primary p-5 shadow-soft">
               <View className="relative z-10">
-                <Text className="font-sans text-2xl font-bold text-primary mb-2">Laporan Terkini</Text>
-                <Text className="font-body text-base text-on-surface-variant mb-3">
+                <Text className="font-sans text-2xl font-extrabold text-white mb-1">Laporan Terkini</Text>
+                <Text className="font-body text-sm text-white/85 mb-4 leading-relaxed">
                   Pantau dan dukung laporan masyarakat di sekitar Anda.
                 </Text>
-                <View className="flex-row items-center gap-2 bg-surface rounded-full px-4 py-2 border border-outline-variant self-start">
-                  <MapPin size={14} color="#757682" />
-                  <Text className="font-body text-xs text-on-surface-variant">Jakarta Selatan</Text>
-                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("CreateReport")}
+                  activeOpacity={0.85}
+                  className="bg-white py-2.5 px-4 rounded-xl flex-row items-center justify-center gap-2 self-start"
+                >
+                  <Plus size={16} color="#0f766e" />
+                  <Text className="text-primary font-sans text-sm font-bold">Buat Laporan</Text>
+                </TouchableOpacity>
               </View>
-              <View className="absolute -right-16 -top-16 w-48 h-48 bg-primary-container opacity-10 rounded-full" />
-              <View className="absolute -bottom-8 right-8 w-32 h-32 bg-secondary-container opacity-10 rounded-full" />
+              <View className="absolute -right-12 -top-12 w-40 h-40 bg-white/10 rounded-full" />
+              <View className="absolute -bottom-8 right-8 w-24 h-24 bg-white/10 rounded-full" />
             </View>
 
-            <View className="flex-row gap-2 mx-5 mb-4">
-              <StatBadge icon={Inbox} label="Total" value={total} bg="bg-surface-container" textColor="text-on-surface-variant" valueColor="text-on-surface" />
-              <StatBadge icon={Activity} label="Diproses" value={proses + menunggu} bg="bg-secondary-fixed" textColor="text-on-secondary-fixed" valueColor="text-on-surface" />
-              <StatBadge icon={CheckCircle2} label="Selesai" value={selesai} bg="bg-tertiary-fixed" textColor="text-on-tertiary-fixed" valueColor="text-on-surface" />
+            <View className="flex-row gap-3 mx-5 mb-4">
+              <StatCard icon={Inbox} label="Total" value={total} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-primary-soft" iconColor="#0f766e" />
+              <StatCard icon={Activity} label="Diproses" value={proses + menunggu} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-secondary-soft" iconColor="#2563eb" />
+              <StatCard icon={CheckCircle2} label="Selesai" value={selesai} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-success-soft" iconColor="#059669" />
             </View>
 
-            <View className="mx-5 mb-4">
-              <TouchableOpacity
-                onPress={() => navigation.navigate("CreateReport" as never)}
-                className="bg-primary py-3.5 rounded-full flex-row items-center justify-center gap-2 shadow-md active:opacity-80"
-              >
-                <Plus size={20} color="#fff" />
-                <Text className="text-on-primary font-sans text-sm font-semibold">Buat Laporan Baru</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 mb-4">
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 mb-2">
               <View className="flex-row gap-2">
                 {tabs.map((t) => (
                   <TouchableOpacity
                     key={t.key}
                     onPress={() => setTab(t.key)}
-                    className={`px-4 py-2 rounded-full ${
-                      tab === t.key
-                        ? "bg-primary"
-                        : "bg-surface border border-outline-variant"
-                    }`}
+                    activeOpacity={0.7}
+                    className={`px-4 py-2.5 rounded-full ${tab === t.key ? "bg-primary" : "bg-white border border-outline-variant"}`}
                   >
                     <Text className={`font-body text-xs font-semibold ${tab === t.key ? "text-on-primary" : "text-on-surface-variant"}`}>
-                      {t.label} ({t.count})
+                      {t.label} · {t.count}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -118,16 +124,26 @@ export default function DashboardScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })}>
+          <TouchableOpacity onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })} activeOpacity={0.85}>
             <ReportCardItem report={item} />
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <View className="items-center mt-16">
-            <Inbox size={48} color="#c5c5d3" />
-            <Text className="text-on-surface-variant mt-4 font-medium">Belum ada laporan</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("CreateReport" as never)} className="bg-primary px-6 py-3 rounded-full mt-4">
-              <Text className="text-on-primary font-bold">Buat Laporan Baru</Text>
+          <View className="items-center mt-12 px-8">
+            <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-4">
+              <Inbox size={32} color="#0f766e" />
+            </View>
+            <Text className="text-on-surface font-sans text-base font-bold mb-1">Belum ada laporan</Text>
+            <Text className="text-on-surface-variant font-body text-sm text-center mb-5">
+              Mulai buat laporan pertamamu untuk mengawal perubahan.
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CreateReport")}
+              activeOpacity={0.85}
+              className="bg-primary py-3 px-6 rounded-2xl flex-row items-center gap-2"
+            >
+              <Plus size={16} color="#fff" />
+              <Text className="text-on-primary font-sans text-sm font-bold">Buat Laporan Baru</Text>
             </TouchableOpacity>
           </View>
         }
@@ -136,74 +152,70 @@ export default function DashboardScreen() {
   );
 }
 
-function StatBadge({ icon: Icon, label, value, bg, textColor, valueColor }: { icon: any; label: string; value: number; bg: string; textColor: string; valueColor: string }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  bg,
+  textColor,
+  iconBg,
+  iconColor,
+}: {
+  icon: any;
+  label: string;
+  value: number;
+  bg: string;
+  textColor: string;
+  iconBg: string;
+  iconColor: string;
+}) {
   return (
-    <View className={`flex-1 ${bg} rounded-xl p-3`}>
-      <Text className={`text-lg font-bold ${valueColor}`}>{value}</Text>
-      <Text className={`text-xs font-bold ${textColor}`}>{label}</Text>
+    <View className={`flex-1 ${bg} rounded-2xl p-3.5 border border-outline-variant shadow-sm`}>
+      <View className={`w-9 h-9 ${iconBg} rounded-lg items-center justify-center mb-2.5`}>
+        <Icon size={18} color={iconColor} />
+      </View>
+      <Text className="text-xl font-extrabold text-on-surface">{value}</Text>
+      <Text className={`text-xs font-semibold ${textColor}`}>{label}</Text>
     </View>
   );
 }
 
 function ReportCardItem({ report }: { report: Report }) {
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "PENDING":
-      case "IN_REVIEW":
-        return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: Clock };
-      case "IN_PROGRESS":
-        return { bg: "bg-secondary-container", text: "text-on-secondary-container", icon: Activity };
-      case "RESOLVED":
-        return { bg: "bg-tertiary-fixed", text: "text-on-tertiary-fixed", icon: CheckCircle2 };
-      case "REJECTED":
-        return { bg: "bg-error-container", text: "text-on-error-container", icon: Inbox };
-      default:
-        return { bg: "bg-surface-variant", text: "text-on-surface-variant", icon: Clock };
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "PENDING": return "Menunggu";
-      case "IN_REVIEW": return "Ditinjau";
-      case "IN_PROGRESS": return "Diproses";
-      case "RESOLVED": return "Selesai";
-      case "REJECTED": return "Ditolak";
-      default: return status;
-    }
-  };
-
-  const s = getStatusStyle(report.status);
+  const s = statusConfig[report.status] || statusConfig.PENDING;
+  const Icon = s.icon;
 
   return (
-    <View className="bg-surface-container-lowest rounded-xl mx-5 mb-3 border border-outline-variant shadow-sm overflow-hidden">
+    <View className="bg-white rounded-2xl mx-5 mb-3 border border-outline-variant shadow-sm overflow-hidden">
       <View className="p-4">
-        <View className="flex-row justify-between items-start mb-2">
-          <View className={`px-2 py-1 rounded ${s.bg} flex-row items-center gap-1`}>
-            <Text className={`${s.text} text-xs font-bold`}>{getStatusLabel(report.status)}</Text>
+        <View className="flex-row justify-between items-start mb-2.5">
+          <View className={`px-2.5 py-1 rounded-lg ${s.bg} flex-row items-center gap-1.5`}>
+            <Icon size={12} color="#0f172a" />
+            <Text className={`${s.text} text-[11px] font-bold`}>{s.label}</Text>
           </View>
           {report.category && (
-            <Text className="text-xs font-bold text-on-surface-variant uppercase">{report.category.name}</Text>
+            <Text className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+              {report.category.name}
+            </Text>
           )}
         </View>
-        <Text className="font-sans text-lg font-bold text-on-surface mb-1">{report.title}</Text>
-        <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-3" numberOfLines={3}>
+        <Text className="font-sans text-base font-bold text-on-surface mb-1.5">{report.title}</Text>
+        <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-3" numberOfLines={2}>
           {report.description}
         </Text>
         <View className="flex-row items-center justify-between pt-3 border-t border-outline-variant">
-          <View className="flex-row items-center gap-1 flex-1">
-            <MapPin size={14} color="#757682" />
+          <View className="flex-row items-center gap-1.5 flex-1 mr-2">
+            <MapPin size={13} color="#94a3b8" />
             <Text className="font-body text-xs text-on-surface-variant" numberOfLines={1}>
               {report.address || `${report.latitude}, ${report.longitude}`}
             </Text>
           </View>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
-              <MessageCircle size={14} color="#757682" />
+              <MessageCircle size={13} color="#94a3b8" />
               <Text className="font-body text-xs text-on-surface-variant font-semibold">{report._count?.comments ?? 0}</Text>
             </View>
             <View className="flex-row items-center gap-1">
-              <ThumbsUp size={14} color="#757682" />
+              <ThumbsUp size={13} color="#94a3b8" />
               <Text className="font-body text-xs text-on-surface-variant font-semibold">{report._count?.likes ?? 0}</Text>
             </View>
           </View>

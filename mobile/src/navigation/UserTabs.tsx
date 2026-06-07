@@ -44,16 +44,16 @@ export default function UserTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#f8f9ff",
-          borderTopColor: "#c5c5d3",
+          backgroundColor: "#ffffff",
+          borderTopColor: "#e2e8f0",
           paddingBottom: 8,
           paddingTop: 8,
           height: 64,
         },
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#00236f",
-        tabBarInactiveTintColor: "#757682",
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600", fontFamily: "Inter" },
+        tabBarActiveTintColor: "#0f766e",
+        tabBarInactiveTintColor: "#94a3b8",
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700", fontFamily: "Plus Jakarta Sans" },
         tabBarIcon: ({ color, size, focused }) => {
           const icons: Record<string, typeof Home> = {
             DashboardTab: Home,
@@ -62,9 +62,31 @@ export default function UserTabs() {
             ProfileTab: User,
           };
           const Icon = icons[route.name];
+          if (route.name === "CreateReportTab") {
+            return (
+              <View
+                style={{
+                  backgroundColor: "#0f766e",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: -16,
+                  shadowColor: "#0f766e",
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 4 },
+                  elevation: 6,
+                }}
+              >
+                <Icon size={24} color="#fff" />
+              </View>
+            );
+          }
           return (
             <View
-              className={`rounded-full px-4 py-1 ${focused ? "bg-primary-container" : ""}`}
+              className={`rounded-xl px-3 py-1.5 ${focused ? "bg-primary-soft" : ""}`}
             >
               <Icon size={size} color={color} />
             </View>
@@ -73,9 +95,9 @@ export default function UserTabs() {
       })}
     >
       <Tab.Screen name="DashboardTab" component={DashboardStack} options={{ title: "Home" }} />
-      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Search" }} />
-      <Tab.Screen name="CreateReportTab" component={CreateReportScreen} options={{ title: "Lapor" }} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profile" }} />
+      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Jelajahi" }} />
+      <Tab.Screen name="CreateReportTab" component={CreateReportScreen} options={{ title: "Buat" }} />
+      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profil" }} />
     </Tab.Navigator>
   );
 }
