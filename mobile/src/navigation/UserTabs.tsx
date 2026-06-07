@@ -51,7 +51,7 @@ export default function UserTabs() {
           height: 64,
         },
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#007AFF",
+        tabBarActiveTintColor: "#00236f",
         tabBarInactiveTintColor: "#94a3b8",
         tabBarLabelStyle: { fontSize: 11, fontWeight: "700", fontFamily: "Plus Jakarta Sans" },
         tabBarIcon: ({ color, size, focused }) => {
@@ -66,14 +66,14 @@ export default function UserTabs() {
             return (
               <View
                 style={{
-                  backgroundColor: "#007AFF",
+                  backgroundColor: "#00236f",
                   width: 48,
                   height: 48,
                   borderRadius: 24,
                   alignItems: "center",
                   justifyContent: "center",
                   marginTop: -16,
-                  shadowColor: "#007AFF",
+                  shadowColor: "#00236f",
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
                   shadowOffset: { width: 0, height: 4 },

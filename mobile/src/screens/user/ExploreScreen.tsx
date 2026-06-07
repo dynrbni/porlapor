@@ -58,7 +58,7 @@ export default function ExploreScreen() {
         keyExtractor={(item) => item.id}
         contentContainerClassName="px-5 pb-6 mt-4"
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#007AFF" />
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />
         }
         renderItem={({ item }) => {
           const s = statusConfig[item.status] || statusConfig.PENDING;
@@ -110,7 +110,7 @@ export default function ExploreScreen() {
         ListEmptyComponent={
           <View className="items-center mt-16">
             <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-3">
-              <Inbox size={28} color="#007AFF" />
+              <Inbox size={28} color="#00236f" />
             </View>
             <Text className="text-on-surface font-sans text-sm font-bold mb-1">
               {search ? "Laporan tidak ditemukan" : "Belum ada laporan"}

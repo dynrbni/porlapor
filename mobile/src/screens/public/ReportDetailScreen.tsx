@@ -62,7 +62,7 @@ export default function ReportDetailScreen() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center"><ActivityIndicator size="large" color="#007AFF" /></View>
+        <View className="flex-1 items-center justify-center"><ActivityIndicator size="large" color="#00236f" /></View>
       </SafeAreaView>
     );
   }
@@ -118,7 +118,7 @@ export default function ReportDetailScreen() {
 
             <View className="flex-row flex-wrap gap-2">
               <View className="bg-primary-soft px-3 py-1.5 rounded-full flex-row items-center gap-1.5">
-                <FileText size={13} color="#007AFF" />
+                <FileText size={13} color="#00236f" />
                 <Text className="font-body text-xs font-bold text-primary">{report.category?.name || "Umum"}</Text>
               </View>
               {report.address ? (
@@ -173,7 +173,7 @@ export default function ReportDetailScreen() {
         <View className="bg-white mx-5 mt-3 rounded-2xl border border-outline-variant shadow-sm p-5">
           <View className="flex-row items-center gap-2 mb-4">
             <View className="w-8 h-8 bg-primary-soft rounded-lg items-center justify-center">
-              <Clock size={16} color="#007AFF" />
+              <Clock size={16} color="#00236f" />
             </View>
             <Text className="font-sans text-base font-extrabold text-on-surface">Status Laporan</Text>
           </View>
@@ -227,7 +227,7 @@ export default function ReportDetailScreen() {
               activeOpacity={0.7}
               className={`flex-row items-center gap-2 px-4 py-2.5 rounded-full mb-4 self-start border-2 ${isLiked ? "bg-primary-soft border-primary" : "bg-white border-outline"}`}
             >
-              <ThumbsUp size={14} color={isLiked ? "#007AFF" : "#475569"} />
+              <ThumbsUp size={14} color={isLiked ? "#00236f" : "#475569"} />
               <Text className={`font-body text-xs font-bold ${isLiked ? "text-primary" : "text-on-surface-variant"}`}>
                 Dukung · {report._count?.likes ?? 0}
               </Text>

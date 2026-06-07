@@ -58,7 +58,7 @@ export default function DashboardScreen() {
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerClassName="pb-28"
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#007AFF" />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />}
         ListHeaderComponent={
           <View>
             <View className="flex-row items-center justify-between px-5 pt-3 pb-2 bg-white">
@@ -91,7 +91,7 @@ export default function DashboardScreen() {
                   activeOpacity={0.85}
                   className="bg-white py-2.5 px-4 rounded-xl flex-row items-center justify-center gap-2 self-start"
                 >
-                  <Plus size={16} color="#007AFF" />
+                  <Plus size={16} color="#00236f" />
                   <Text className="text-primary font-sans text-sm font-bold">Buat Laporan</Text>
                 </TouchableOpacity>
               </View>
@@ -100,7 +100,7 @@ export default function DashboardScreen() {
             </View>
 
             <View className="flex-row gap-3 mx-5 mb-4">
-              <StatCard icon={Inbox} label="Total" value={total} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-primary-soft" iconColor="#007AFF" />
+              <StatCard icon={Inbox} label="Total" value={total} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-primary-soft" iconColor="#00236f" />
               <StatCard icon={Activity} label="Diproses" value={proses + menunggu} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-secondary-soft" iconColor="#2563eb" />
               <StatCard icon={CheckCircle2} label="Selesai" value={selesai} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-success-soft" iconColor="#059669" />
             </View>
@@ -131,7 +131,7 @@ export default function DashboardScreen() {
         ListEmptyComponent={
           <View className="items-center mt-12 px-8">
             <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-4">
-              <Inbox size={32} color="#007AFF" />
+              <Inbox size={32} color="#00236f" />
             </View>
             <Text className="text-on-surface font-sans text-base font-bold mb-1">Belum ada laporan</Text>
             <Text className="text-on-surface-variant font-body text-sm text-center mb-5">

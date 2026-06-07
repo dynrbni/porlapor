@@ -60,7 +60,7 @@ export default function SplashScreen() {
           </View>
 
           <View className="flex-row items-center justify-center gap-2 pt-4">
-            <ShieldCheck size={16} color="#007AFF" />
+            <ShieldCheck size={16} color="#00236f" />
             <Text className="font-body text-xs font-medium text-on-surface-variant">
               Layanan Resmi Pengaduan Masyarakat
             </Text>

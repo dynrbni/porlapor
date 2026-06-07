@@ -99,7 +99,7 @@ export default function CreateReportScreen() {
 
         <View className="bg-white rounded-2xl border border-outline-variant p-5 flex-col gap-5 shadow-sm">
           <View className="flex-row gap-3 p-4 bg-primary-soft rounded-xl border border-primary/30">
-            <Info size={18} color="#007AFF" style={{ marginTop: 2 }} />
+            <Info size={18} color="#00236f" style={{ marginTop: 2 }} />
             <Text className="font-body text-sm text-on-surface flex-1 leading-relaxed">
               Pastikan data diri dan kategori laporan sesuai untuk mempercepat proses verifikasi oleh instansi terkait.
             </Text>
