@@ -833,23 +833,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {isSuperAdmin && (
-                    <button
-                      onClick={() => {
-                        setUserForm({ name: '', email: '', password: '' });
-                        setUserModalRole('ADMIN');
-                        setCategoryError('');
-                        setCategorySuccess('');
-                        setUserModalOpen(true);
-                      }}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-semibold transition-colors"
-                    >
-                      Tambah Admin
-                    </button>
-                  )}
-                </div>
-
                 {/* User Create Modal */}
                 {userModalOpen && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
