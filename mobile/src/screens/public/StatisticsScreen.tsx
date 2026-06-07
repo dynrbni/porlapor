@@ -41,7 +41,7 @@ export default function StatisticsScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0f766e" />
+          <ActivityIndicator size="large" color="#007AFF" />
         </View>
       ) : !data?.data ? (
         <View className="flex-1 items-center justify-center">
@@ -60,7 +60,7 @@ export default function StatisticsScreen() {
               label="Total Laporan"
               value={data.data.totalReports}
               iconBg="bg-primary-soft"
-              iconColor="#0f766e"
+              iconColor="#007AFF"
             />
             <View className="flex-row gap-3">
               <View className="flex-1">

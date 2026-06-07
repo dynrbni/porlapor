@@ -112,7 +112,7 @@ function ProfileRow({ icon: Icon, label, value, isLast }: { icon: any; label: st
   return (
     <View className={`flex-row items-center px-2 py-3 ${!isLast ? "border-b border-outline-variant" : ""}`}>
       <View className="w-9 h-9 bg-primary-soft rounded-lg items-center justify-center mr-3">
-        <Icon size={16} color="#0f766e" />
+        <Icon size={16} color="#007AFF" />
       </View>
       <View className="flex-1">
         <Text className="font-body text-xs text-on-surface-variant">{label}</Text>

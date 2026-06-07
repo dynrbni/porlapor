@@ -148,7 +148,7 @@ export default function LoginScreen() {
           </View>
 
           <View className="flex-row items-center justify-center gap-2 pt-8">
-            <ShieldCheck size={14} color="#0f766e" />
+            <ShieldCheck size={14} color="#007AFF" />
             <Text className="font-body text-xs font-medium text-on-surface-variant">
               Koneksi Aman &amp; Terenkripsi
             </Text>

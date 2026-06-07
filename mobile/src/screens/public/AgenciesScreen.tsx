@@ -31,7 +31,7 @@ export default function AgenciesScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0f766e" />
+          <ActivityIndicator size="large" color="#007AFF" />
         </View>
       ) : (
         <FlatList
@@ -43,7 +43,7 @@ export default function AgenciesScreen() {
             <View className="bg-white rounded-2xl p-4 mb-3 border border-outline-variant shadow-sm">
               <View className="flex-row items-start gap-3">
                 <View className="w-12 h-12 bg-primary-soft rounded-2xl items-center justify-center">
-                  <Building2 size={22} color="#0f766e" />
+                  <Building2 size={22} color="#007AFF" />
                 </View>
                 <View className="flex-1">
                   <Text className="font-sans text-base font-extrabold text-on-surface">
@@ -87,7 +87,7 @@ export default function AgenciesScreen() {
           ListEmptyComponent={
             <View className="items-center mt-16">
               <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-3">
-                <Building2 size={28} color="#0f766e" />
+                <Building2 size={28} color="#007AFF" />
               </View>
               <Text className="text-on-surface font-sans text-sm font-bold mb-1">Belum ada instansi</Text>
               <Text className="text-on-surface-variant font-body text-xs text-center px-8">

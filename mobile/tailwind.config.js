@@ -9,7 +9,7 @@ module.exports = {
         body: ['"Inter"', "system-ui", "sans-serif"],
       },
       colors: {
-        background: "#f8fafc",
+        background: "#F5F5F5",
         surface: "#ffffff",
         "surface-dim": "#f1f5f9",
         "surface-bright": "#ffffff",
@@ -24,7 +24,7 @@ module.exports = {
         "inverse-on-surface": "#f8fafc",
         outline: "#cbd5e1",
         "outline-variant": "#e2e8f0",
-        primary: "#0f766e",
+        primary: "#007AFF",
         "primary-dark": "#115e59",
         "primary-soft": "#ccfbf1",
         "on-primary": "#ffffff",

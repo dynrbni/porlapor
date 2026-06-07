@@ -105,7 +105,7 @@ export default function HomeScreen() {
                 className="bg-white py-3 px-5 rounded-2xl flex-row items-center justify-center gap-2 self-start"
               >
                 <Text className="text-primary font-sans text-sm font-bold">Tulis Laporan Baru</Text>
-                <ArrowRight size={16} color="#0f766e" />
+                <ArrowRight size={16} color="#007AFF" />
               </TouchableOpacity>
             </View>
           </ImageBackground>
@@ -160,7 +160,7 @@ export default function HomeScreen() {
             className="flex-1 bg-white border border-outline-variant rounded-2xl p-4 flex-row items-center gap-3 shadow-sm"
           >
             <View className="w-11 h-11 bg-primary-soft rounded-xl items-center justify-center">
-              <BarChart3 size={22} color="#0f766e" />
+              <BarChart3 size={22} color="#007AFF" />
             </View>
             <View className="flex-1">
               <Text className="font-sans text-sm font-bold text-on-surface">Statistik</Text>
@@ -197,7 +197,7 @@ export default function HomeScreen() {
               desc: "Tuliskan rincian keluhan atau aspirasi. Lengkapi detail kronologi dan lokasi.",
               icon: FileText,
               bg: "bg-primary-soft",
-              color: "#0f766e",
+              color: "#007AFF",
             },
             {
               no: "02",
