@@ -10,7 +10,7 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin, User as UserIcon } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin, User as UserIcon, Pencil } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
@@ -690,25 +690,23 @@ const AdminDashboard = () => {
                                   <button
                                     onClick={() => setSelectedReportId(report.id)}
                                     className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
-                                    title="Lihat Detail"
+                                    title="Edit Laporan"
                                   >
-                                    <ArrowRight className="w-5 h-5" />
+                                    <Pencil className="w-5 h-5" />
                                   </button>
-                                  {isSuperAdmin && (
-                                    <ConfirmDialog
-                                      action="delete"
-                                      title="Hapus Laporan"
-                                      description="Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan."
-                                      onConfirm={() => handleDeleteReport(report.id)}
+                                  <ConfirmDialog
+                                    action="delete"
+                                    title="Hapus Laporan"
+                                    description="Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan."
+                                    onConfirm={() => handleDeleteReport(report.id)}
+                                  >
+                                    <button
+                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                                      title="Hapus laporan"
                                     >
-                                      <button
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
-                                        title="Hapus laporan"
-                                      >
-                                        <Trash2 className="w-5 h-5" />
-                                      </button>
-                                    </ConfirmDialog>
-                                  )}
+                                      <Trash2 className="w-5 h-5" />
+                                    </button>
+                                  </ConfirmDialog>
                                 </div>
                               </td>
                             </tr>

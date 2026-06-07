@@ -10,7 +10,7 @@ import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin, User as UserIcon } from 'lucide-react';
+import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, Search, Menu, X, Users, Tag, Trash2, UserPlus, MapPin, User as UserIcon, Pencil } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
@@ -358,6 +358,17 @@ const AgencyDashboard = () => {
     }
   };
 
+  const handleDeleteReport = async (id: string) => {
+    try {
+      await reportService.deleteReport(id);
+      setReports((prev) => prev.filter((r) => r.id !== id));
+      showToast('Laporan berhasil dihapus.');
+    } catch (err: any) {
+      console.error('Failed to delete report', err);
+      showToast('Gagal menghapus laporan.', 'error');
+    }
+  };
+
   const handlePromoteUser = async (id: string) => {
     try {
       await userService.promote(id, 'ADMIN');
@@ -662,13 +673,28 @@ const AgencyDashboard = () => {
                                 {new Date(report.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                               </td>
                               <td className="p-4 text-center">
-                                <button
-                                  onClick={() => setSelectedReportId(report.id)}
-                                  className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
-                                  title="Lihat Detail"
-                                >
-                                  <ArrowRight className="w-5 h-5" />
-                                </button>
+                                <div className="flex items-center justify-center gap-1">
+                                  <button
+                                    onClick={() => setSelectedReportId(report.id)}
+                                    className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex"
+                                    title="Edit Laporan"
+                                  >
+                                    <Pencil className="w-5 h-5" />
+                                  </button>
+                                  <ConfirmDialog
+                                    action="delete"
+                                    title="Hapus Laporan"
+                                    description="Yakin ingin menghapus laporan ini?"
+                                    onConfirm={() => handleDeleteReport(report.id)}
+                                  >
+                                    <button
+                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                                      title="Hapus laporan"
+                                    >
+                                      <Trash2 className="w-5 h-5" />
+                                    </button>
+                                  </ConfirmDialog>
+                                </div>
                               </td>
                             </tr>
                           ))

@@ -12,7 +12,7 @@ import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2 } from 'lucide-react';
+import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2, Pencil, ExternalLink } from 'lucide-react';
 
 type SuperadminSection = 'categories' | 'users' | 'reports' | 'agencies';
 
@@ -627,33 +627,42 @@ const SuperadminPanel = () => {
               <div className="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 className="text-lg font-semibold mb-4">Manajemen Laporan</h2>
                 <div className="space-y-3">
-                  {reports.length > 0 ? (
-                    reports.map(r => (
-                      <div
-                        key={r.id}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-slate-900 truncate">{r.title}</p>
-                          <p className="text-sm text-slate-600 truncate">
-                            {r.user?.name || r.user?.nama || r.user?.email || 'Unknown'} • {new Date(r.createdAt).toLocaleString('id-ID')}
-                          </p>
-                        </div>
-                        <ConfirmDialog
-                          action="delete"
-                          title="Hapus Laporan"
-                          description="Hapus laporan ini?"
-                          onConfirm={() => handleDeleteReport(r.id)}
+                    {reports.length > 0 ? (
+                      reports.map(r => (
+                        <div
+                          key={r.id}
+                          className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50"
                         >
-                          <button
-                            className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 flex-shrink-0"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Hapus</span>
-                          </button>
-                        </ConfirmDialog>
-                      </div>
-                    ))
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-slate-900 truncate">{r.title}</p>
+                            <p className="text-sm text-slate-600 truncate">
+                              {r.user?.name || r.user?.nama || r.user?.email || 'Unknown'} • {new Date(r.createdAt).toLocaleString('id-ID')}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => navigate(`/laporan/${r.id}`)}
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              <span className="hidden sm:inline">Detail</span>
+                            </button>
+                            <ConfirmDialog
+                              action="delete"
+                              title="Hapus Laporan"
+                              description="Hapus laporan ini?"
+                              onConfirm={() => handleDeleteReport(r.id)}
+                            >
+                              <button
+                                className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 flex-shrink-0"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                <span className="hidden sm:inline">Hapus</span>
+                              </button>
+                            </ConfirmDialog>
+                          </div>
+                        </div>
+                      ))
                   ) : (
                     <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-slate-500">
                       Belum ada laporan.
