@@ -87,6 +87,7 @@ model User {
   officialNotes OfficialNote[]
   comments     Comment[]
   likes        ReportLike[]
+  notifications Notification[]
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -189,6 +190,7 @@ model Report {
   officialNotes OfficialNote[]
   comments      Comment[]
   likes         ReportLike[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -265,6 +267,26 @@ model Comment {
   updatedAt DateTime @updatedAt
 
   @@map("comments")
+}
+
+// ===================================================
+// MODEL: Notification
+// ===================================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // new_report | comment | like | official_note | status_change
+  message   String
+  reportId  String?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  report    Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
 }
 
 // ===================================================

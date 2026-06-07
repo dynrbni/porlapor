@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2, Pencil, ExternalLink } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
 
 type SuperadminSection = 'categories' | 'users' | 'reports' | 'agencies';
 
@@ -335,12 +336,13 @@ const SuperadminPanel = () => {
 
         {/* Header */}
         <div className="px-6 pt-8 pb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Shield className="h-6 w-6 text-slate-900" />
-            <div>
+          <div className="flex items-start gap-3 mb-4">
+            <Shield className="h-6 w-6 text-slate-900 mt-1" />
+            <div className="flex-1">
               <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">PorLapor</p>
               <h1 className="text-3xl font-semibold text-slate-900">Superadmin Control Panel</h1>
             </div>
+            <NotificationBell />
           </div>
           <p className="text-sm text-slate-600">
             {activeSection === 'categories' && 'Kelola kategori laporan yang tersedia di sistem.'}

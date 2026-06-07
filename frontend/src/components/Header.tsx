@@ -1,4 +1,5 @@
 import { Menu, X, LogOut, ChevronDown, LayoutDashboard, Shield, User } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService, getPhotoUrl } from '../services/authService';
@@ -97,6 +98,8 @@ export default function Header() {
           {/* Actions — desktop */}
           <div className="hidden md:flex flex-[1_1_0%] justify-end items-center gap-3">
             {isAuthenticated ? (
+              <>
+              <NotificationBell />
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
@@ -169,6 +172,7 @@ export default function Header() {
                   </div>
                 </div>
               </div>
+              </>
             ) : (
               <>
                 <Link

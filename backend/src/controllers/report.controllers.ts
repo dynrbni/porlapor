@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Prisma, ReportStatus } from '@prisma/client';
 import prisma from '../config/database';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
+import { createNotification } from './notification.controllers';
 import crypto from 'crypto';
 
 function parseNumber(value: unknown) {
@@ -100,6 +101,33 @@ export const createReport = async (req: Request, res: Response) => {
         category: { select: categorySelect() },
       },
     });
+
+    // Notify all ADMIN, SUPERADMIN, and AGENCY users
+    const adminUsers = await prisma.user.findMany({
+      where: {
+        role: { in: ['ADMIN', 'SUPERADMIN'] },
+        isActive: true,
+      },
+      select: { id: true },
+    });
+    const agencyUsers = targetAgencyId
+      ? await prisma.user.findMany({
+          where: { agencyId: targetAgencyId, isActive: true },
+          select: { id: true },
+        })
+      : [];
+    const notifyUserIds = new Set([
+      ...adminUsers.map((u) => u.id),
+      ...agencyUsers.map((u) => u.id),
+    ]);
+    for (const uid of notifyUserIds) {
+      await createNotification(
+        uid,
+        'new_report',
+        `Laporan baru: "${title.substring(0, 60)}"`,
+        report.id,
+      );
+    }
 
     res.status(201).json({
       message: 'Laporan berhasil dibuat',
@@ -273,6 +301,11 @@ export const updateReport = async (req: Request, res: Response) => {
       data.longitude = lng;
     }
 
+    const oldReport = await prisma.report.findUnique({
+      where: { id: String(id) },
+      select: { userId: true, status: true, title: true },
+    });
+
     const report = await prisma.report.update({
       where: { id: String(id) },
       data,
@@ -281,6 +314,24 @@ export const updateReport = async (req: Request, res: Response) => {
         category: { select: categorySelect() },
       },
     });
+
+    // Notify report author if status changed
+    if (oldReport && status && status !== oldReport.status) {
+      const statusLabels: Record<string, string> = {
+        PENDING: 'Menunggu',
+        IN_REVIEW: 'Ditinjau',
+        IN_PROGRESS: 'Diproses',
+        RESOLVED: 'Selesai',
+        REJECTED: 'Ditolak',
+      };
+      const newLabel = statusLabels[status as string] || status;
+      await createNotification(
+        oldReport.userId,
+        'status_change',
+        `Status laporanmu "${oldReport.title.substring(0, 50)}" berubah menjadi ${newLabel}`,
+        String(id),
+      );
+    }
 
     res.status(200).json({
       message: 'Laporan berhasil diperbarui',
@@ -433,6 +484,21 @@ export const addComment = async (req: Request, res: Response) => {
       }
     });
 
+    // Notify report author (if commenter is not the author)
+    if (report.userId !== user.id) {
+      const commenter = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { name: true, nama: true },
+      });
+      const commenterName = (commenter as any)?.nama || commenter?.name || 'Seseorang';
+      await createNotification(
+        report.userId,
+        'comment',
+        `${commenterName} berkomentar di laporanmu: "${content.substring(0, 50)}"`,
+        String(id),
+      );
+    }
+
     res.status(201).json({
       message: 'Komentar berhasil ditambahkan',
       data: comment
@@ -476,6 +542,22 @@ export const toggleLike = async (req: Request, res: Response) => {
           reportId: String(id)
         }
       });
+
+      // Notify report author (if liker is not the author)
+      if (report.userId !== user.id) {
+        const liker = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { name: true, nama: true },
+        });
+        const likerName = (liker as any)?.nama || liker?.name || 'Seseorang';
+        await createNotification(
+          report.userId,
+          'like',
+          `${likerName} mendukung laporanmu`,
+          String(id),
+        );
+      }
+
       res.status(200).json({ message: 'Laporan didukung', liked: true });
     }
   } catch (error) {

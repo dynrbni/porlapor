@@ -18,6 +18,7 @@ import { useToast } from '../components/Toast';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 import AdminReportTrendChart from '../components/AdminReportTrendChart';
 import AdminExploreMap from '../components/AdminExploreMap';
+import NotificationBell from '../components/NotificationBell';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 type Tab = 'semua' | 'pending' | 'proses' | 'selesai' | 'ditolak';
@@ -442,7 +443,7 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-
+              <NotificationBell />
             </div>
           </div>
 

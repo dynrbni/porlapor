@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
+import { createNotification } from './notification.controllers';
 
 export const createOfficialNote = async (req: Request, res: Response) => {
   try {
@@ -34,6 +35,14 @@ export const createOfficialNote = async (req: Request, res: Response) => {
         },
       },
     });
+
+    // Notify report author
+    await createNotification(
+      report.userId,
+      'official_note',
+      `Instansi memberikan tanggapan resmi pada laporanmu: "${content.substring(0, 60)}"`,
+      reportId,
+    );
 
     return res.status(201).json({
       message: 'Tanggapan resmi berhasil ditambahkan',
