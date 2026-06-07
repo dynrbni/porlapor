@@ -99,7 +99,7 @@ const Statistik: React.FC = () => {
             Statistik <span className="text-blue-600">Laporan.</span>
           </h1>
           <p data-aos="fade-up" data-aos-delay="100" className="text-lg sm:text-xl text-slate-600 mb-10 leading-relaxed font-medium max-w-2xl mx-auto">
-            Pantau perkembangan laporan masyarakat secara transparan — lihat instansi mana yang paling banyak menangani laporan.
+            Pantau perkembangan laporan masyarakat secara transparan dan lihat instansi mana yang paling banyak menangani laporan.
           </p>
         </div>
 

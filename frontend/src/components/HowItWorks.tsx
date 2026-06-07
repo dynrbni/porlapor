@@ -29,7 +29,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 bg-white border-t border-slate-100 overflow-hidden">
+    <section className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -82,11 +82,9 @@ export default function HowItWorks() {
 
                 {/* Kolom kiri: dot + garis */}
                 <div className="flex flex-col items-center flex-shrink-0">
-                  {/* Icon circle */}
                   <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm flex-shrink-0">
                     <Icon className="w-6 h-6" />
                   </div>
-                  {/* Connector line */}
                   {!isLast && (
                     <div className="w-0.5 flex-1 bg-gradient-to-b from-blue-200 to-blue-50 mt-3 mb-3 rounded-full min-h-[40px]" />
                   )}
