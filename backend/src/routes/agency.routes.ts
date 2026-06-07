@@ -7,12 +7,11 @@ const router = Router();
 // Endpoint publik atau yg bisa diakses user biasa
 router.get('/', getAgencies);
 
-// Endpoint yg butuh autentikasi & hanya SUPERADMIN dan ADMIN
+// Endpoint yg butuh autentikasi
 router.use(authenticate);
-router.use(authorizeRoles('SUPERADMIN', 'ADMIN', 'AGENCY'));
 
-router.post('/', createAgency);
-router.put('/:id', updateAgency);
-router.delete('/:id', deleteAgency);
+router.post('/', authorizeRoles('SUPERADMIN', 'ADMIN'), createAgency);
+router.put('/:id', authorizeRoles('SUPERADMIN'), updateAgency);
+router.delete('/:id', authorizeRoles('SUPERADMIN'), deleteAgency);
 
 export default router;

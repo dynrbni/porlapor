@@ -5,7 +5,7 @@ import { categoryService } from '../services/categoryService';
 import type { Category } from '../services/categoryService';
 import { userService } from '../services/userService';
 import type { User } from '../services/userService';
-import { getAgencies, createAgency } from '../services/agencyService';
+import { getAgencies, createAgency, updateAgency, deleteAgency } from '../services/agencyService';
 import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
@@ -32,6 +32,7 @@ const SuperadminPanel = () => {
   const [creatingAgency, setCreatingAgency] = useState(false);
   const [agencyError, setAgencyError] = useState('');
   const [agencySuccess, setAgencySuccess] = useState('');
+  const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
@@ -84,7 +85,7 @@ const SuperadminPanel = () => {
   }
 
   
-  const handleCreateAgency = async () => {
+  const handleSaveAgency = async () => {
     if (!agencyName.trim()) {
       setAgencyError('Nama instansi wajib diisi.');
       return;
@@ -99,21 +100,62 @@ const SuperadminPanel = () => {
       if (agencyPassword.trim()) payload.password = agencyPassword.trim();
       if (agencyPhone.trim()) payload.phone = agencyPhone.trim();
       if (agencyAddress.trim()) payload.address = agencyAddress.trim();
-      
-      await createAgency(payload);
-      showToast('Instansi berhasil ditambahkan.');
+
+      if (editingAgency) {
+        await updateAgency(editingAgency.id, payload);
+        showToast('Instansi berhasil diperbarui.');
+      } else {
+        await createAgency(payload);
+        showToast('Instansi berhasil ditambahkan.');
+      }
       setAgencyName('');
       setAgencyDesc('');
       setAgencyEmail('');
       setAgencyPassword('');
       setAgencyPhone('');
       setAgencyAddress('');
+      setEditingAgency(null);
       await fetchAll();
     } catch (e: any) {
-      console.error('create agency', e);
-      setAgencyError(e.response?.data?.message || 'Gagal menambahkan instansi.');
+      console.error('save agency', e);
+      setAgencyError(e.response?.data?.message || 'Gagal menyimpan instansi.');
     } finally {
       setCreatingAgency(false);
+    }
+  };
+
+  const handleStartEdit = (agency: Agency) => {
+    setEditingAgency(agency);
+    setAgencyName(agency.name);
+    setAgencyDesc(agency.description || '');
+    setAgencyEmail(agency.email || '');
+    setAgencyPhone(agency.phone || '');
+    setAgencyAddress(agency.address || '');
+    setAgencyPassword('');
+    setAgencyError('');
+    setAgencySuccess('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAgency(null);
+    setAgencyName('');
+    setAgencyDesc('');
+    setAgencyEmail('');
+    setAgencyPassword('');
+    setAgencyPhone('');
+    setAgencyAddress('');
+    setAgencyError('');
+    setAgencySuccess('');
+  };
+
+  const handleDeleteAgency = async (id: string) => {
+    try {
+      await deleteAgency(id);
+      showToast('Instansi berhasil dihapus.');
+      await fetchAll();
+    } catch (e: any) {
+      console.error('delete agency', e);
+      showToast(e.response?.data?.message || 'Gagal menghapus instansi.', 'error');
     }
   };
 
@@ -319,7 +361,14 @@ const SuperadminPanel = () => {
             {activeSection === 'agencies' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-2xl border border-slate-200 p-6">
-                  <h2 className="text-lg font-semibold mb-4">Buat Instansi Baru</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold">{editingAgency ? 'Edit Instansi' : 'Buat Instansi Baru'}</h2>
+                    {editingAgency && (
+                      <button onClick={handleCancelEdit} className="text-sm text-slate-500 hover:text-slate-700 underline">
+                        Batal
+                      </button>
+                    )}
+                  </div>
                   {agencyError && <div className="mb-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm">{agencyError}</div>}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="col-span-1 md:col-span-2">
@@ -379,14 +428,22 @@ const SuperadminPanel = () => {
                         className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-900/20"
                       />
                     </div>
-                    <div className="col-span-1 md:col-span-2 flex justify-end">
+                    <div className="col-span-1 md:col-span-2 flex justify-end gap-3">
+                      {editingAgency && (
+                        <button
+                          onClick={handleCancelEdit}
+                          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                        >
+                          Batal
+                        </button>
+                      )}
                       <button
-                        onClick={handleCreateAgency}
+                        onClick={handleSaveAgency}
                         disabled={creatingAgency || !agencyName.trim()}
                         className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
                       >
                         {creatingAgency ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
-                        {creatingAgency ? 'Menyimpan...' : 'Simpan Instansi'}
+                        {creatingAgency ? 'Menyimpan...' : editingAgency ? 'Simpan Perubahan' : 'Simpan Instansi'}
                       </button>
                     </div>
                   </div>
@@ -409,6 +466,25 @@ const SuperadminPanel = () => {
                               <p className="font-semibold text-slate-900">{agency.name}</p>
                               <p className="text-sm text-slate-600">{agency.email || '-'} • {agency.phone || '-'}</p>
                             </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleStartEdit(agency)}
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                            >
+                              Edit
+                            </button>
+                            <ConfirmDialog
+                              action="delete"
+                              title="Hapus Instansi"
+                              description={`Apakah kamu yakin ingin menghapus instansi "${agency.name}"? Semua data terkait akan dihapus.`}
+                              onConfirm={() => handleDeleteAgency(agency.id)}
+                            >
+                              <button className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100">
+                                <Trash2 className="w-4 h-4" />
+                                Hapus
+                              </button>
+                            </ConfirmDialog>
                           </div>
                         </div>
                       ))

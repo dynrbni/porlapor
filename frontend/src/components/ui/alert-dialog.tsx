@@ -16,7 +16,10 @@ function AlertDialogPortal({ ...props }: AlertDialogPrimitive.AlertDialogPortalP
 function AlertDialogOverlay({ className, ...props }: AlertDialogPrimitive.AlertDialogOverlayProps) {
   return (
     <AlertDialogPrimitive.Overlay
-      className={cn('fixed inset-0 z-50 bg-black/40', className)}
+      className={cn(
+        'fixed inset-0 z-50 bg-black/40 data-[state=open]:opacity-100 data-[state=closed]:opacity-0 transition-opacity duration-150',
+        className,
+      )}
       {...props}
     />
   )
@@ -28,7 +31,8 @@ function AlertDialogContent({ className, ...props }: AlertDialogPrimitive.AlertD
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl',
+          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl flex flex-col gap-6',
+          'data-[state=open]:opacity-100 data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=closed]:scale-95 transition-all duration-150',
           className,
         )}
         {...props}

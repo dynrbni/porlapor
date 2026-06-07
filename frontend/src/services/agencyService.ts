@@ -32,3 +32,13 @@ export const createAgency = async (payload: CreateAgencyPayload) => {
   const response = await apiClient.post<{ message: string; data: Agency }>('/agencies', payload);
   return response.data;
 };
+
+export const updateAgency = async (id: string, payload: Partial<CreateAgencyPayload>) => {
+  const response = await apiClient.put<{ message: string; data: Agency }>(`/agencies/${id}`, payload);
+  return response.data;
+};
+
+export const deleteAgency = async (id: string) => {
+  const response = await apiClient.delete<{ message: string }>(`/agencies/${id}`);
+  return response.data;
+};
