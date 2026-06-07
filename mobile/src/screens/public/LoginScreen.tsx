@@ -11,7 +11,7 @@ import {
   Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Eye, EyeOff, Person, Lock, ArrowForward, ShieldLock } from "lucide-react-native";
+import { ArrowLeft, Eye, EyeOff, User, Lock, ArrowRight, ShieldCheck } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../navigation/PublicNavigator";
@@ -78,7 +78,7 @@ export default function LoginScreen() {
             <View className="mb-4">
               <Text className="font-body text-xs font-semibold text-on-surface mb-2">Email atau Nomor Telepon</Text>
               <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
-                <Person size={18} color="#757682" />
+                <User size={18} color="#757682" />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
@@ -129,7 +129,7 @@ export default function LoginScreen() {
               className="bg-primary py-3.5 rounded-full items-center flex-row justify-center gap-2 shadow-md"
             >
               <Text className="text-on-primary font-sans text-sm font-semibold">{loading ? "Memuat..." : "Masuk"}</Text>
-              <ArrowForward size={18} color="#fff" />
+              <ArrowRight size={18} color="#fff" />
             </TouchableOpacity>
           </View>
 
@@ -148,7 +148,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             <View className="flex-row items-center gap-2 mt-2">
-              <ShieldLock size={14} color="#757682" />
+              <ShieldCheck size={14} color="#757682" />
               <Text className="font-body text-xs text-outline">Koneksi Aman &amp; Terenkripsi</Text>
             </View>
           </View>

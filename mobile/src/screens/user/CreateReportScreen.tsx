@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, ChevronRight, Info, MapPin, Camera, Image as ImageIcon, User, CheckCircle } from "lucide-react-native";
+import { ArrowLeft, ChevronRight, Info, MapPin, Camera, Image as ImageIcon, User, CheckCircle2 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -114,7 +114,7 @@ export default function CreateReportScreen() {
                 Nomor Induk Kependudukan (NIK)
               </Text>
               <View className="flex-row items-center gap-1 bg-tertiary-fixed/30 px-2 py-0.5 rounded">
-                <CheckCircle size={12} color="#004a31" />
+                <CheckCircle2 size={12} color="#004a31" />
                 <Text className="text-tertiary-container text-[10px] uppercase tracking-wider font-semibold">Terverifikasi</Text>
               </View>
             </View>

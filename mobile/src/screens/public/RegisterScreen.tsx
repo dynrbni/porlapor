@@ -16,12 +16,12 @@ import {
   Mail,
   Lock,
   Phone,
-  Badge,
+  CreditCard,
   MapPin,
   Calendar,
   Eye,
   EyeOff,
-  ArrowForward,
+  ArrowRight,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
@@ -149,7 +149,7 @@ export default function RegisterScreen() {
                   Nomor Induk Kependudukan (NIK)
                 </Text>
                 <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
-                  <Badge size={18} color="#757682" />
+                  <CreditCard size={18} color="#757682" />
                   <TextInput
                     value={form.nik}
                     onChangeText={(v) => update("nik", v.replace(/[^0-9]/g, ""))}
@@ -206,7 +206,7 @@ export default function RegisterScreen() {
                 className="bg-primary py-3.5 rounded-full items-center flex-row justify-center gap-2 shadow-md"
               >
                 <Text className="text-on-primary font-sans text-sm font-semibold">Lanjut</Text>
-                <ArrowForward size={18} color="#fff" />
+                <ArrowRight size={18} color="#fff" />
               </TouchableOpacity>
             </>
           ) : (
@@ -241,7 +241,7 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleRegister} disabled={loading} className="flex-1 bg-primary py-3.5 rounded-xl items-center flex-row justify-center gap-2 shadow-md">
                   <Text className="text-on-primary font-sans text-sm font-semibold">{loading ? "Memuat..." : "Daftar"}</Text>
-                  <ArrowForward size={18} color="#fff" />
+                  <ArrowRight size={18} color="#fff" />
                 </TouchableOpacity>
               </View>
             </>
