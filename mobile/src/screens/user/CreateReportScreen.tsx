@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, ChevronRight, Info, MapPin, Camera, Image as ImageIcon, User } from "lucide-react-native";
+import { ArrowLeft, ChevronRight, Info, MapPin, Camera, Image as ImageIcon, User, CheckCircle } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ export default function CreateReportScreen() {
   const [longitude, setLongitude] = useState("");
   const [address, setAddress] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [step, setStep] = useState(1);
 
   useEffect(() => {
     try {
@@ -53,8 +54,6 @@ export default function CreateReportScreen() {
     },
   });
 
-  const step = 1;
-
   function handleSubmit() {
     if (!title || !description || !categoryId) {
       Alert.alert("Error", "Judul, deskripsi, dan kategori harus diisi");
@@ -87,6 +86,14 @@ export default function CreateReportScreen() {
       </View>
 
       <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled">
+        <View className="flex-row items-center justify-between mb-2">
+          <Text className="font-body text-xs font-semibold text-primary">
+            Langkah 1 dari 3
+          </Text>
+          <Text className="font-body text-xs text-on-surface-variant">
+            {step === 1 ? "Verifikasi" : step === 2 ? "Foto & Lokasi" : "Konfirmasi"}
+          </Text>
+        </View>
         <View className="flex-row gap-2 mb-4">
           <View className="h-2 flex-1 rounded-full bg-primary transition-all duration-300" />
           <View className="h-2 flex-1 rounded-full bg-surface-variant transition-all duration-300" />
@@ -96,21 +103,24 @@ export default function CreateReportScreen() {
         <View className="bg-surface rounded-xl border border-outline-variant p-5 flex-col gap-5">
           <View className="flex-row gap-3 p-4 bg-surface-container-low rounded-lg border border-primary-fixed">
             <Info size={18} color="#00236f" style={{ marginTop: 2 }} />
-            <Text className="font-body text-sm text-on-surface-variant flex-1">
+            <Text className="font-body text-sm text-on-surface-variant flex-1 leading-relaxed">
               Pastikan data diri dan kategori laporan sesuai untuk mempercepat proses verifikasi oleh instansi terkait.
             </Text>
           </View>
 
           <View className="flex-col gap-1.5">
-            <Text className="font-body text-xs font-semibold text-on-surface flex-row items-center gap-1">
-              Nomor Induk Kependudukan (NIK)
-              <Text className="text-tertiary-container bg-tertiary-fixed/30 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ml-1 overflow-hidden">Terverifikasi</Text>
-            </Text>
-            <TextInput
-              value="3171234567890123"
-              editable={false}
-              className="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body text-base text-on-surface-variant tracking-widest"
-            />
+            <View className="flex-row items-center justify-between">
+              <Text className="font-body text-xs font-semibold text-on-surface">
+                Nomor Induk Kependudukan (NIK)
+              </Text>
+              <View className="flex-row items-center gap-1 bg-tertiary-fixed/30 px-2 py-0.5 rounded">
+                <CheckCircle size={12} color="#004a31" />
+                <Text className="text-tertiary-container text-[10px] uppercase tracking-wider font-semibold">Terverifikasi</Text>
+              </View>
+            </View>
+            <View className="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3">
+              <Text className="font-body text-base text-on-surface-variant tracking-widest">3171234567890123</Text>
+            </View>
             <Text className="font-body text-[11px] text-outline">Format: 16-digits (Sesuai KTP terdaftar)</Text>
           </View>
 

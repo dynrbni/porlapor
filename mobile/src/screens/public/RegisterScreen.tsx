@@ -16,11 +16,12 @@ import {
   Mail,
   Lock,
   Phone,
-  CreditCard,
+  Badge,
   MapPin,
   Calendar,
   Eye,
   EyeOff,
+  ArrowForward,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
@@ -34,6 +35,7 @@ export default function RegisterScreen() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [agree, setAgree] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -51,6 +53,10 @@ export default function RegisterScreen() {
 
   function validateStep1() {
     setError("");
+    if (!form.nik.trim() || form.nik.trim().length !== 16) {
+      setError("NIK harus 16 digit.");
+      return false;
+    }
     if (!form.name.trim()) {
       setError("Nama lengkap wajib diisi.");
       return false;
@@ -59,8 +65,16 @@ export default function RegisterScreen() {
       setError("Email wajib diisi.");
       return false;
     }
+    if (!form.phone.trim()) {
+      setError("Nomor telepon wajib diisi.");
+      return false;
+    }
     if (form.password.length < 6) {
       setError("Password minimal 6 karakter.");
+      return false;
+    }
+    if (!agree) {
+      setError("Anda harus menyetujui Syarat & Ketentuan.");
       return false;
     }
     return true;
@@ -68,14 +82,6 @@ export default function RegisterScreen() {
 
   function validateStep2() {
     setError("");
-    if (!form.phone.trim()) {
-      setError("Nomor telepon wajib diisi.");
-      return false;
-    }
-    if (form.nik.trim().length !== 16) {
-      setError("NIK harus 16 digit.");
-      return false;
-    }
     if (!form.birthDate.trim()) {
       setError("Tanggal lahir wajib diisi.");
       return false;
@@ -98,9 +104,7 @@ export default function RegisterScreen() {
     try {
       await register(form as any);
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Pendaftaran gagal. Silakan coba lagi."
-      );
+      setError(err.response?.data?.message || "Pendaftaran gagal. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -108,38 +112,28 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-      >
-        <ScrollView
-          contentContainerClassName="px-6 py-6"
-          keyboardShouldPersistTaps="handled"
-        >
-          <TouchableOpacity onPress={() => navigation.goBack()} className="mb-6">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+        <ScrollView contentContainerClassName="px-6 py-6" keyboardShouldPersistTaps="handled">
+          <TouchableOpacity onPress={() => navigation.goBack()} className="flex-row items-center gap-2 mb-6">
             <ArrowLeft size={24} color="#444651" />
+            <Text className="font-body text-base text-on-surface-variant">Kembali</Text>
           </TouchableOpacity>
 
-          <Text className="font-sans text-2xl font-bold text-on-surface mb-2">
-            {step === 1 ? "Buat Akun" : "Data Diri"}
-          </Text>
-          <Text className="font-body text-base text-on-surface-variant mb-8">
-            {step === 1
-              ? "Masukkan informasi akun Anda"
-              : "Lengkapi data identitas Anda"}
+          <View className="flex-row items-center gap-3 mb-6">
+            <View className="w-10 h-10 bg-primary rounded-xl items-center justify-center">
+              <Text className="text-on-primary font-sans text-lg font-bold">P</Text>
+            </View>
+            <Text className="font-sans text-xl font-bold text-primary">PorLapor</Text>
+          </View>
+
+          <Text className="font-sans text-2xl font-bold text-on-surface mb-1">Daftar Akun</Text>
+          <Text className="font-body text-base text-on-surface-variant mb-6">
+            Lengkapi data diri Anda untuk mulai menggunakan layanan PorLapor.
           </Text>
 
-          <View className="flex-row gap-2 mb-8">
-            <View
-              className={`flex-1 h-1.5 rounded-full ${
-                step >= 1 ? "bg-primary" : "bg-surface-variant"
-              }`}
-            />
-            <View
-              className={`flex-1 h-1.5 rounded-full ${
-                step >= 2 ? "bg-primary" : "bg-surface-variant"
-              }`}
-            />
+          <View className="flex-row gap-2 mb-6">
+            <View className={`flex-1 h-1.5 rounded-full ${step >= 1 ? "bg-primary" : "bg-surface-variant"}`} />
+            <View className={`flex-1 h-1.5 rounded-full ${step >= 2 ? "bg-primary" : "bg-surface-variant"}`} />
           </View>
 
           {error ? (
@@ -150,26 +144,34 @@ export default function RegisterScreen() {
 
           {step === 1 ? (
             <>
-              <InputField
-                icon={User}
-                label="Nama Lengkap"
-                value={form.name}
-                onChangeText={(v) => update("name", v)}
-                placeholder="Masukkan nama"
-              />
-              <InputField
-                icon={Mail}
-                label="Email"
-                value={form.email}
-                onChangeText={(v) => update("email", v)}
-                placeholder="Masukkan email"
-                keyboardType="email-address"
-              />
-              <View className="mb-6">
-                <Text className="font-body text-xs font-semibold text-on-surface mb-2">
-                  Password
+              <View className="flex-col gap-1.5 mb-4">
+                <Text className="font-body text-xs font-semibold text-on-surface flex-row items-center gap-1">
+                  Nomor Induk Kependudukan (NIK)
                 </Text>
-                <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+                <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
+                  <Badge size={18} color="#757682" />
+                  <TextInput
+                    value={form.nik}
+                    onChangeText={(v) => update("nik", v.replace(/[^0-9]/g, ""))}
+                    placeholder="16-digit NIK"
+                    placeholderTextColor="#757682"
+                    keyboardType="number-pad"
+                    maxLength={16}
+                    className="flex-1 ml-3 py-4 font-body text-base text-on-surface tracking-widest"
+                  />
+                </View>
+                <Text className="font-body text-[11px] text-outline">
+                  NIK diperlukan untuk verifikasi identitas resmi Anda. Format: 16-digits.
+                </Text>
+              </View>
+
+              <InputField icon={User} label="Nama Lengkap" value={form.name} onChangeText={(v) => update("name", v)} placeholder="Masukkan nama lengkap" />
+              <InputField icon={Mail} label="Email" value={form.email} onChangeText={(v) => update("email", v)} placeholder="Masukkan email" keyboardType="email-address" />
+              <InputField icon={Phone} label="Nomor Telepon" value={form.phone} onChangeText={(v) => update("phone", v)} placeholder="08xxxxxxxxxx" keyboardType="phone-pad" />
+
+              <View className="mb-4">
+                <Text className="font-body text-xs font-semibold text-on-surface mb-2">Kata Sandi</Text>
+                <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
                   <Lock size={18} color="#757682" />
                   <TextInput
                     value={form.password}
@@ -180,54 +182,39 @@ export default function RegisterScreen() {
                     className="flex-1 ml-3 py-4 font-body text-base text-on-surface"
                   />
                   <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-                    {showPass ? (
-                      <EyeOff size={18} color="#757682" />
-                    ) : (
-                      <Eye size={18} color="#757682" />
-                    )}
+                    {showPass ? <EyeOff size={18} color="#757682" /> : <Eye size={18} color="#757682" />}
                   </TouchableOpacity>
                 </View>
               </View>
 
               <TouchableOpacity
+                onPress={() => setAgree(!agree)}
+                className="flex-row items-start gap-3 mb-6"
+              >
+                <View className={`w-5 h-5 rounded border-2 mt-0.5 items-center justify-center ${agree ? "bg-primary border-primary" : "border-outline-variant"}`}>
+                  {agree && <Text className="text-on-primary text-xs font-bold">✓</Text>}
+                </View>
+                <Text className="font-body text-sm text-on-surface-variant flex-1 leading-relaxed">
+                  Saya setuju dengan Syarat &amp; Ketentuan serta Kebijakan Privasi PorLapor.
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => {
                   if (validateStep1()) setStep(2);
                 }}
-                className="bg-primary py-4 rounded-full items-center shadow-md"
+                className="bg-primary py-3.5 rounded-full items-center flex-row justify-center gap-2 shadow-md"
               >
                 <Text className="text-on-primary font-sans text-sm font-semibold">Lanjut</Text>
+                <ArrowForward size={18} color="#fff" />
               </TouchableOpacity>
             </>
           ) : (
             <>
-              <InputField
-                icon={Phone}
-                label="No. Telepon"
-                value={form.phone}
-                onChangeText={(v) => update("phone", v)}
-                placeholder="08xxxxxxxxxx"
-                keyboardType="phone-pad"
-              />
-              <InputField
-                icon={CreditCard}
-                label="NIK"
-                value={form.nik}
-                onChangeText={(v) => update("nik", v)}
-                placeholder="16 digit NIK"
-                keyboardType="number-pad"
-              />
-              <InputField
-                icon={Calendar}
-                label="Tanggal Lahir"
-                value={form.birthDate}
-                onChangeText={(v) => update("birthDate", v)}
-                placeholder="YYYY-MM-DD"
-              />
+              <InputField icon={Calendar} label="Tanggal Lahir" value={form.birthDate} onChangeText={(v) => update("birthDate", v)} placeholder="YYYY-MM-DD" />
 
               <View className="mb-4">
-                <Text className="font-body text-xs font-semibold text-on-surface mb-2">
-                  Jenis Kelamin
-                </Text>
+                <Text className="font-body text-xs font-semibold text-on-surface mb-2">Jenis Kelamin</Text>
                 <View className="flex-row gap-3">
                   {[
                     { value: "LAKI_LAKI", label: "Laki-laki" },
@@ -236,19 +223,9 @@ export default function RegisterScreen() {
                     <TouchableOpacity
                       key={g.value}
                       onPress={() => update("gender", g.value)}
-                      className={`flex-1 py-4 rounded-xl border items-center ${
-                        form.gender === g.value
-                          ? "bg-primary-fixed border-primary"
-                          : "bg-surface-container border-outline-variant"
-                      }`}
+                      className={`flex-1 py-4 rounded-xl border items-center ${form.gender === g.value ? "bg-primary-fixed border-primary" : "bg-surface-container border-outline-variant"}`}
                     >
-                      <Text
-                        className={`font-sans text-sm font-semibold ${
-                          form.gender === g.value
-                            ? "text-on-primary-fixed"
-                            : "text-on-surface-variant"
-                        }`}
-                      >
+                      <Text className={`font-sans text-sm font-semibold ${form.gender === g.value ? "text-on-primary-fixed" : "text-on-surface-variant"}`}>
                         {g.label}
                       </Text>
                     </TouchableOpacity>
@@ -256,42 +233,24 @@ export default function RegisterScreen() {
                 </View>
               </View>
 
-              <InputField
-                icon={MapPin}
-                label="Alamat"
-                value={form.address}
-                onChangeText={(v) => update("address", v)}
-                placeholder="Masukkan alamat"
-                multiline
-              />
+              <InputField icon={MapPin} label="Alamat" value={form.address} onChangeText={(v) => update("address", v)} placeholder="Masukkan alamat" multiline />
 
               <View className="flex-row gap-3 mt-2">
-                <TouchableOpacity
-                  onPress={() => setStep(1)}
-                  className="flex-1 py-4 rounded-xl items-center border border-outline-variant"
-                >
+                <TouchableOpacity onPress={() => setStep(1)} className="flex-1 py-3.5 rounded-xl items-center border border-outline-variant">
                   <Text className="font-sans text-sm font-semibold text-on-surface-variant">Kembali</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleRegister}
-                  disabled={loading}
-                  className="flex-1 bg-primary py-4 rounded-xl items-center shadow-md"
-                >
-                  <Text className="text-on-primary font-sans text-sm font-semibold">
-                    {loading ? "Memuat..." : "Daftar"}
-                  </Text>
+                <TouchableOpacity onPress={handleRegister} disabled={loading} className="flex-1 bg-primary py-3.5 rounded-xl items-center flex-row justify-center gap-2 shadow-md">
+                  <Text className="text-on-primary font-sans text-sm font-semibold">{loading ? "Memuat..." : "Daftar"}</Text>
+                  <ArrowForward size={18} color="#fff" />
                 </TouchableOpacity>
               </View>
             </>
           )}
 
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="mt-8 items-center mb-8"
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} className="mt-8 items-center mb-8">
             <Text className="font-body text-base text-on-surface-variant">
               Sudah punya akun?{" "}
-              <Text className="text-primary font-bold">Masuk</Text>
+              <Text className="text-primary font-bold">Masuk di sini</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -320,7 +279,7 @@ function InputField({
   return (
     <View className="mb-4">
       <Text className="font-body text-xs font-semibold text-on-surface mb-2">{label}</Text>
-      <View className="flex-row items-center bg-surface-container border border-outline-variant rounded-xl px-4">
+      <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
         <Icon size={18} color="#757682" />
         <TextInput
           value={value}
