@@ -5,6 +5,7 @@ import type { Category } from '../services/categoryService';
 import { getAgencies } from '../services/agencyService';
 import type { Agency } from '../services/agencyService';
 import LocationPicker from './LocationPicker';
+import { useToast } from './Toast';
 import { FileText, Loader2, Paperclip, Building2, PencilLine } from 'lucide-react';
 
 export default function CreateReportForm({ onSuccess }: { onSuccess: () => void }) {
@@ -21,6 +22,7 @@ export default function CreateReportForm({ onSuccess }: { onSuccess: () => void 
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
 
   useEffect(() => {
     categoryService.getAll().then(setCategories).catch(console.error);
@@ -47,6 +49,7 @@ export default function CreateReportForm({ onSuccess }: { onSuccess: () => void 
         address,
         ...(imageUrl && { imageUrl })
       });
+      showToast('Laporan berhasil dibuat.');
       onSuccess();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Gagal membuat laporan. Silakan coba lagi.');

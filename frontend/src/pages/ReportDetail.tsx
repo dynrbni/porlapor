@@ -9,6 +9,7 @@ import { ArrowLeft, Calendar, CheckCircle, Clock, FileText, Image as ImageIcon, 
 import { getPhotoUrl } from '../services/authService';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useToast } from '../components/Toast';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -38,6 +39,7 @@ export default function ReportDetail() {
   const [sendingComment, setSendingComment] = useState(false);
   const [liking, setLiking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -73,9 +75,10 @@ export default function ReportDetail() {
         setReport({ ...report, comments: [...(report.comments || []), res.data] });
       }
       setCommentText('');
+      showToast('Komentar berhasil dikirim.');
     } catch (error) {
       console.error('Failed to send comment', error);
-      alert('Gagal mengirim komentar');
+      showToast('Gagal mengirim komentar.', 'error');
     } finally {
       setSendingComment(false);
     }
@@ -97,9 +100,11 @@ export default function ReportDetail() {
             ? [...(report.likes || []), { userId: user.id }]
             : (report.likes || []).filter((l) => l.userId !== user.id),
         });
+        showToast(isLiked ? 'Laporan didukung.' : 'Dukungan dibatalkan.');
       }
     } catch (err) {
       console.error('Failed to toggle like', err);
+      showToast('Gagal mengubah dukungan.', 'error');
     } finally {
       setLiking(false);
     }

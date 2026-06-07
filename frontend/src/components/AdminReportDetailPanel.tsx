@@ -3,6 +3,7 @@ import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { getAgencies } from '../services/agencyService';
 import type { Agency } from '../services/agencyService';
+import { useToast } from './Toast';
 import { Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, X, User } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
@@ -40,6 +41,7 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
   const [saving, setSaving] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
 
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedAgencyId, setSelectedAgencyId] = useState('');
@@ -131,7 +133,9 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
       });
       const refreshed = await reportService.getReportById(reportId);
       setReport(refreshed.data);
+      showToast('Laporan berhasil diperbarui.');
       onUpdated?.();
+      onClose();
     } catch (err: any) {
       console.error('Failed to update report', err);
       setError(err.response?.data?.message || 'Gagal memperbarui laporan.');
@@ -156,7 +160,9 @@ export default function AdminReportDetailPanel({ reportId, onClose, onUpdated }:
           : prev
       );
       setNoteText('');
+      showToast('Tanggapan resmi berhasil dikirim.');
       onUpdated?.();
+      onClose();
     } catch (err: any) {
       console.error('Failed to add official note', err);
       setError(err.response?.data?.message || 'Gagal menambahkan tanggapan resmi.');

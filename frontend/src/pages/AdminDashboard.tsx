@@ -14,6 +14,7 @@ import { Activity, Building2, CheckCircle2, Clock, Inbox, ArrowRight, Loader2, S
 import { getPhotoUrl } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
 import AdminReportDetailPanel from '../components/AdminReportDetailPanel';
+import { useToast } from '../components/Toast';
 import AdminAgencySummaryChart from '../components/AdminAgencySummaryChart';
 import AdminReportTrendChart from '../components/AdminReportTrendChart';
 import AdminExploreMap from '../components/AdminExploreMap';
@@ -49,6 +50,7 @@ const AdminDashboard = () => {
   const [userModalRole, setUserModalRole] = useState<'USER' | 'ADMIN'>('USER');
   const [userForm, setUserForm] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleLogout = () => {
     authService.logout();
@@ -292,11 +294,12 @@ const AdminDashboard = () => {
       }
 
       const created = await createAgency(payload);
-      setAgencySuccess('Instansi berhasil ditambahkan.');
+      showToast('Instansi berhasil ditambahkan.');
       if (created.data) {
         setAgencies((prev) => [created.data, ...prev]);
       }
       resetAgencyForm();
+      setAgencyModalOpen(false);
     } catch (err: any) {
       console.error('Failed to create agency', err);
       setAgencyError(err.response?.data?.message || 'Gagal menambahkan instansi.');
@@ -326,7 +329,7 @@ const AdminDashboard = () => {
         name: categoryForm.name.trim(),
         description: categoryForm.description.trim() || undefined,
       });
-      setCategorySuccess('Kategori berhasil ditambahkan.');
+      showToast('Kategori berhasil ditambahkan.');
       setCategoryForm({ name: '', description: '' });
       await fetchUserAndReports();
     } catch (err: any) {
@@ -343,7 +346,7 @@ const AdminDashboard = () => {
     try {
       await categoryService.delete(id);
       setCategories((prev) => prev.filter((c) => c.id !== id));
-      setCategorySuccess('Kategori berhasil dihapus.');
+      showToast('Kategori berhasil dihapus.');
     } catch (err: any) {
       console.error('Failed to delete category', err);
       setCategoryError(err.response?.data?.message || 'Gagal menghapus kategori.');
@@ -356,7 +359,7 @@ const AdminDashboard = () => {
     try {
       await userService.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
-      setCategorySuccess('Pengguna berhasil dihapus.');
+      showToast('Pengguna berhasil dihapus.');
     } catch (err: any) {
       console.error('Failed to delete user', err);
       setCategoryError(err.response?.data?.message || 'Gagal menghapus pengguna.');
@@ -371,7 +374,7 @@ const AdminDashboard = () => {
       setUsers((prev) =>
         prev.map((u) => (u.id === id ? { ...u, role: 'ADMIN' } : u))
       );
-      setCategorySuccess('Pengguna berhasil dipromosi.');
+      showToast('Pengguna berhasil dipromosi.');
     } catch (err: any) {
       console.error('Failed to promote user', err);
       setCategoryError(err.response?.data?.message || 'Gagal mempromosi pengguna.');
@@ -383,7 +386,7 @@ const AdminDashboard = () => {
     try {
       await reportService.deleteReport(id);
       setReports((prev) => prev.filter((r) => r.id !== id));
-      setCategorySuccess('Laporan berhasil dihapus.');
+      showToast('Laporan berhasil dihapus.');
     } catch (err: any) {
       console.error('Failed to delete report', err);
       setCategoryError(err.response?.data?.message || 'Gagal menghapus laporan.');
@@ -395,7 +398,7 @@ const AdminDashboard = () => {
       await userService.createUser(payload);
       const updated = await userService.getAll();
       setUsers(updated);
-      setCategorySuccess(payload.role === 'ADMIN' ? 'Admin berhasil ditambahkan.' : 'Pengguna berhasil ditambahkan.');
+      showToast(payload.role === 'ADMIN' ? 'Admin berhasil ditambahkan.' : 'Pengguna berhasil ditambahkan.');
       return true;
     } catch (err: any) {
       console.error('Failed to create user', err);
@@ -864,11 +867,6 @@ const AdminDashboard = () => {
                           {categoryError}
                         </div>
                       )}
-                      {categorySuccess && (
-                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg p-3 mb-4">
-                          {categorySuccess}
-                        </div>
-                      )}
                       <form
                         onSubmit={async (e) => {
                           e.preventDefault();
@@ -1032,11 +1030,6 @@ const AdminDashboard = () => {
                       {categoryError}
                     </div>
                   )}
-                  {categorySuccess && (
-                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg p-3">
-                      {categorySuccess}
-                    </div>
-                  )}
                   <form onSubmit={handleCreateCategory} className="space-y-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">Nama Kategori *</label>
@@ -1171,11 +1164,6 @@ const AdminDashboard = () => {
               {agencyError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
                   {agencyError}
-                </div>
-              )}
-              {agencySuccess && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl p-3">
-                  {agencySuccess}
                 </div>
               )}
 

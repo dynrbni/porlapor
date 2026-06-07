@@ -5,6 +5,7 @@ import { userService } from '../services/userService';
 import type { ProfileData } from '../services/userService';
 import { ArrowLeft, Camera, Loader2, Save, Lock, Eye, EyeOff } from 'lucide-react';
 import Header from '../components/Header';
+import { useToast } from '../components/Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8080';
 
@@ -19,6 +20,7 @@ export default function ProfilePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     name: '',
@@ -64,7 +66,6 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setError('');
-    setSuccess('');
     setSaving(true);
     try {
       const fd = new FormData();
@@ -78,7 +79,7 @@ export default function ProfilePage() {
       if (photoFile) fd.append('photo', photoFile);
 
       await userService.updateProfile(fd);
-      setSuccess('Profil berhasil diperbarui');
+      showToast('Profil berhasil diperbarui.');
 
       const refreshed = await userService.getProfile();
       setProfile(refreshed.data);
@@ -98,7 +99,6 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     setError('');
-    setSuccess('');
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setError('Konfirmasi password tidak cocok');
       return;
@@ -112,7 +112,7 @@ export default function ProfilePage() {
       const fd = new FormData();
       fd.append('password', passwordForm.newPassword);
       await userService.updateProfile(fd);
-      setSuccess('Password berhasil diubah');
+      showToast('Password berhasil diubah.');
       setPasswordForm({ newPassword: '', confirmPassword: '' });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Gagal mengubah password');
@@ -144,9 +144,6 @@ export default function ProfilePage() {
           <div className="space-y-8">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-4">{error}</div>
-            )}
-            {success && (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl p-4">{success}</div>
             )}
 
             {/* Photo */}

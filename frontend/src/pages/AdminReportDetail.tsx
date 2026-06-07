@@ -7,6 +7,7 @@ import type { Agency } from '../services/agencyService';
 import { authService } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 import AdminSidebar, { type AdminSection } from '../components/AdminSidebar';
+import { useToast } from '../components/Toast';
 import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Loader2, MapPin, ShieldAlert, Trash2, Menu, User } from 'lucide-react';
 import { getPhotoUrl } from '../services/authService';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
@@ -42,6 +43,7 @@ export default function AdminReportDetail() {
   const [saving, setSaving] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const sidebarSection: AdminSection = 'reports';
 
@@ -132,6 +134,7 @@ export default function AdminReportDetail() {
       });
       const refreshed = await reportService.getReportById(id);
       setReport(refreshed.data);
+      showToast('Laporan berhasil diperbarui.');
     } catch (err: any) {
       console.error('Failed to update report', err);
       setError(err.response?.data?.message || 'Gagal memperbarui laporan.');
@@ -156,6 +159,7 @@ export default function AdminReportDetail() {
           : prev
       );
       setNoteText('');
+      showToast('Tanggapan resmi berhasil dikirim.');
     } catch (err: any) {
       console.error('Failed to add official note', err);
       setError(err.response?.data?.message || 'Gagal menambahkan tanggapan resmi.');
@@ -170,6 +174,7 @@ export default function AdminReportDetail() {
     if (!id || !window.confirm('Yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.')) return;
     try {
       await reportService.deleteReport(id);
+      showToast('Laporan berhasil dihapus.');
       navigate('/admin');
     } catch (err: any) {
       console.error('Failed to delete report', err);

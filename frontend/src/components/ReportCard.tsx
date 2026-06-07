@@ -4,6 +4,7 @@ import type { AuthUser } from '../services/authService';
 import { reportService } from '../services/reportService';
 import { MessageCircle, ThumbsUp, ArrowRight, Image as ImageIcon, MapPin, Calendar, Clock, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from './Toast';
 
 interface ReportCardProps {
   report: Report;
@@ -15,19 +16,22 @@ interface ReportCardProps {
 export default function ReportCard({ report, currentUser, onLikeToggle }: ReportCardProps) {
   const navigate = useNavigate();
   const [liking, setLiking] = useState(false);
+  const { showToast } = useToast();
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) {
-      alert("Silakan login untuk memberikan dukungan");
+      showToast('Silakan login untuk memberikan dukungan.', 'warning');
       return;
     }
     setLiking(true);
     try {
-      await reportService.toggleLike(report.id);
+      const res = await reportService.toggleLike(report.id);
+      showToast(res.liked ? 'Laporan didukung.' : 'Dukungan dibatalkan.');
       if (onLikeToggle) onLikeToggle();
     } catch(err) {
       console.error(err);
+      showToast('Gagal mengubah dukungan.', 'error');
     } finally {
       setLiking(false);
     }

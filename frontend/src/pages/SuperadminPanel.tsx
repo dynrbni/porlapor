@@ -10,6 +10,7 @@ import type { Agency, CreateAgencyPayload } from '../services/agencyService';
 import { reportService } from '../services/reportService';
 import type { Report } from '../services/reportService';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import { Trash2, PlusCircle, UserPlus, Menu, X, Tag, Users, FileText, LogOut, Shield, Building2, Loader2 } from 'lucide-react';
 
 type SuperadminSection = 'categories' | 'users' | 'reports' | 'agencies';
@@ -37,6 +38,7 @@ const SuperadminPanel = () => {
   const [catDesc, setCatDesc] = useState('');
   const [creatingCategory, setCreatingCategory] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleLogout = () => {
     authService.logout();
@@ -98,7 +100,7 @@ const SuperadminPanel = () => {
       if (agencyAddress.trim()) payload.address = agencyAddress.trim();
       
       await createAgency(payload);
-      setAgencySuccess('Instansi berhasil ditambahkan.');
+      showToast('Instansi berhasil ditambahkan.');
       setAgencyName('');
       setAgencyDesc('');
       setAgencyEmail('');
@@ -119,11 +121,13 @@ const SuperadminPanel = () => {
     setCreatingCategory(true);
     try {
       await categoryService.create({ name: catName.trim(), description: catDesc.trim() });
+      showToast('Kategori berhasil ditambahkan.');
       setCatName('');
       setCatDesc('');
       await fetchAll();
-    } catch (e) {
+    } catch (e: any) {
       console.error('create category', e);
+      showToast(e.response?.data?.message || 'Gagal menambahkan kategori.', 'error');
     } finally {
       setCreatingCategory(false);
     }
@@ -133,9 +137,11 @@ const SuperadminPanel = () => {
     if (!confirm('Hapus kategori ini?')) return;
     try {
       await categoryService.delete(id);
+      showToast('Kategori berhasil dihapus.');
       await fetchAll();
-    } catch (e) {
+    } catch (e: any) {
       console.error('delete category', e);
+      showToast(e.response?.data?.message || 'Gagal menghapus kategori.', 'error');
     }
   };
 
@@ -143,9 +149,11 @@ const SuperadminPanel = () => {
     if (!confirm('Hapus user ini?')) return;
     try {
       await userService.deleteUser(id);
+      showToast('Pengguna berhasil dihapus.');
       await fetchAll();
-    } catch (e) {
+    } catch (e: any) {
       console.error('delete user', e);
+      showToast(e.response?.data?.message || 'Gagal menghapus pengguna.', 'error');
     }
   };
 
@@ -153,9 +161,11 @@ const SuperadminPanel = () => {
     if (!confirm('Promosikan user ini menjadi ADMIN?')) return;
     try {
       await userService.promote(id, 'ADMIN');
+      showToast('Pengguna berhasil dipromosi.');
       await fetchAll();
-    } catch (e) {
+    } catch (e: any) {
       console.error('promote user', e);
+      showToast(e.response?.data?.message || 'Gagal mempromosi pengguna.', 'error');
     }
   };
 
@@ -163,9 +173,11 @@ const SuperadminPanel = () => {
     if (!confirm('Hapus laporan ini?')) return;
     try {
       await reportService.deleteReport(id);
+      showToast('Laporan berhasil dihapus.');
       await fetchAll();
-    } catch (e) {
+    } catch (e: any) {
       console.error('delete report', e);
+      showToast(e.response?.data?.message || 'Gagal menghapus laporan.', 'error');
     }
   };
 
@@ -312,7 +324,6 @@ const SuperadminPanel = () => {
                 <div className="bg-white rounded-2xl border border-slate-200 p-6">
                   <h2 className="text-lg font-semibold mb-4">Buat Instansi Baru</h2>
                   {agencyError && <div className="mb-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm">{agencyError}</div>}
-                  {agencySuccess && <div className="mb-4 bg-emerald-50 text-emerald-700 p-3 rounded-lg text-sm">{agencySuccess}</div>}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="col-span-1 md:col-span-2">
                       <label className="block text-sm font-semibold text-slate-700 mb-1">Nama Instansi *</label>

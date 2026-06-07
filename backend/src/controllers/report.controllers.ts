@@ -213,14 +213,12 @@ export const getReportById = async (req: Request, res: Response) => {
       });
     }
 
-    const { user } = req as AuthenticatedRequest;
-    // Removed the restriction so public users can view report details for commenting/liking
-
     res.status(200).json({
       message: 'Berhasil mendapatkan data laporan',
       data: report,
     });
   } catch (error) {
+    console.error('getReportById error:', error);
     res.status(500).json({
       message: 'Internal server error',
     });
