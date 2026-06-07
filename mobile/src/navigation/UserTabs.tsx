@@ -23,6 +23,7 @@ function DashboardStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="CreateReport" component={CreateReportScreen} />
       <Stack.Screen name="ReportDetail" component={ReportDetailScreen} />
     </Stack.Navigator>
   );
