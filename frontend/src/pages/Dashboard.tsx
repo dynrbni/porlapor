@@ -151,11 +151,11 @@ const Dashboard = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                      <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
                         Halo, {user?.nama || 'Pengguna'}.
                       </h1>
                       <p className="max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                        Ini ringkasan laporan kamu di PorLapor. Fokus ke status terbaru, laporan yang masih jalan, dan hal penting yang perlu ditindaklanjuti.
+                        Ini ringkasan laporan kamu. Fokus ke status terbaru, laporan yang masih jalan, dan hal penting yang perlu ditindaklanjuti.
                       </p>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ const Dashboard = () => {
                     <div key={stat.label} className={`flex items-center justify-between rounded-2xl border p-4 ${stat.tone}`}>
                       <div>
                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">{stat.label}</p>
-                        <p className="mt-2 text-3xl font-bold text-slate-900">{stat.value}</p>
+                        <p className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">{stat.value}</p>
                       </div>
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 shadow-sm">
                         <Icon className="h-5 w-5" />
@@ -215,12 +215,13 @@ const Dashboard = () => {
                     <h2 className="mt-1 text-lg font-bold text-slate-900">Daftar laporan terbaru</h2>
                   </div>
 
+                  <div className="overflow-x-auto">
                   <div className="inline-flex w-full rounded-2xl bg-slate-100 p-1 sm:w-auto">
                     {dashboardTabs.map((tab) => (
                       <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
-                        className={`flex-1 rounded-xl px-4 py-2 text-sm font-bold transition-all sm:flex-none ${activeTab === tab.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                        className={`flex-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-bold transition-all sm:flex-none sm:px-4 ${activeTab === tab.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                       >
                         <span className="flex items-center justify-center gap-2">
                           {tab.label}
@@ -228,8 +229,9 @@ const Dashboard = () => {
                             {tab.count}
                           </span>
                         </span>
-                      </button>
-                    ))}
+                    </button>
+                  ))}
+                  </div>
                   </div>
                 </div>
 
