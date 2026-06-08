@@ -1,123 +1,79 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
-  RefreshControl,
-} from "react-native";
+import { View, Text, FlatList, TextInput, RefreshControl, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search, MapPin, MessageCircle, ThumbsUp, Clock, Activity, CheckCircle2, AlertCircle, Inbox } from "lucide-react-native";
+import { Search } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getReports } from "../../api/reports";
 import type { UserStackParamList } from "../../navigation/UserTabs";
 import type { Report } from "../../types";
+import { StitchHeader } from "../../components/ui/StitchHeader";
+import { StitchReportCard } from "../../components/ui/StitchReportCard";
+import { colors } from "../../theme";
 
 type Nav = NativeStackNavigationProp<UserStackParamList, "Explore">;
 
-const statusConfig: Record<string, { bg: string; text: string; icon: any; label: string }> = {
-  PENDING: { bg: "bg-warning-soft", text: "text-warning", icon: Clock, label: "Menunggu" },
-  IN_REVIEW: { bg: "bg-secondary-soft", text: "text-secondary", icon: AlertCircle, label: "Ditinjau" },
-  IN_PROGRESS: { bg: "bg-secondary-soft", text: "text-secondary", icon: Activity, label: "Diproses" },
-  RESOLVED: { bg: "bg-success-soft", text: "text-success", icon: CheckCircle2, label: "Selesai" },
-  REJECTED: { bg: "bg-error-container", text: "text-error", icon: AlertCircle, label: "Ditolak" },
-};
+const CATEGORIES = ["Semua", "Infrastruktur", "Lingkungan", "Kebersihan", "Transportasi", "Ketertiban"];
 
 export default function ExploreScreen() {
   const navigation = useNavigation<Nav>();
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
 
-  const { data, refetch, isLoading } = useQuery({
+  const { data, refetch, isLoading, isRefetching } = useQuery({
     queryKey: ["all-reports", search],
     queryFn: () => getReports({ search: search || undefined, limit: 50 }),
   });
 
-  const reports = data?.data ?? [];
+  const allReports = (data?.data ?? []) as Report[];
+  const reports = useMemo(() => {
+    if (selectedCategory === "Semua") return allReports;
+    return allReports.filter((r) => r.category?.name === selectedCategory);
+  }, [allReports, selectedCategory]);
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="bg-white border-b border-outline-variant px-5 pt-3 pb-4">
-        <Text className="font-sans text-2xl font-extrabold text-on-surface mb-3">Jelajahi</Text>
-        <View className="flex-row items-center bg-surface-container-low rounded-2xl px-4 h-12 border border-outline-variant">
-          <Search size={18} color="#94a3b8" />
+      <StitchHeader />
+
+      <View className="px-4 pt-3 pb-2">
+        <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-3 h-11">
+          <Search size={16} color={colors.onSurfaceVariant} />
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder="Cari laporan..."
             placeholderTextColor="#94a3b8"
-            className="flex-1 ml-3 font-body text-base text-on-surface"
+            className="flex-1 ml-2 font-body text-sm text-on-surface"
           />
         </View>
       </View>
 
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="pb-2">
+        <View className="flex-row gap-2 px-4">
+          {CATEGORIES.map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              onPress={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full ${selectedCategory === cat ? "bg-primary" : "bg-surface border border-outline-variant"}`}
+            >
+              <Text className={`font-body text-xs font-semibold ${selectedCategory === cat ? "text-on-primary" : "text-on-surface-variant"}`}>{cat}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+
       <FlatList
         data={reports}
         keyExtractor={(item) => item.id}
-        contentContainerClassName="px-5 pb-6 mt-4"
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />
-        }
-        renderItem={({ item }) => {
-          const s = statusConfig[item.status] || statusConfig.PENDING;
-          const Icon = s.icon;
-          return (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })}
-              activeOpacity={0.85}
-              className="bg-white rounded-2xl p-4 mb-3 border border-outline-variant shadow-sm"
-            >
-              <View className="flex-row justify-between items-start mb-2.5">
-                <View className={`px-2.5 py-1 rounded-lg ${s.bg} flex-row items-center gap-1.5`}>
-                  <Icon size={12} color="#0f172a" />
-                  <Text className={`${s.text} text-[11px] font-bold`}>{s.label}</Text>
-                </View>
-                {item.category && (
-                  <Text className="font-body text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
-                    {item.category.name}
-                  </Text>
-                )}
-              </View>
-              <Text className="font-sans text-base font-bold text-on-surface mb-1.5">
-                {item.title}
-              </Text>
-              <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-3" numberOfLines={2}>
-                {item.description}
-              </Text>
-              <View className="pt-3 border-t border-outline-variant flex-row items-center justify-between">
-                <View className="flex-row items-center gap-1.5 flex-1 mr-2">
-                  <MapPin size={13} color="#94a3b8" />
-                  <Text className="font-body text-xs text-on-surface-variant" numberOfLines={1}>
-                    {item.address || `${item.latitude}, ${item.longitude}`}
-                  </Text>
-                </View>
-                <View className="flex-row items-center gap-3">
-                  <View className="flex-row items-center gap-1">
-                    <MessageCircle size={13} color="#94a3b8" />
-                    <Text className="font-body text-xs text-on-surface-variant font-semibold">{item._count?.comments ?? 0}</Text>
-                  </View>
-                  <View className="flex-row items-center gap-1">
-                    <ThumbsUp size={13} color="#94a3b8" />
-                    <Text className="font-body text-xs text-on-surface-variant font-semibold">{item._count?.likes ?? 0}</Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
+        contentContainerClassName="px-4 pb-28 pt-2 gap-4"
+        refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} tintColor={colors.primary} />}
+        renderItem={({ item }) => (
+          <StitchReportCard report={item} onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })} />
+        )}
         ListEmptyComponent={
-          <View className="items-center mt-16">
-            <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-3">
-              <Inbox size={28} color="#00236f" />
-            </View>
-            <Text className="text-on-surface font-sans text-sm font-bold mb-1">
-              {search ? "Laporan tidak ditemukan" : "Belum ada laporan"}
-            </Text>
-            <Text className="text-on-surface-variant font-body text-xs text-center px-8">
-              {search ? "Coba kata kunci lain" : "Jelajahi laporan yang dikirimkan oleh pengguna lain"}
-            </Text>
+          <View className="items-center py-16">
+            <Text className="font-sans text-sm font-bold text-on-surface">{search ? "Laporan tidak ditemukan" : "Belum ada laporan"}</Text>
           </View>
         }
       />

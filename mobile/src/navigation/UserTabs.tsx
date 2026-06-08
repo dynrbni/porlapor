@@ -1,12 +1,11 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View } from "react-native";
 import DashboardScreen from "../screens/user/DashboardScreen";
 import CreateReportScreen from "../screens/user/CreateReportScreen";
 import ExploreScreen from "../screens/user/ExploreScreen";
 import ProfileScreen from "../screens/user/ProfileScreen";
 import ReportDetailScreen from "../screens/public/ReportDetailScreen";
-import { Home, Search, Plus, User } from "lucide-react-native";
+import { tabBarScreenOptions } from "./tabBarOptions";
 
 export type UserStackParamList = {
   Dashboard: undefined;
@@ -40,64 +39,10 @@ function ExploreStack() {
 
 export default function UserTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: "#ffffff",
-          borderTopColor: "#e2e8f0",
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 64,
-        },
-        tabBarShowLabel: true,
-        tabBarActiveTintColor: "#00236f",
-        tabBarInactiveTintColor: "#94a3b8",
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "700", fontFamily: "Plus Jakarta Sans" },
-        tabBarIcon: ({ color, size, focused }) => {
-          const icons: Record<string, typeof Home> = {
-            DashboardTab: Home,
-            ExploreTab: Search,
-            CreateReportTab: Plus,
-            ProfileTab: User,
-          };
-          const Icon = icons[route.name];
-          if (route.name === "CreateReportTab") {
-            return (
-              <View
-                style={{
-                  backgroundColor: "#00236f",
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginTop: -16,
-                  shadowColor: "#00236f",
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: 6,
-                }}
-              >
-                <Icon size={24} color="#fff" />
-              </View>
-            );
-          }
-          return (
-            <View
-              className={`rounded-xl px-3 py-1.5 ${focused ? "bg-primary-soft" : ""}`}
-            >
-              <Icon size={size} color={color} />
-            </View>
-          );
-        },
-      })}
-    >
+    <Tab.Navigator screenOptions={tabBarScreenOptions}>
       <Tab.Screen name="DashboardTab" component={DashboardStack} options={{ title: "Home" }} />
-      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Jelajahi" }} />
-      <Tab.Screen name="CreateReportTab" component={CreateReportScreen} options={{ title: "Buat" }} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profil" }} />
+      <Tab.Screen name="ExploreTab" component={ExploreStack} options={{ title: "Search" }} />
+      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: "Profile" }} />
     </Tab.Navigator>
   );
 }

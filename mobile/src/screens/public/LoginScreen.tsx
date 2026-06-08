@@ -4,19 +4,19 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Alert,
-  Switch,
-  Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Eye, EyeOff, Mail, Lock, ShieldCheck } from "lucide-react-native";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../navigation/PublicNavigator";
 import { useAuth } from "../../context/AuthContext";
+import { colors } from "../../theme";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -26,132 +26,117 @@ export default function LoginScreen() {
   const [showPass, setShowPass] = useState(false);
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleLogin() {
-    if (!email || !password) {
-      Alert.alert("Error", "Email dan password harus diisi");
+    if (!email.trim() || !password) {
+      setError("Email dan password wajib diisi.");
       return;
     }
+    setError("");
     setLoading(true);
     try {
-      await login({ email, password });
+      await login({ email: email.trim(), password });
     } catch (err: any) {
-      Alert.alert("Login Gagal", err.response?.data?.message || "Terjadi kesalahan");
+      setError(err?.response?.data?.message || "Login gagal. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
-        <ScrollView
-          contentContainerClassName="flex-1 px-6 py-6"
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 items-center justify-center rounded-full bg-white border border-outline-variant mb-6">
-            <ArrowLeft size={20} color="#0f172a" />
-          </TouchableOpacity>
+  const inputCls =
+    "bg-surface-container-lowest border border-outline-variant rounded-xl pl-10 pr-4 py-3.5 font-body text-sm text-on-surface";
 
-          <View className="items-center mb-8">
-            <Image
-              source={require("../../../assets/images/porlapor_logo.png")}
-              className="h-16 w-auto mb-3"
-              resizeMode="contain"
-            />
-            <Text className="font-body text-sm text-on-surface-variant text-center leading-relaxed">
-              Layanan Aspirasi dan Pengaduan Online Rakyat
+  return (
+    <SafeAreaView className="flex-1 bg-background" edges={["top", "bottom"]}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+        <ScrollView contentContainerClassName="flex-grow" keyboardShouldPersistTaps="handled">
+          <View className="bg-primary px-6 pt-4 pb-10">
+            <TouchableOpacity onPress={() => navigation.goBack()} className="flex-row items-center gap-2 mb-8">
+              <ArrowLeft size={18} color="#fff" />
+              <Text className="font-body text-sm text-white/80">Beranda</Text>
+            </TouchableOpacity>
+            <Text className="font-sans text-3xl font-bold text-white mb-2">Selamat Datang 👋</Text>
+            <Text className="font-body text-sm text-white/75">
+              Masuk menggunakan akun PorLapor Anda untuk melanjutkan.
             </Text>
           </View>
 
-          <View className="bg-white rounded-2xl border border-outline-variant p-6 mb-6 shadow-sm">
-            <Text className="font-sans text-2xl font-extrabold text-on-surface mb-1">Masuk ke Akun Anda</Text>
-            <Text className="font-body text-sm text-on-surface-variant mb-6">
-              Silakan masukkan kredensial Anda untuk melanjutkan.
-            </Text>
-
-            <View className="mb-4">
-              <Text className="font-body text-xs font-semibold text-on-surface mb-2">Email atau Nomor Telepon</Text>
-              <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4 focus:border-primary">
-                <Mail size={18} color="#64748b" />
-                <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="Masukkan email"
-                  placeholderTextColor="#94a3b8"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  className="flex-1 ml-3 py-3.5 font-body text-base text-on-surface"
-                />
+          <View className="flex-1 bg-background px-6 -mt-4 pt-8 pb-8">
+            {error ? (
+              <View className="bg-error-container border-l-4 border-error p-4 rounded-lg flex-row gap-3 mb-5">
+                <AlertCircle size={20} color={colors.error} />
+                <Text className="font-body text-sm text-on-error-container flex-1">{error}</Text>
               </View>
+            ) : null}
+
+            <Text className="font-body text-sm font-semibold text-on-surface mb-2">Alamat Email</Text>
+            <View className="relative mb-4">
+              <View className="absolute left-3.5 top-3.5">
+                <Mail size={18} color={colors.onSurfaceVariant} />
+              </View>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="contoh@email.com"
+                placeholderTextColor="#94a3b8"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className={inputCls}
+              />
             </View>
 
-            <View className="mb-2">
-              <Text className="font-body text-xs font-semibold text-on-surface mb-2">Password</Text>
-              <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4 focus:border-primary">
-                <Lock size={18} color="#64748b" />
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Masukkan password"
-                  placeholderTextColor="#94a3b8"
-                  secureTextEntry={!showPass}
-                  className="flex-1 ml-3 py-3.5 font-body text-base text-on-surface"
-                />
-                <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-                  {showPass ? <EyeOff size={18} color="#64748b" /> : <Eye size={18} color="#64748b" />}
-                </TouchableOpacity>
-              </View>
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="font-body text-sm font-semibold text-on-surface">Password</Text>
+              <Text className="font-body text-xs font-semibold text-primary">Lupa Password?</Text>
             </View>
-
-            <View className="flex-row items-center justify-between mb-6 mt-3">
-              <TouchableOpacity
-                onPress={() => setRemember(!remember)}
-                className="flex-row items-center"
-              >
-                <View className={`w-5 h-5 rounded border-2 mr-2 items-center justify-center ${remember ? "bg-primary border-primary" : "border-outline"}`}>
-                  {remember && <Text className="text-on-primary text-[11px] font-bold">✓</Text>}
-                </View>
-                <Text className="font-body text-sm text-on-surface-variant">Ingat saya</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text className="font-body text-sm text-primary font-semibold">Lupa Password?</Text>
+            <View className="relative mb-4">
+              <View className="absolute left-3.5 top-3.5">
+                <Lock size={18} color={colors.onSurfaceVariant} />
+              </View>
+              <TextInput
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Masukkan password Anda"
+                placeholderTextColor="#94a3b8"
+                secureTextEntry={!showPass}
+                className={`${inputCls} pr-12`}
+              />
+              <TouchableOpacity onPress={() => setShowPass(!showPass)} className="absolute right-3.5 top-3.5">
+                {showPass ? <EyeOff size={18} color={colors.onSurfaceVariant} /> : <Eye size={18} color={colors.onSurfaceVariant} />}
               </TouchableOpacity>
             </View>
+
+            <TouchableOpacity onPress={() => setRemember(!remember)} className="flex-row items-center gap-2.5 mb-6">
+              <View className={`w-4 h-4 rounded border ${remember ? "bg-primary border-primary" : "border-outline"}`} />
+              <Text className="font-body text-sm text-on-surface-variant">Ingat saya</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleLogin}
               disabled={loading}
-              activeOpacity={0.85}
-              className="bg-primary py-4 rounded-2xl items-center shadow-soft flex-row justify-center"
+              className="bg-primary py-4 rounded-xl items-center mb-6"
+              style={{ opacity: loading ? 0.7 : 1 }}
             >
-              <Text className="text-on-primary font-sans text-base font-bold">
-                {loading ? "Memuat..." : "Masuk"}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="font-sans text-sm font-bold text-on-primary">Masuk Sekarang</Text>
+              )}
             </TouchableOpacity>
-          </View>
 
-          <View className="items-center gap-4">
-            <View className="flex-row items-center gap-4 w-full">
+            <View className="flex-row items-center gap-4 mb-5">
               <View className="flex-1 h-px bg-outline-variant" />
-              <Text className="font-body text-sm text-on-surface-variant">atau</Text>
+              <Text className="font-body text-xs text-on-surface-variant">Belum Memiliki Akun?</Text>
               <View className="flex-1 h-px bg-outline-variant" />
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text className="font-body text-base text-on-surface-variant">
-                Belum punya akun?{" "}
-                <Text className="text-primary font-bold">Daftar Sekarang</Text>
-              </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register")}
+              className="border-2 border-outline-variant py-4 rounded-xl items-center"
+            >
+              <Text className="font-sans text-sm font-bold text-on-surface">Buat Akun Baru</Text>
             </TouchableOpacity>
-          </View>
-
-          <View className="flex-row items-center justify-center gap-2 pt-8">
-            <ShieldCheck size={14} color="#00236f" />
-            <Text className="font-body text-xs font-medium text-on-surface-variant">
-              Koneksi Aman &amp; Terenkripsi
-            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

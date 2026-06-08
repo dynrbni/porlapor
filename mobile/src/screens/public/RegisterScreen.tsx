@@ -1,109 +1,103 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Alert,
-  Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  ArrowLeft,
-  User,
-  Mail,
-  Lock,
-  Phone,
-  CreditCard,
-  MapPin,
-  Calendar,
-  Eye,
-  EyeOff,
-  ArrowRight,
+  User, Mail, Lock, Phone, CreditCard, MapPin, Calendar, ChevronDown,
+  Eye, EyeOff, ArrowLeft, AlertCircle,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { PublicStackParamList } from "../../navigation/PublicNavigator";
 import { useAuth } from "../../context/AuthContext";
+import { StepIndicator } from "../../components/ui/StepIndicator";
+import { colors } from "../../theme";
 
-type Gender = "LAKI_LAKI" | "PEREMPUAN";
+const STEPS = [
+  { id: 1, label: "Akun" },
+  { id: 2, label: "Identitas" },
+];
+
+type Nav = NativeStackNavigationProp<PublicStackParamList, "Register">;
 
 export default function RegisterScreen() {
+  const navigation = useNavigation<Nav>();
   const { register } = useAuth();
-  const navigation = useNavigation();
   const [step, setStep] = useState(1);
-  const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [agree, setAgree] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    passwordConfirm: "",
     phone: "",
     nik: "",
     address: "",
     birthDate: "",
-    gender: "" as Gender | "",
+    gender: "" as "" | "LAKI_LAKI" | "PEREMPUAN",
   });
 
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  const set = (field: keyof typeof form) => (v: string) =>
+    setForm((p) => ({ ...p, [field]: v }));
+
+  const inputCls =
+    "bg-surface-container-lowest border border-outline-variant rounded-xl pl-10 pr-4 py-3.5 font-body text-sm text-on-surface";
 
   function validateStep1() {
-    setError("");
-    if (!form.nik.trim() || form.nik.trim().length !== 16) {
-      setError("NIK harus 16 digit.");
-      return false;
-    }
-    if (!form.name.trim()) {
-      setError("Nama lengkap wajib diisi.");
-      return false;
-    }
-    if (!form.email.trim()) {
-      setError("Email wajib diisi.");
-      return false;
-    }
-    if (!form.phone.trim()) {
-      setError("Nomor telepon wajib diisi.");
-      return false;
-    }
-    if (form.password.length < 6) {
-      setError("Password minimal 6 karakter.");
-      return false;
-    }
-    if (!agree) {
-      setError("Anda harus menyetujui Syarat & Ketentuan.");
-      return false;
-    }
-    return true;
+    if (!form.name.trim()) return "Nama lengkap wajib diisi.";
+    if (!form.email.trim()) return "Alamat email wajib diisi.";
+    if (form.password.length < 6) return "Password minimal 6 karakter.";
+    if (form.password !== form.passwordConfirm) return "Konfirmasi password tidak cocok.";
+    return "";
   }
 
   function validateStep2() {
-    setError("");
-    if (!form.birthDate.trim()) {
-      setError("Tanggal lahir wajib diisi.");
-      return false;
-    }
-    if (!form.gender) {
-      setError("Jenis kelamin wajib dipilih.");
-      return false;
-    }
-    if (!form.address.trim()) {
-      setError("Alamat wajib diisi.");
-      return false;
-    }
-    return true;
+    if (!form.phone.trim()) return "Nomor telepon wajib diisi.";
+    if (!form.nik.trim() || form.nik.length !== 16) return "NIK harus 16 digit.";
+    if (!form.birthDate.trim()) return "Tanggal lahir wajib diisi.";
+    if (!form.gender) return "Jenis kelamin wajib dipilih.";
+    if (!form.address.trim()) return "Alamat wajib diisi.";
+    if (!agreed) return "Anda harus menyetujui syarat dan ketentuan.";
+    return "";
   }
 
-  async function handleRegister() {
-    if (!validateStep2()) return;
-    setLoading(true);
+  function goNext() {
+    const err = validateStep1();
+    if (err) { setError(err); return; }
     setError("");
+    setStep(2);
+  }
+
+  async function handleSubmit() {
+    const err = validateStep2();
+    if (err) { setError(err); return; }
+    setError("");
+    setLoading(true);
     try {
-      await register(form as any);
+      await register({
+        name: form.name,
+        email: form.email.trim(),
+        password: form.password,
+        phone: form.phone,
+        nik: form.nik,
+        address: form.address,
+        birthDate: form.birthDate,
+        gender: form.gender as "LAKI_LAKI" | "PEREMPUAN",
+      });
     } catch (err: any) {
       setError(err.response?.data?.message || "Pendaftaran gagal. Silakan coba lagi.");
     } finally {
@@ -112,198 +106,145 @@ export default function RegisterScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
-        <ScrollView contentContainerClassName="px-6 py-6" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-          <TouchableOpacity onPress={() => navigation.goBack()} className="flex-row items-center gap-2 mb-6">
-            <View className="w-9 h-9 items-center justify-center rounded-full bg-white border border-outline-variant">
-              <ArrowLeft size={18} color="#0f172a" />
-            </View>
-            <Text className="font-body text-sm text-on-surface-variant">Kembali</Text>
-          </TouchableOpacity>
-
-          <View className="items-center mb-6">
-            <Image
-              source={require("../../../assets/images/porlapor_logo.png")}
-              className="h-12 w-auto mb-2"
-              resizeMode="contain"
-            />
-            <Text className="font-sans text-2xl font-extrabold text-on-surface text-center">Daftar Akun</Text>
-            <Text className="font-body text-sm text-on-surface-variant text-center mt-1 max-w-xs">
-              Lengkapi data diri Anda untuk mulai menggunakan layanan PorLapor.
-            </Text>
+        <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
+          <View className="bg-primary px-6 pt-4 pb-8">
+            <TouchableOpacity onPress={() => navigation.goBack()} className="flex-row items-center gap-2 mb-6">
+              <ArrowLeft size={18} color="#fff" />
+              <Text className="font-body text-sm text-white/80">Beranda</Text>
+            </TouchableOpacity>
+            <Text className="font-sans text-3xl font-bold text-white mb-1">Buat Akun Baru</Text>
+            <Text className="font-body text-sm text-white/75">Daftar gratis, mulai melaporkan masalah di sekitar Anda.</Text>
           </View>
 
-          <View className="flex-row gap-2 mb-6">
-            <View className={`flex-1 h-1.5 rounded-full ${step >= 1 ? "bg-primary" : "bg-outline-variant"}`} />
-            <View className={`flex-1 h-1.5 rounded-full ${step >= 2 ? "bg-primary" : "bg-outline-variant"}`} />
-          </View>
+          <View className="px-6 -mt-2 pt-4">
+            <StepIndicator steps={STEPS} current={step} />
 
-          {error ? (
-            <View className="bg-error-container border border-red-200 rounded-xl p-4 mb-4">
-              <Text className="text-red-700 text-sm font-medium">{error}</Text>
-            </View>
-          ) : null}
+            {error ? (
+              <View className="bg-error-container border-l-4 border-error p-4 rounded-lg flex-row gap-3 mb-5">
+                <AlertCircle size={20} color={colors.error} />
+                <Text className="font-body text-sm text-on-error-container flex-1">{error}</Text>
+              </View>
+            ) : null}
 
-          {step === 1 ? (
-            <View className="bg-white rounded-2xl border border-outline-variant p-5 shadow-sm">
-              <InputField
-                icon={CreditCard}
-                label="Nomor Induk Kependudukan (NIK)"
-                value={form.nik}
-                onChangeText={(v) => update("nik", v.replace(/[^0-9]/g, ""))}
-                placeholder="16 digit NIK"
-                keyboardType="number-pad"
-                maxLength={16}
-                hint="Format: 16-digits"
-              />
-              <InputField icon={User} label="Nama Lengkap" value={form.name} onChangeText={(v) => update("name", v)} placeholder="Masukkan nama lengkap" />
-              <InputField icon={Mail} label="Email" value={form.email} onChangeText={(v) => update("email", v)} placeholder="Masukkan email" keyboardType="email-address" />
-              <InputField icon={Phone} label="Nomor Telepon" value={form.phone} onChangeText={(v) => update("phone", v)} placeholder="08xxxxxxxxxx" keyboardType="phone-pad" />
-
-              <View className="mb-4">
-                <Text className="font-body text-xs font-semibold text-on-surface mb-2">Kata Sandi</Text>
-                <View className="flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4">
-                  <Lock size={18} color="#64748b" />
-                  <TextInput
-                    value={form.password}
-                    onChangeText={(v) => update("password", v)}
-                    placeholder="Minimal 6 karakter"
-                    placeholderTextColor="#94a3b8"
-                    secureTextEntry={!showPass}
-                    className="flex-1 ml-3 py-3.5 font-body text-base text-on-surface"
-                  />
-                  <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-                    {showPass ? <EyeOff size={18} color="#64748b" /> : <Eye size={18} color="#64748b" />}
+            {step === 1 ? (
+              <View className="gap-4">
+                <Field label="Nama Lengkap" required icon={User}>
+                  <TextInput value={form.name} onChangeText={set("name")} placeholder="Nama sesuai KTP" placeholderTextColor="#94a3b8" className={inputCls} />
+                </Field>
+                <Field label="Alamat Email" required icon={Mail}>
+                  <TextInput value={form.email} onChangeText={set("email")} placeholder="contoh@email.com" keyboardType="email-address" autoCapitalize="none" placeholderTextColor="#94a3b8" className={inputCls} />
+                </Field>
+                <Field label="Password" required icon={Lock}>
+                  <View className="relative">
+                    <TextInput value={form.password} onChangeText={set("password")} placeholder="Min. 6 karakter" secureTextEntry={!showPassword} placeholderTextColor="#94a3b8" className={`${inputCls} pr-12`} />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3.5">
+                      {showPassword ? <EyeOff size={18} color={colors.onSurfaceVariant} /> : <Eye size={18} color={colors.onSurfaceVariant} />}
+                    </TouchableOpacity>
+                  </View>
+                </Field>
+                <Field label="Konfirmasi Password" required icon={Lock}>
+                  <View className="relative">
+                    <TextInput value={form.passwordConfirm} onChangeText={set("passwordConfirm")} placeholder="Ulangi password" secureTextEntry={!showConfirm} placeholderTextColor="#94a3b8" className={`${inputCls} pr-12`} />
+                    <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)} className="absolute right-3.5 top-3.5">
+                      {showConfirm ? <EyeOff size={18} color={colors.onSurfaceVariant} /> : <Eye size={18} color={colors.onSurfaceVariant} />}
+                    </TouchableOpacity>
+                  </View>
+                </Field>
+                <TouchableOpacity onPress={goNext} className="bg-primary py-4 rounded-xl items-center mt-2">
+                  <Text className="font-sans text-sm font-bold text-on-primary">Lanjut →</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View className="gap-4">
+                <Text className="font-body text-sm text-on-surface-variant mb-1">
+                  Semua data identitas wajib diisi untuk menyelesaikan pendaftaran.
+                </Text>
+                <Field label="Nomor Telepon" required icon={Phone}>
+                  <TextInput value={form.phone} onChangeText={set("phone")} placeholder="08xxxxxxxxxx" keyboardType="phone-pad" placeholderTextColor="#94a3b8" className={inputCls} />
+                </Field>
+                <Field label="NIK (KTP)" required icon={CreditCard}>
+                  <TextInput value={form.nik} onChangeText={(v) => set("nik")(v.replace(/[^0-9]/g, ""))} placeholder="16 digit NIK" keyboardType="number-pad" maxLength={16} placeholderTextColor="#94a3b8" className={inputCls} />
+                </Field>
+                <Field label="Tanggal Lahir" required icon={Calendar}>
+                  <TextInput value={form.birthDate} onChangeText={set("birthDate")} placeholder="YYYY-MM-DD" placeholderTextColor="#94a3b8" className={inputCls} />
+                </Field>
+                <View>
+                  <Text className="font-body text-sm font-semibold text-on-surface mb-2">Jenis Kelamin <Text className="text-error">*</Text></Text>
+                  <View className="flex-row gap-2">
+                    {(["LAKI_LAKI", "PEREMPUAN"] as const).map((g) => (
+                      <TouchableOpacity
+                        key={g}
+                        onPress={() => set("gender")(g)}
+                        className={`flex-1 py-3 rounded-xl border items-center ${form.gender === g ? "bg-primary-soft border-primary" : "border-outline-variant"}`}
+                      >
+                        <Text className={`font-body text-sm font-semibold ${form.gender === g ? "text-primary" : "text-on-surface-variant"}`}>
+                          {g === "LAKI_LAKI" ? "Laki-laki" : "Perempuan"}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+                <Field label="Alamat Lengkap" required icon={MapPin}>
+                  <TextInput value={form.address} onChangeText={set("address")} placeholder="Jl. Contoh No. 1, Kota" multiline placeholderTextColor="#94a3b8" className={`${inputCls} min-h-[80px]`} textAlignVertical="top" />
+                </Field>
+                <TouchableOpacity onPress={() => setAgreed(!agreed)} className="flex-row items-start gap-2.5">
+                  <View className={`w-4 h-4 rounded border mt-0.5 items-center justify-center ${agreed ? "bg-primary border-primary" : "border-outline"}`}>
+                    {agreed && <Text className="text-on-primary text-[10px]">✓</Text>}
+                  </View>
+                  <Text className="font-body text-sm text-on-surface-variant flex-1 leading-relaxed">
+                    Saya menyetujui <Text className="text-primary font-semibold">Syarat, Ketentuan & Kebijakan Privasi</Text>.
+                  </Text>
+                </TouchableOpacity>
+                <View className="flex-row gap-3 mt-2">
+                  <TouchableOpacity onPress={() => { setError(""); setStep(1); }} className="flex-1 border-2 border-outline-variant py-3.5 rounded-xl items-center">
+                    <Text className="font-sans text-sm font-bold text-on-surface">← Kembali</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSubmit} disabled={loading} className="flex-[2] bg-primary py-3.5 rounded-xl items-center" style={{ opacity: loading ? 0.7 : 1 }}>
+                    {loading ? <ActivityIndicator color="#fff" /> : <Text className="font-sans text-sm font-bold text-on-primary">Daftar Sekarang</Text>}
                   </TouchableOpacity>
                 </View>
               </View>
+            )}
 
-              <TouchableOpacity
-                onPress={() => setAgree(!agree)}
-                activeOpacity={0.7}
-                className="flex-row items-start gap-3 mb-6"
-              >
-                <View className={`w-5 h-5 rounded border-2 mt-0.5 items-center justify-center ${agree ? "bg-primary border-primary" : "border-outline"}`}>
-                  {agree && <Text className="text-on-primary text-[11px] font-bold">✓</Text>}
-                </View>
-                <Text className="font-body text-sm text-on-surface-variant flex-1 leading-relaxed">
-                  Saya setuju dengan <Text className="text-primary font-semibold">Syarat &amp; Ketentuan</Text> serta <Text className="text-primary font-semibold">Kebijakan Privasi</Text> PorLapor.
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => {
-                  if (validateStep1()) setStep(2);
-                }}
-                activeOpacity={0.85}
-                className="bg-primary py-4 rounded-2xl items-center flex-row justify-center gap-2 shadow-soft"
-              >
-                <Text className="text-on-primary font-sans text-base font-bold">Lanjut</Text>
-                <ArrowRight size={18} color="#fff" />
-              </TouchableOpacity>
+            <View className="flex-row items-center gap-4 my-7">
+              <View className="flex-1 h-px bg-outline-variant" />
+              <Text className="font-body text-xs text-on-surface-variant">Sudah Punya Akun?</Text>
+              <View className="flex-1 h-px bg-outline-variant" />
             </View>
-          ) : (
-            <View className="bg-white rounded-2xl border border-outline-variant p-5 shadow-sm">
-              <InputField icon={Calendar} label="Tanggal Lahir" value={form.birthDate} onChangeText={(v) => update("birthDate", v)} placeholder="YYYY-MM-DD" />
-
-              <View className="mb-4">
-                <Text className="font-body text-xs font-semibold text-on-surface mb-2">Jenis Kelamin</Text>
-                <View className="flex-row gap-3">
-                  {[
-                    { value: "LAKI_LAKI", label: "Laki-laki" },
-                    { value: "PEREMPUAN", label: "Perempuan" },
-                  ].map((g) => (
-                    <TouchableOpacity
-                      key={g.value}
-                      onPress={() => update("gender", g.value)}
-                      activeOpacity={0.7}
-                      className={`flex-1 py-3.5 rounded-xl border-2 items-center ${form.gender === g.value ? "bg-primary-soft border-primary" : "bg-white border-outline"}`}
-                    >
-                      <Text className={`font-sans text-sm font-semibold ${form.gender === g.value ? "text-primary" : "text-on-surface-variant"}`}>
-                        {g.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              <InputField icon={MapPin} label="Alamat" value={form.address} onChangeText={(v) => update("address", v)} placeholder="Masukkan alamat" multiline />
-
-              <View className="flex-row gap-3 mt-2">
-                <TouchableOpacity onPress={() => setStep(1)} activeOpacity={0.7} className="flex-1 py-4 rounded-2xl items-center border-2 border-outline">
-                  <Text className="font-sans text-sm font-bold text-on-surface-variant">Kembali</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleRegister}
-                  disabled={loading}
-                  activeOpacity={0.85}
-                  className="flex-1 bg-primary py-4 rounded-2xl items-center shadow-soft flex-row justify-center gap-2"
-                >
-                  <Text className="text-on-primary font-sans text-sm font-bold">
-                    {loading ? "Memuat..." : "Daftar"}
-                  </Text>
-                  {!loading && <ArrowRight size={16} color="#fff" />}
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-
-          <TouchableOpacity onPress={() => navigation.goBack()} className="mt-8 items-center mb-8">
-            <Text className="font-body text-base text-on-surface-variant">
-              Sudah punya akun?{" "}
-              <Text className="text-primary font-bold">Masuk di sini</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")} className="border-2 border-outline-variant py-4 rounded-xl items-center">
+              <Text className="font-sans text-sm font-bold text-on-surface">Masuk di Sini</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-function InputField({
-  icon: Icon,
+function Field({
   label,
-  value,
-  onChangeText,
-  placeholder,
-  keyboardType,
-  multiline,
-  maxLength,
-  hint,
+  required,
+  icon: Icon,
+  children,
 }: {
-  icon: any;
   label: string;
-  value: string;
-  onChangeText: (v: string) => void;
-  placeholder: string;
-  keyboardType?: any;
-  multiline?: boolean;
-  maxLength?: number;
-  hint?: string;
+  required?: boolean;
+  icon: any;
+  children: ReactNode;
 }) {
   return (
-    <View className="mb-4">
-      <Text className="font-body text-xs font-semibold text-on-surface mb-2">{label}</Text>
-      <View className={`flex-row items-center bg-surface-container-lowest border border-outline-variant rounded-xl px-4 ${multiline ? "items-start" : ""}`}>
-        <View className={multiline ? "mt-3.5" : ""}>
-          <Icon size={18} color="#64748b" />
+    <View>
+      <Text className="font-body text-sm font-semibold text-on-surface mb-2">
+        {label} {required && <Text className="text-error">*</Text>}
+      </Text>
+      <View className="relative">
+        <View className="absolute left-3.5 top-3.5 z-10">
+          <Icon size={18} color={colors.onSurfaceVariant} />
         </View>
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="#94a3b8"
-          keyboardType={keyboardType}
-          autoCapitalize="none"
-          multiline={multiline}
-          maxLength={maxLength}
-          className={`flex-1 ml-3 py-3.5 font-body text-base text-on-surface ${multiline ? "min-h-[80px]" : ""}`}
-        />
+        {children}
       </View>
-      {hint ? (
-        <Text className="font-body text-[11px] text-on-surface-variant mt-1.5">{hint}</Text>
-      ) : null}
     </View>
   );
 }

@@ -1,226 +1,135 @@
-import { View, Text, FlatList, TouchableOpacity, RefreshControl, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Inbox, Activity, CheckCircle2, Plus, MapPin, MessageCircle, ThumbsUp, Home, Bell, Clock, AlertCircle } from "lucide-react-native";
+import { MapPin, Pencil, Plus } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getReports } from "../../api/reports";
-import { useAuth } from "../../context/AuthContext";
 import type { UserStackParamList } from "../../navigation/UserTabs";
+import { useQuery } from "@tanstack/react-query";
+import { getMyReports } from "../../api/reports";
 import type { Report } from "../../types";
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { StitchHeader } from "../../components/ui/StitchHeader";
+import { StitchReportCard } from "../../components/ui/StitchReportCard";
+import { colors } from "../../theme";
 
 type Nav = NativeStackNavigationProp<UserStackParamList, "Dashboard">;
-type Tab = "semua" | "menunggu" | "proses" | "selesai";
+type Filter = "semua" | "menunggu" | "diproses" | "selesai";
 
-const statusConfig: Record<string, { bg: string; text: string; icon: any; label: string }> = {
-  PENDING: { bg: "bg-warning-soft", text: "text-warning", icon: Clock, label: "Menunggu" },
-  IN_REVIEW: { bg: "bg-secondary-soft", text: "text-secondary", icon: AlertCircle, label: "Ditinjau" },
-  IN_PROGRESS: { bg: "bg-secondary-soft", text: "text-secondary", icon: Activity, label: "Diproses" },
-  RESOLVED: { bg: "bg-success-soft", text: "text-success", icon: CheckCircle2, label: "Selesai" },
-  REJECTED: { bg: "bg-error-container", text: "text-error", icon: AlertCircle, label: "Ditolak" },
-};
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: "semua", label: "Semua" },
+  { key: "menunggu", label: "Menunggu" },
+  { key: "diproses", label: "Diproses" },
+  { key: "selesai", label: "Selesai" },
+];
 
 export default function DashboardScreen() {
   const navigation = useNavigation<Nav>();
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("semua");
+  const [activeFilter, setActiveFilter] = useState<Filter>("semua");
 
-  const { data, refetch, isLoading } = useQuery({
-    queryKey: ["my-reports"],
-    queryFn: () => getReports({ userId: user?.id, limit: 50 }),
+  const { data, isLoading } = useQuery({
+    queryKey: ["my-reports-dashboard"],
+    queryFn: () => getMyReports({ limit: 50 }),
   });
 
-  const reports = data?.data ?? [];
-  const myReports = reports;
-  const total = myReports.length;
-  const menunggu = myReports.filter((r) => r.status === "PENDING" || r.status === "IN_REVIEW").length;
-  const proses = myReports.filter((r) => r.status === "IN_PROGRESS").length;
-  const selesai = myReports.filter((r) => r.status === "RESOLVED").length;
+  const reports = (data?.data ?? []) as Report[];
 
-  const filtered = myReports.filter((r) => {
-    if (tab === "menunggu") return r.status === "PENDING" || r.status === "IN_REVIEW";
-    if (tab === "proses") return r.status === "IN_PROGRESS";
-    if (tab === "selesai") return r.status === "RESOLVED" || r.status === "REJECTED";
+  const filtered = reports.filter((r) => {
+    if (activeFilter === "menunggu") return r.status === "PENDING" || r.status === "IN_REVIEW";
+    if (activeFilter === "diproses") return r.status === "IN_PROGRESS";
+    if (activeFilter === "selesai") return r.status === "RESOLVED";
     return true;
   });
 
-  const tabs: Array<{ key: Tab; label: string; count: number }> = [
-    { key: "semua", label: "Semua", count: total },
-    { key: "menunggu", label: "Menunggu", count: menunggu },
-    { key: "proses", label: "Diproses", count: proses },
-    { key: "selesai", label: "Selesai", count: selesai },
-  ];
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id}
-        contentContainerClassName="pb-28"
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#00236f" />}
-        ListHeaderComponent={
-          <View>
-            <View className="flex-row items-center justify-between px-5 pt-3 pb-2 bg-white">
-              <View className="flex-row items-center gap-3">
-                <View className="w-11 h-11 bg-primary-soft rounded-full items-center justify-center">
-                  <Text className="text-primary font-sans text-base font-extrabold">
-                    {user?.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "U"}
-                  </Text>
-                </View>
-                <View>
-                  <Text className="font-body text-xs text-on-surface-variant">Halo,</Text>
-                  <Text className="font-sans text-base font-bold text-on-surface" numberOfLines={1}>
-                    {user?.name || "Pengguna"}
-                  </Text>
-                </View>
-              </View>
-              <TouchableOpacity className="w-11 h-11 bg-white border border-outline-variant rounded-full items-center justify-center">
-                <Bell size={18} color="#475569" />
-              </TouchableOpacity>
-            </View>
+      <StitchHeader />
 
-            <View className="mx-5 mb-4 mt-2 relative overflow-hidden rounded-3xl bg-primary p-5 shadow-soft">
-              <View className="relative z-10">
-                <Text className="font-sans text-2xl font-extrabold text-white mb-1">Laporan Terkini</Text>
-                <Text className="font-body text-sm text-white/85 mb-4 leading-relaxed">
-                  Pantau dan dukung laporan masyarakat di sekitar Anda.
-                </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("CreateReport")}
-                  activeOpacity={0.85}
-                  className="bg-white py-2.5 px-4 rounded-xl flex-row items-center justify-center gap-2 self-start"
-                >
-                  <Plus size={16} color="#00236f" />
-                  <Text className="text-primary font-sans text-sm font-bold">Buat Laporan</Text>
-                </TouchableOpacity>
-              </View>
-              <View className="absolute -right-12 -top-12 w-40 h-40 bg-white/10 rounded-full" />
-              <View className="absolute -bottom-8 right-8 w-24 h-24 bg-white/10 rounded-full" />
+      <ScrollView className="flex-1" contentContainerClassName="px-4 pb-32 pt-4" showsVerticalScrollIndicator={false}>
+        <View className="mb-6 relative overflow-hidden rounded-xl bg-surface-container-high border border-outline-variant p-5 shadow-sm">
+          <View className="absolute -right-16 -top-16 w-48 h-48 bg-primary-container opacity-10 rounded-full" />
+          <View className="absolute -bottom-8 right-4 w-32 h-32 bg-secondary-container opacity-10 rounded-full" />
+          <View className="relative z-10">
+            <Text className="font-sans text-2xl font-bold text-primary mb-2">Laporan Terkini</Text>
+            <Text className="font-body text-base text-on-surface-variant mb-4 leading-relaxed">
+              Pantau dan dukung laporan masyarakat di sekitar Anda untuk lingkungan yang lebih baik.
+            </Text>
+            <View className="flex-row items-center gap-2 bg-surface rounded-full px-4 py-2 border border-outline-variant self-start">
+              <MapPin size={14} color={colors.onSurfaceVariant} />
+              <Text className="font-body text-xs text-on-surface-variant">Jakarta Selatan</Text>
+              <Pencil size={12} color={colors.primary} />
             </View>
-
-            <View className="flex-row gap-3 mx-5 mb-4">
-              <StatCard icon={Inbox} label="Total" value={total} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-primary-soft" iconColor="#00236f" />
-              <StatCard icon={Activity} label="Diproses" value={proses + menunggu} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-secondary-soft" iconColor="#2563eb" />
-              <StatCard icon={CheckCircle2} label="Selesai" value={selesai} bg="bg-white" textColor="text-on-surface-variant" iconBg="bg-success-soft" iconColor="#059669" />
-            </View>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 mb-2">
-              <View className="flex-row gap-2">
-                {tabs.map((t) => (
-                  <TouchableOpacity
-                    key={t.key}
-                    onPress={() => setTab(t.key)}
-                    activeOpacity={0.7}
-                    className={`px-4 py-2.5 rounded-full ${tab === t.key ? "bg-primary" : "bg-white border border-outline-variant"}`}
-                  >
-                    <Text className={`font-body text-xs font-semibold ${tab === t.key ? "text-on-primary" : "text-on-surface-variant"}`}>
-                      {t.label} · {t.count}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
           </View>
-        }
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate("ReportDetail", { reportId: item.id })} activeOpacity={0.85}>
-            <ReportCardItem report={item} />
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 -mx-4">
+          <View className="flex-row gap-3 px-4 pb-2 border-b border-outline-variant">
+            {FILTERS.map((f) => (
+              <TouchableOpacity
+                key={f.key}
+                onPress={() => setActiveFilter(f.key)}
+                className={`px-4 py-2 rounded-full ${
+                  activeFilter === f.key
+                    ? "bg-primary"
+                    : "bg-surface border border-outline-variant"
+                }`}
+              >
+                <Text
+                  className={`font-body text-sm font-semibold ${
+                    activeFilter === f.key ? "text-on-primary" : "text-on-surface-variant"
+                  }`}
+                >
+                  {f.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.primary} className="py-16" />
+        ) : filtered.length > 0 ? (
+          <View className="gap-4">
+            {filtered.map((r) => (
+              <StitchReportCard
+                key={r.id}
+                report={r}
+                onPress={() => navigation.navigate("ReportDetail", { reportId: r.id })}
+              />
+            ))}
+          </View>
+        ) : (
+          <View className="items-center py-16 px-6">
+            <Text className="font-sans text-base font-bold text-on-surface mb-1">Belum ada laporan</Text>
+            <Text className="font-body text-sm text-on-surface-variant text-center">
+              {user?.name ? `Halo ${user.name}, buat laporan pertama Anda.` : "Buat laporan pertama Anda."}
+            </Text>
+          </View>
+        )}
+
+        {filtered.length > 0 && (
+          <TouchableOpacity className="mt-6 self-center px-6 py-2 rounded-full border border-outline-variant">
+            <Text className="font-body text-sm font-semibold text-primary">Muat Lebih Banyak</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={
-          <View className="items-center mt-12 px-8">
-            <View className="w-16 h-16 bg-primary-soft rounded-full items-center justify-center mb-4">
-              <Inbox size={32} color="#00236f" />
-            </View>
-            <Text className="text-on-surface font-sans text-base font-bold mb-1">Belum ada laporan</Text>
-            <Text className="text-on-surface-variant font-body text-sm text-center mb-5">
-              Mulai buat laporan pertamamu untuk mengawal perubahan.
-            </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("CreateReport")}
-              activeOpacity={0.85}
-              className="bg-primary py-3 px-6 rounded-2xl flex-row items-center gap-2"
-            >
-              <Plus size={16} color="#fff" />
-              <Text className="text-on-primary font-sans text-sm font-bold">Buat Laporan Baru</Text>
-            </TouchableOpacity>
-          </View>
-        }
-      />
+      </ScrollView>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("CreateReport")}
+        activeOpacity={0.9}
+        className="absolute bottom-24 right-4 flex-row items-center gap-2 bg-primary h-14 px-6 rounded-full"
+        style={{
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.2,
+          shadowRadius: 16,
+          elevation: 8,
+        }}
+      >
+        <Plus size={22} color="#fff" />
+        <Text className="font-body text-sm font-semibold text-on-primary">Buat Laporan</Text>
+      </TouchableOpacity>
     </SafeAreaView>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  bg,
-  textColor,
-  iconBg,
-  iconColor,
-}: {
-  icon: any;
-  label: string;
-  value: number;
-  bg: string;
-  textColor: string;
-  iconBg: string;
-  iconColor: string;
-}) {
-  return (
-    <View className={`flex-1 ${bg} rounded-2xl p-3.5 border border-outline-variant shadow-sm`}>
-      <View className={`w-9 h-9 ${iconBg} rounded-lg items-center justify-center mb-2.5`}>
-        <Icon size={18} color={iconColor} />
-      </View>
-      <Text className="text-xl font-extrabold text-on-surface">{value}</Text>
-      <Text className={`text-xs font-semibold ${textColor}`}>{label}</Text>
-    </View>
-  );
-}
-
-function ReportCardItem({ report }: { report: Report }) {
-  const s = statusConfig[report.status] || statusConfig.PENDING;
-  const Icon = s.icon;
-
-  return (
-    <View className="bg-white rounded-2xl mx-5 mb-3 border border-outline-variant shadow-sm overflow-hidden">
-      <View className="p-4">
-        <View className="flex-row justify-between items-start mb-2.5">
-          <View className={`px-2.5 py-1 rounded-lg ${s.bg} flex-row items-center gap-1.5`}>
-            <Icon size={12} color="#0f172a" />
-            <Text className={`${s.text} text-[11px] font-bold`}>{s.label}</Text>
-          </View>
-          {report.category && (
-            <Text className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
-              {report.category.name}
-            </Text>
-          )}
-        </View>
-        <Text className="font-sans text-base font-bold text-on-surface mb-1.5">{report.title}</Text>
-        <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-3" numberOfLines={2}>
-          {report.description}
-        </Text>
-        <View className="flex-row items-center justify-between pt-3 border-t border-outline-variant">
-          <View className="flex-row items-center gap-1.5 flex-1 mr-2">
-            <MapPin size={13} color="#94a3b8" />
-            <Text className="font-body text-xs text-on-surface-variant" numberOfLines={1}>
-              {report.address || `${report.latitude}, ${report.longitude}`}
-            </Text>
-          </View>
-          <View className="flex-row items-center gap-3">
-            <View className="flex-row items-center gap-1">
-              <MessageCircle size={13} color="#94a3b8" />
-              <Text className="font-body text-xs text-on-surface-variant font-semibold">{report._count?.comments ?? 0}</Text>
-            </View>
-            <View className="flex-row items-center gap-1">
-              <ThumbsUp size={13} color="#94a3b8" />
-              <Text className="font-body text-xs text-on-surface-variant font-semibold">{report._count?.likes ?? 0}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
   );
 }

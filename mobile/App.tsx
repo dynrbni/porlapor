@@ -30,9 +30,9 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24, backgroundColor: "#fff" }}>
-          <Text style={{ fontSize: 18, fontWeight: "700", color: "#dc2626", marginBottom: 8 }}>
-            Runtime Error
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24, backgroundColor: "#f8f9ff" }}>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: "#ba1a1a", marginBottom: 8 }}>
+            Terjadi Kesalahan
           </Text>
           <Text style={{ fontSize: 13, color: "#64748b", textAlign: "center", marginBottom: 16 }}>
             {this.state.error?.message}
@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<
           <TouchableOpacity
             onPress={() => this.setState({ hasError: false, error: null })}
             style={{
-              backgroundColor: "#0f766e",
+              backgroundColor: "#00236f",
               paddingHorizontal: 24,
               paddingVertical: 12,
               borderRadius: 12,
@@ -70,8 +70,8 @@ function AppContent() {
 
   if (!ready) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" }}>
-        <ActivityIndicator size="large" color="#0f766e" />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#f8f9ff" }}>
+        <ActivityIndicator size="large" color="#00236f" />
       </View>
     );
   }
