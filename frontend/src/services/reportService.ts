@@ -1,0 +1,123 @@
+import apiClient, { publicApiClient } from './authService';
+
+export interface Author {
+  id: string;
+  name?: string;
+  nama?: string;
+  role?: string;
+  email?: string;
+  photoUrl?: string;
+}
+
+export interface OfficialNote {
+  id: string;
+  reportId: string;
+  content: string;
+  createdAt: string;
+  author: Author;
+}
+
+
+export interface Comment {
+  id: string;
+  reportId: string;
+  content: string;
+  createdAt: string;
+  author: Author;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Report {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  createdAt: string;
+  category: Category;
+  agencyId?: string | null;
+  officialNotes?: OfficialNote[];
+  comments?: Comment[];
+  latitude: number;
+  longitude: number;
+  address?: string;
+  imageUrl?: string;
+  _count?: {
+    likes: number;
+  };
+  likes?: { userId: string }[];
+  user?: Author;
+}
+
+export interface ReportStats {
+  totalReports: number;
+  totalAgencies: number;
+  totalUsers: number;
+  reportsByStatus: { status: string; count: number }[];
+  reportsByAgency: { agencyId: string; agencyName: string; count: number }[];
+  recentReports: Report[];
+  dailyReports: { date: string; count: number }[];
+}
+
+export interface UpdateReportPayload {
+  title?: string;
+  description?: string;
+  status?: string;
+  categoryId?: string;
+  agencyId?: string | null;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  imageUrl?: string;
+}
+
+export const getStats = async (): Promise<ReportStats> => {
+  const response = await publicApiClient.get<{ message: string; data: ReportStats }>('/reports/stats');
+  return response.data.data;
+};
+
+export const reportService = {
+  
+  getReportById: async (id: string) => {
+    const response = await publicApiClient.get<{ message: string; data: Report }>(`/reports/${id}`);
+    return response.data;
+  },
+  addComment: async (reportId: string, content: string) => {
+    const response = await apiClient.post<{ message: string; data: Comment }>(`/reports/${reportId}/comments`, { content });
+    return response.data;
+  },
+  toggleLike: async (reportId: string) => {
+    const response = await apiClient.post<{ message: string; liked: boolean }>(`/reports/${reportId}/like`);
+    return response.data;
+  },
+  createReport: async (payload: { title: string; description: string; latitude: number; longitude: number; address: string; categoryId: string; agencyId?: string; imageUrl?: string }) => {
+    const response = await apiClient.post('/reports', payload);
+    return response.data;
+  },
+
+  updateReport: async (id: string, payload: UpdateReportPayload) => {
+    const response = await apiClient.put<{ message: string; data: Report }>(`/reports/${id}`, payload);
+    return response.data;
+  },
+
+  addOfficialNote: async (reportId: string, content: string) => {
+    const response = await apiClient.post<{ message: string; data: OfficialNote }>(`/official-notes/report/${reportId}`, { content });
+    return response.data;
+  },
+
+  getAllReports: async () => {
+    const response = await publicApiClient.get<{ message: string; data: Report[] }>('/reports');
+    return response.data;
+  },
+  getUserReports: async (userId: string) => {
+    const response = await apiClient.get<{ message: string; data: Report[] }>(`/reports?userId=${userId}`);
+    return response.data;
+  },
+  deleteReport: async (id: string) => {
+    const response = await apiClient.delete<{ message: string }>(`/reports/${id}`);
+    return response.data;
+  },
+};

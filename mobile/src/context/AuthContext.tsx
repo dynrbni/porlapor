@@ -34,7 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const res = await getMe();
           setUser(res.data);
         }
-      } catch {
+      } catch (error) {
+        console.error("Failed to load user session:", error);
         await setToken(null);
       } finally {
         setIsLoading(false);
@@ -43,15 +44,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {
-    const res = await apiLogin(payload);
-    await setToken(res.token);
-    setUser(res.data.user);
+    try {
+      const res = await apiLogin(payload);
+      await setToken(res.token);
+      setUser(res.data.user);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   }, []);
 
   const register = useCallback(async (payload: RegisterPayload) => {
-    const res = await apiRegister(payload);
-    await setToken(res.token);
-    setUser(res.data.user);
+    try {
+      const res = await apiRegister(payload);
+      await setToken(res.token);
+      setUser(res.data.user);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -60,8 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshUser = useCallback(async () => {
-    const res = await getMe();
-    setUser(res.data);
+    try {
+      const res = await getMe();
+      setUser(res.data);
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+      throw error;
+    }
   }, []);
 
   return (

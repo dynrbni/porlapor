@@ -15,8 +15,8 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LocationMap from "../../components/ui/LocationMap";
 import { Info, MapPin, Camera, Image as ImageIcon, X, ChevronDown, ArrowRight, User, BadgeCheck, FileText, Type, Tags, AlignLeft, Building } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -384,32 +384,15 @@ export default function CreateReportScreen() {
           <StitchHeader variant="flow" title="Tentukan Lokasi" onBack={() => setMapVisible(false)} />
           <View className="flex-1 relative">
             {tempLat && tempLng ? (
-              <MapView
-                style={{ flex: 1 }}
-                initialRegion={{
-                  latitude: tempLat,
-                  longitude: tempLng,
-                  latitudeDelta: 0.005,
-                  longitudeDelta: 0.005,
-                }}
-                onPress={(e) => {
-                  const { latitude: lat, longitude: lng } = e.nativeEvent.coordinate;
+              <LocationMap
+                latitude={tempLat}
+                longitude={tempLng}
+                onCoordinateChange={(lat, lng) => {
                   setTempLat(lat);
                   setTempLng(lng);
                   reverseGeocode(lat, lng);
                 }}
-              >
-                <Marker
-                  coordinate={{ latitude: tempLat, longitude: tempLng }}
-                  draggable
-                  onDragEnd={(e) => {
-                    const { latitude: lat, longitude: lng } = e.nativeEvent.coordinate;
-                    setTempLat(lat);
-                    setTempLng(lng);
-                    reverseGeocode(lat, lng);
-                  }}
-                />
-              </MapView>
+              />
             ) : (
               <View className="flex-1 items-center justify-center bg-surface-container-low">
                 <ActivityIndicator size="large" color={colors.primary} />

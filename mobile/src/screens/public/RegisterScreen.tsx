@@ -94,8 +94,13 @@ export default function RegisterScreen() {
         birthDate: form.birthDate,
         gender: form.gender as "LAKI_LAKI" | "PEREMPUAN",
       });
+      // Navigation will be handled by RootNavigator automatically
     } catch (err: any) {
-      setError(err.response?.data?.message || "Pendaftaran gagal. Silakan coba lagi.");
+      if (err.code === "ECONNABORTED" || err.message?.includes("timeout")) {
+        setError("Koneksi ke server timeout. Pastikan server backend berjalan.");
+      } else {
+        setError(err.response?.data?.message || "Pendaftaran gagal. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }

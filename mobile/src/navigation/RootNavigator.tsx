@@ -6,6 +6,6 @@ export default function RootNavigator() {
   const { user, isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) return null;
-  if (!isAuthenticated || user?.role !== "USER") return <PublicNavigator />;
+  if (!isAuthenticated) return <PublicNavigator />;
   return <UserTabs />;
 }

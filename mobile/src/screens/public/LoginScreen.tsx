@@ -36,8 +36,13 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login({ email: email.trim(), password });
+      // Navigation will be handled by RootNavigator automatically
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Login gagal. Silakan coba lagi.");
+      if (err.code === "ECONNABORTED" || err.message?.includes("timeout")) {
+        setError("Koneksi ke server timeout. Pastikan server backend berjalan.");
+      } else {
+        setError(err?.response?.data?.message || "Login gagal. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }
