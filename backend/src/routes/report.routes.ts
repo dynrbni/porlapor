@@ -10,6 +10,7 @@ import {
   toggleLike
 } from '../controllers/report.controllers';
 import { authenticate, authorizeRoles } from '../middlewares/auth.middleware';
+import { uploadReportImage } from '../middlewares/upload.middleware';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get('/reports/:id', getReportById);
 // Protected routes
 router.use('/reports', authenticate);
 
-router.post('/reports', createReport);
+router.post('/reports', uploadReportImage.single('image'), createReport);
 router.put('/reports/:id', updateReport);
 router.post('/reports/:id/comments', addComment);
 router.post('/reports/:id/like', toggleLike);

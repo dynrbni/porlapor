@@ -17,7 +17,9 @@ export async function getMyReports(userId: string, params?: Record<string, any>)
 }
 
 export async function createReport(formData: FormData) {
-  const { data } = await api.post("/reports", formData);
+  const { data } = await api.post("/reports", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data;
 }
 

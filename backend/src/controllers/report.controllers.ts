@@ -45,7 +45,7 @@ export const createReport = async (req: Request, res: Response) => {
       });
     }
 
-    const { title, description, latitude, longitude, address, imageUrl, categoryId, agencyId } = req.body;
+    const { title, description, latitude, longitude, address, categoryId, agencyId } = req.body;
     const lat = parseNumber(latitude);
     const lng = parseNumber(longitude);
 
@@ -83,6 +83,12 @@ export const createReport = async (req: Request, res: Response) => {
       targetAgencyId = categoryExists.agencyId;
     }
 
+    // Jika ada file yang diupload, simpan pathnya
+    let photoUrl = req.body.imageUrl;
+    if (req.file) {
+      photoUrl = `/uploads/reports/${req.file.filename}`;
+    }
+
     const report = await prisma.report.create({
       data: {
         id: trackingId,
@@ -91,7 +97,7 @@ export const createReport = async (req: Request, res: Response) => {
         latitude: lat,
         longitude: lng,
         address,
-        imageUrl,
+        imageUrl: photoUrl,
         categoryId,
         agencyId: targetAgencyId,
         userId: user.id,
