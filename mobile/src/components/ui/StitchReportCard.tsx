@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import { Clock, ThumbsUp, MessageCircle, CheckCircle, Hourglass, RefreshCw } from "lucide-react-native";
+import { Clock, ThumbsUp, MessageCircle, CheckCircle, Hourglass, RefreshCw, ArrowRight, MapPin } from "lucide-react-native";
+import { getPhotoUrl } from "../../api/client";
 import type { Report } from "../../types";
 import {
   timeAgo,
@@ -17,7 +18,7 @@ type Props = {
 function StatusIcon({ status }: { status: string }) {
   const s = status.toUpperCase();
   const style = getStatusBadgeStyle(s);
-  const size = 14;
+  const size = 13;
   if (s === "RESOLVED") return <CheckCircle size={size} color={style.iconColor} />;
   if (s === "IN_PROGRESS") return <RefreshCw size={size} color={style.iconColor} />;
   return <Hourglass size={size} color={style.iconColor} />;
@@ -32,59 +33,93 @@ export function StitchReportCard({ report, onPress }: Props) {
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.9}
-      className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm"
+      className="bg-surface-container-lowest rounded-3xl border border-outline-variant/60 overflow-hidden mb-2"
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 4,
+      }}
     >
-      {report.imageUrl ? (
-        <Image source={{ uri: report.imageUrl }} className="w-full h-40" resizeMode="cover" />
-      ) : null}
+      {/* Image Container with Top-Radius */}
+      {report.imageUrl && (
+        <View className="w-full h-48 overflow-hidden bg-surface-container-low">
+          <Image
+            source={{ uri: getPhotoUrl(report.imageUrl)! }}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+        </View>
+      )}
 
-      <View className="p-4 flex-1">
-        <View className="flex-row justify-between items-start mb-2 gap-2">
-          {report.category?.name ? (
-            <View className={`px-2 py-1 rounded ${catStyle.bg}`}>
-              <Text className={`font-body text-[11px] font-semibold ${catStyle.text}`}>
-                {report.category.name}
-              </Text>
-            </View>
-          ) : (
-            <View />
-          )}
-          <View className={`flex-row items-center gap-1 px-2 py-1 rounded ${statusStyle.bg}`}>
+      <View className="p-5">
+        {/* Badges Row */}
+        <View className="flex-row justify-between items-start mb-3.5 gap-2">
+          <View className={`flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl ${statusStyle.bg}`}>
             <StatusIcon status={report.status} />
-            <Text className={`font-body text-[11px] font-semibold ${statusStyle.text}`}>
+            <Text className={`font-sans text-xs font-bold tracking-wider ${statusStyle.text}`}>
               {statusLabel}
             </Text>
           </View>
+          {report.category?.name && (
+            <View className="px-3 py-1.5 rounded-xl bg-surface-container-low border border-outline-variant/50">
+              <Text className="font-sans text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                {report.category.name}
+              </Text>
+            </View>
+          )}
         </View>
 
-        <Text className="font-sans text-lg font-semibold text-on-surface mb-2 leading-snug">
+        {/* Title */}
+        <Text className="font-sans text-lg font-bold text-on-surface mb-2.5 leading-snug tracking-tight" numberOfLines={2}>
           {report.title}
         </Text>
 
-        <View className="flex-row items-center gap-1 mb-2">
-          <Clock size={14} color={colors.outline} />
-          <Text className="font-body text-xs text-outline">{timeAgo(report.createdAt)}</Text>
-        </View>
-
-        {report.description ? (
-          <Text className="font-body text-sm text-on-surface-variant leading-relaxed" numberOfLines={3}>
+        {/* Description */}
+        {report.description && (
+          <Text className="font-body text-sm text-on-surface-variant leading-relaxed mb-4" numberOfLines={2}>
             {report.description}
           </Text>
-        ) : null}
-      </View>
+        )}
 
-      <View className="bg-surface-container-low px-4 py-3 border-t border-outline-variant flex-row items-center justify-between">
-        <View className="flex-row items-center gap-4">
-          <View className="flex-row items-center gap-1">
-            <ThumbsUp size={18} color={colors.onSurfaceVariant} />
-            <Text className="font-body text-xs text-on-surface-variant">{report._count?.likes ?? 0}</Text>
-          </View>
-          <View className="flex-row items-center gap-1">
-            <MessageCircle size={18} color={colors.onSurfaceVariant} />
-            <Text className="font-body text-xs text-on-surface-variant">{report._count?.comments ?? 0}</Text>
+        {/* Meta Row */}
+        <View className="flex-row items-center gap-4 mt-auto pt-1">
+          {report.address && (
+            <View className="flex-row items-center gap-1.5 flex-1">
+              <MapPin size={14} color={colors.outline} />
+              <Text className="font-body text-xs font-medium text-outline" numberOfLines={1}>
+                {report.address.split(",")[0]}
+              </Text>
+            </View>
+          )}
+          <View className="flex-row items-center gap-1.5 bg-surface-container-lowest px-2 py-1 rounded-md border border-outline-variant/30">
+            <Clock size={12} color={colors.outline} />
+            <Text className="font-body text-[11px] font-semibold text-outline">{timeAgo(report.createdAt)}</Text>
           </View>
         </View>
-        <Text className="font-body text-xs font-semibold text-primary">Lihat Detail</Text>
+      </View>
+
+      {/* Footer Actions */}
+      <View className="bg-surface-container-low/50 px-5 py-4 border-t border-outline-variant/40 flex-row items-center justify-between">
+        <View className="flex-row items-center gap-6">
+          <View className="flex-row items-center gap-2">
+            <ThumbsUp size={16} color={colors.onSurfaceVariant} />
+            <Text className="font-sans text-sm font-bold text-on-surface-variant">
+              {report._count?.likes ?? 0}
+            </Text>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <MessageCircle size={16} color={colors.onSurfaceVariant} />
+            <Text className="font-sans text-sm font-bold text-on-surface-variant">
+              {report._count?.comments ?? 0}
+            </Text>
+          </View>
+        </View>
+        <View className="flex-row items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full">
+          <Text className="font-sans text-xs font-bold text-primary">Detail</Text>
+          <ArrowRight size={14} color={colors.primary} />
+        </View>
       </View>
     </TouchableOpacity>
   );

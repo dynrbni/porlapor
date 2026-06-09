@@ -9,26 +9,26 @@ export const tabBarScreenOptions = ({
 }): BottomTabNavigationOptions => ({
   headerShown: false,
   tabBarStyle: {
-    backgroundColor: colors.surface,
+    backgroundColor: "#ffffff",
     borderTopWidth: 1,
-    borderTopColor: colors.outlineVariant,
+    borderTopColor: "rgba(197, 197, 211, 0.25)",
     height: 72,
     paddingBottom: 10,
     paddingTop: 8,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     elevation: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
   },
   tabBarShowLabel: true,
-  tabBarActiveTintColor: colors.onPrimaryContainer,
+  tabBarActiveTintColor: colors.primary,
   tabBarInactiveTintColor: colors.onSurfaceVariant,
   tabBarLabelStyle: {
     fontSize: 11,
-    fontWeight: "500",
+    fontWeight: "600",
     fontFamily: "Inter",
     marginTop: 2,
   },
@@ -47,8 +47,11 @@ export const tabBarScreenOptions = ({
 
     if (focused) {
       return (
-        <View className="bg-primary-container rounded-full px-5 py-1.5 items-center justify-center min-w-[56px]">
-          <Icon size={22} color={colors.onPrimaryContainer} strokeWidth={2.5} />
+        <View
+          className="rounded-full px-5 py-1.5 items-center justify-center min-w-[56px]"
+          style={{ backgroundColor: "rgba(0, 35, 111, 0.1)" }}
+        >
+          <Icon size={22} color={colors.primary} strokeWidth={2.5} />
         </View>
       );
     }

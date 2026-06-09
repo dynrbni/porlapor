@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Image } from "react-native";
 
 type Size = "sm" | "md" | "lg" | "xl";
 
@@ -10,17 +10,21 @@ const sizes: Record<Size, { outer: string; inner: string; text: string }> = {
 };
 
 export function AppLogo({ size = "md", showLabel = false }: { size?: Size; showLabel?: boolean }) {
-  const s = sizes[size];
+  const sizeMap: Record<Size, { width: number; height: number }> = {
+    sm: { width: 100, height: 28 },
+    md: { width: 140, height: 40 },
+    lg: { width: 180, height: 50 },
+    xl: { width: 260, height: 72 },
+  };
+  const s = sizeMap[size];
+  
   return (
-    <View className="flex-row items-center gap-2.5">
-      <View className={`${s.outer} bg-primary-soft items-center justify-center`}>
-        <View className={`${s.inner} bg-primary items-center justify-center`}>
-          <Text className={`text-on-primary font-sans font-bold ${s.text}`}>PL</Text>
-        </View>
-      </View>
-      {showLabel && (
-        <Text className="font-sans text-lg font-bold text-primary">PorLapor</Text>
-      )}
+    <View className="flex-row items-center justify-center">
+      <Image 
+        source={require("../../../assets/images/porlapor_logo.png")} 
+        style={{ width: s.width, height: s.height }} 
+        resizeMode="contain" 
+      />
     </View>
   );
 }

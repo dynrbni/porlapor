@@ -8,6 +8,19 @@ import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { useEffect, useState, Component, type ReactNode } from "react";
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  Poppins_800ExtraBold,
+} from "@expo-google-fonts/poppins";
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from "@expo-google-fonts/inter";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,7 +34,7 @@ class ErrorBoundary extends Component<
   { children: ReactNode },
   { hasError: boolean; error: Error | null }
 > {
-  state = { hasError: false, error: null };
+  state: { hasError: boolean; error: Error | null } = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
@@ -59,14 +72,25 @@ function AppContent() {
   const { isLoading } = useAuth();
   const [ready, setReady] = useState(false);
 
+  const [fontsLoaded] = useFonts({
+    Poppins: Poppins_400Regular,
+    "Poppins-Medium": Poppins_500Medium,
+    "Poppins-SemiBold": Poppins_600SemiBold,
+    "Poppins-Bold": Poppins_700Bold,
+    "Poppins-ExtraBold": Poppins_800ExtraBold,
+    Inter: Inter_400Regular,
+    "Inter-Medium": Inter_500Medium,
+    "Inter-SemiBold": Inter_600SemiBold,
+  });
+
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && fontsLoaded) {
       try {
         SplashScreen.hideAsync();
       } catch {}
       setReady(true);
     }
-  }, [isLoading]);
+  }, [isLoading, fontsLoaded]);
 
   if (!ready) {
     return (

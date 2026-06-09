@@ -1,8 +1,20 @@
 import axios from "axios";
 import { setToken as _setToken, getToken as _getToken } from "./storage";
 
+import { NativeModules } from "react-native";
+
 const TOKEN_KEY = "auth_token";
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8080/api";
+let API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8080/api";
+
+// Auto-detect IP during development
+if (__DEV__) {
+  const scriptURL = NativeModules.SourceCode?.scriptURL;
+  if (scriptURL) {
+    // scriptURL is typically "http://192.168.1.143:8081/index.bundle?..."
+    const ip = scriptURL.split("://")[1].split(":")[0];
+    API_URL = `http://${ip}:8080/api`;
+  }
+}
 
 export const api = axios.create({ baseURL: API_URL });
 export const publicApi = axios.create({ baseURL: API_URL });

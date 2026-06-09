@@ -1,4 +1,5 @@
-import { TouchableOpacity, Text, ActivityIndicator, type ReactNode } from "react-native";
+import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import type { ReactNode } from "react";
 import { colors } from "../../theme";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";

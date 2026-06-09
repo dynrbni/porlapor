@@ -12,6 +12,6 @@ export async function register(payload: RegisterPayload) {
 }
 
 export async function getMe() {
-  const { data } = await api.get("/auth/me");
+  const { data } = await api.get("/users/me");
   return data as { data: User };
 }

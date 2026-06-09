@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, type ReactNode } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import type { ReactNode } from "react";
 import { Bell, ArrowLeft, Share2 } from "lucide-react-native";
 import { colors } from "../../theme";
 
@@ -7,17 +8,28 @@ type Props = {
   title?: string;
   onBack?: () => void;
   onShare?: () => void;
+  onNotificationPress?: () => void;
   rightAction?: ReactNode;
 };
 
-export function StitchHeader({ variant = "main", title, onBack, onShare, rightAction }: Props) {
+export function StitchHeader({ variant = "main", title, onBack, onShare, onNotificationPress, rightAction }: Props) {
   if (variant === "flow") {
     return (
-      <View className="flex-row items-center px-4 h-16 bg-surface border-b border-outline-variant/30">
-        <TouchableOpacity onPress={onBack} className="w-10 h-10 items-center justify-center rounded-full">
-          <ArrowLeft size={24} color={colors.onSurface} />
+      <View
+        className="flex-row items-center px-5 h-16 bg-surface-container-lowest"
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: "rgba(197, 197, 211, 0.3)",
+        }}
+      >
+        <TouchableOpacity
+          onPress={onBack}
+          className="w-10 h-10 items-center justify-center rounded-full"
+          activeOpacity={0.7}
+        >
+          <ArrowLeft size={22} color={colors.onSurface} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-sans text-lg font-semibold text-on-surface" numberOfLines={1}>
+        <Text className="flex-1 text-center font-sans text-base font-semibold text-on-surface" numberOfLines={1}>
           {title}
         </Text>
         <View className="w-10" />
@@ -27,16 +39,27 @@ export function StitchHeader({ variant = "main", title, onBack, onShare, rightAc
 
   if (variant === "detail") {
     return (
-      <View className="flex-row items-center px-4 h-16 bg-surface shadow-sm">
-        <TouchableOpacity onPress={onBack} className="p-2 rounded-full">
+      <View
+        className="flex-row items-center px-5 h-16 bg-surface-container-lowest"
+        style={{
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 3,
+          borderBottomWidth: 1,
+          borderBottomColor: "rgba(197, 197, 211, 0.2)",
+        }}
+      >
+        <TouchableOpacity onPress={onBack} className="p-2 -ml-1 rounded-full" activeOpacity={0.7}>
           <ArrowLeft size={22} color={colors.primary} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center font-sans text-base font-bold text-primary px-2" numberOfLines={1}>
+        <Text className="flex-1 text-center font-sans text-base font-bold text-primary px-3" numberOfLines={1}>
           {title}
         </Text>
         {onShare ? (
-          <TouchableOpacity onPress={onShare} className="p-2 rounded-full">
-            <Share2 size={22} color={colors.onSurfaceVariant} />
+          <TouchableOpacity onPress={onShare} className="p-2 -mr-1 rounded-full" activeOpacity={0.7}>
+            <Share2 size={20} color={colors.onSurfaceVariant} />
           </TouchableOpacity>
         ) : (
           <View className="w-10" />
@@ -45,17 +68,34 @@ export function StitchHeader({ variant = "main", title, onBack, onShare, rightAc
     );
   }
 
+  // Main variant (default)
   return (
-    <View className="flex-row items-center justify-between px-4 h-16 bg-surface shadow-sm">
-      <View className="flex-row items-center gap-2">
-        <View className="w-8 h-8 rounded-lg bg-primary items-center justify-center">
-          <Text className="text-on-primary font-sans text-xs font-bold">PL</Text>
-        </View>
-        <Text className="font-sans text-lg font-bold text-primary">PorLapor</Text>
+    <View
+      className="flex-row items-center justify-between px-5 h-16 bg-surface-container-lowest"
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+        elevation: 3,
+        borderBottomWidth: 1,
+        borderBottomColor: "rgba(197, 197, 211, 0.15)",
+      }}
+    >
+      <View className="flex-row items-center">
+        <Image
+          source={require("../../../assets/images/porlapor_logo.png")}
+          style={{ width: 140, height: 40 }}
+          resizeMode="contain"
+        />
       </View>
       {rightAction ?? (
-        <TouchableOpacity className="p-2 rounded-full">
-          <Bell size={22} color={colors.onSurfaceVariant} />
+        <TouchableOpacity
+          onPress={onNotificationPress}
+          className="w-10 h-10 items-center justify-center rounded-full bg-surface-container-low"
+          activeOpacity={0.7}
+        >
+          <Bell size={20} color={colors.onSurfaceVariant} />
         </TouchableOpacity>
       )}
     </View>

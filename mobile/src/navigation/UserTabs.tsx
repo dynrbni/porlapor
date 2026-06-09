@@ -5,6 +5,7 @@ import CreateReportScreen from "../screens/user/CreateReportScreen";
 import ExploreScreen from "../screens/user/ExploreScreen";
 import ProfileScreen from "../screens/user/ProfileScreen";
 import ReportDetailScreen from "../screens/public/ReportDetailScreen";
+import NotificationScreen from "../screens/user/NotificationScreen";
 import { tabBarScreenOptions } from "./tabBarOptions";
 
 export type UserStackParamList = {
@@ -12,6 +13,7 @@ export type UserStackParamList = {
   CreateReport: undefined;
   Explore: undefined;
   Profile: undefined;
+  Notifications: undefined;
   ReportDetail: { reportId: string };
 };
 
@@ -23,6 +25,7 @@ function DashboardStack() {
     <Stack.Navigator screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="CreateReport" component={CreateReportScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
       <Stack.Screen name="ReportDetail" component={ReportDetailScreen} />
     </Stack.Navigator>
   );
@@ -32,6 +35,7 @@ function ExploreStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       <Stack.Screen name="Explore" component={ExploreScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
       <Stack.Screen name="ReportDetail" component={ReportDetailScreen} />
     </Stack.Navigator>
   );

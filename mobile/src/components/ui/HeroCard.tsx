@@ -1,4 +1,5 @@
-import { View, Text, type ReactNode } from "react-native";
+import { View, Text } from "react-native";
+import type { ReactNode } from "react";
 
 type Props = {
   badge?: string;

@@ -11,15 +11,13 @@ export async function getReportById(id: string) {
   return data as { message: string; data: Report };
 }
 
-export async function getMyReports(params?: Record<string, any>) {
-  const { data } = await api.get("/reports/me", { params });
+export async function getMyReports(userId: string, params?: Record<string, any>) {
+  const { data } = await api.get("/reports", { params: { ...params, userId } });
   return data as { message: string; data: Report[] };
 }
 
 export async function createReport(formData: FormData) {
-  const { data } = await api.post("/reports", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await api.post("/reports", formData);
   return data;
 }
 

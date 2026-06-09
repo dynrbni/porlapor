@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { Clock, CheckCircle, XCircle } from "lucide-react-native";
-import { statusLabels, statusStyles } from "../../theme";
+import { statusLabels, getStatusBadgeStyle } from "../../theme";
 
 type Props = { status: string; compact?: boolean };
 
@@ -14,7 +14,7 @@ function StatusIcon({ status, color }: { status: string; color: string }) {
 
 export function StatusBadge({ status, compact }: Props) {
   const key = status.toUpperCase();
-  const style = statusStyles[key] || statusStyles.PENDING;
+  const style = getStatusBadgeStyle(key);
   const label = statusLabels[key] || status;
 
   return (
